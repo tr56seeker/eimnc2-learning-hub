@@ -13,6 +13,8 @@ const learnerLinks = [
 
 const teacherLinks = [
   ["Dashboard", "/teacher/dashboard"],
+  ["Learners", "/teacher/learners"],
+  ["Sections", "/teacher/sections"],
   ["Lessons", "/teacher/lessons"],
   ["Exams", "/teacher/exams"],
   ["Question Bank", "/teacher/question-bank"],

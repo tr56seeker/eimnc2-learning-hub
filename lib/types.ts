@@ -4,8 +4,11 @@ export type Profile = {
   id: string;
   full_name: string;
   role: UserRole;
+  email: string | null;
   lrn: string | null;
   section_id: string | null;
+  grade_level: number | null;
+  status: "active" | "inactive" | null;
 };
 
 export type Lesson = {

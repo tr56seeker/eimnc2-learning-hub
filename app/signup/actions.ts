@@ -9,6 +9,8 @@ export async function signupAction(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const sectionId = String(formData.get("section_id") ?? "").trim() || null;
+  const gradeLevelValue = String(formData.get("grade_level") ?? "").trim();
+  const gradeLevel = gradeLevelValue ? Number(gradeLevelValue) : null;
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({ email, password });
@@ -21,8 +23,11 @@ export async function signupAction(formData: FormData) {
     id: data.user.id,
     full_name: fullName,
     role: "learner",
+    email,
     lrn,
-    section_id: sectionId
+    section_id: sectionId,
+    grade_level: gradeLevel,
+    status: "active"
   });
 
   if (profileError) {

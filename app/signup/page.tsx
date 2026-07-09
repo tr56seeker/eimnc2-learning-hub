@@ -45,6 +45,14 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
             </select>
           </label>
           <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+            Grade level
+            <select name="grade_level" className={inputClass}>
+              <option value="">Select grade level</option>
+              <option value="11">Grade 11</option>
+              <option value="12">Grade 12</option>
+            </select>
+          </label>
+          <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
             Email
             <input name="email" type="email" required className={inputClass} />
           </label>
