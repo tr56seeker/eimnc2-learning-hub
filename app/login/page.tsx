@@ -7,9 +7,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <main className="flex min-h-screen items-center justify-center px-5 py-10">
       <div className="card w-full max-w-md rounded-[2rem] p-6 sm:p-8">
-        <p className="text-xs font-black uppercase tracking-[0.25em] text-teal-700">EIM NC II</p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950">Login to Learning Hub</h1>
-        <p className="mt-2 text-sm text-slate-500">Use the account provided by your EIM teacher.</p>
+        <Link href="/" className="text-xs font-black tracking-[0.24em] text-teal-700">EIM NC II</Link>
+        <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950">Welcome back</h1>
+        <p className="mt-2 text-sm leading-6 text-slate-500">Use the account provided by your EIM teacher to continue lessons, exams, and outputs.</p>
 
         {params.message ? (
           <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
@@ -20,19 +20,19 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <form action={loginAction} className="mt-6 grid gap-4">
           <label className="grid gap-2 text-sm font-bold text-slate-700">
             Email
-            <input name="email" type="email" required className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 font-normal" placeholder="learner@example.com" />
+            <input name="email" type="email" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm" placeholder="learner@example.com" />
           </label>
           <label className="grid gap-2 text-sm font-bold text-slate-700">
             Password
-            <input name="password" type="password" required className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 font-normal" placeholder="••••••••" />
+            <input name="password" type="password" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm" placeholder="Password" />
           </label>
-          <button className="rounded-2xl bg-teal-700 px-5 py-3 font-black text-white hover:bg-teal-800">
+          <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
             Login
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm text-slate-500">
-          No account yet? <Link href="/signup" className="font-bold text-teal-700">Create learner account</Link>
+          No account yet? <Link href="/signup" className="font-bold text-teal-700 hover:text-teal-800">Create learner account</Link>
         </p>
       </div>
     </main>

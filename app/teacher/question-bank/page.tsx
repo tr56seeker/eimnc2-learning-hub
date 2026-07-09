@@ -115,7 +115,7 @@ export default async function TeacherQuestionBankPage({ searchParams }: { search
               <h2 className="text-lg font-black text-slate-950">{group}</h2>
               <div className="mt-4 grid gap-3">
                 {groupQuestions.map((question) => (
-                  <details key={question.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <details key={question.id} className="rounded-2xl border border-white/70 bg-white/70 p-4 shadow-sm">
                     <summary className="cursor-pointer list-none">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                         <div>

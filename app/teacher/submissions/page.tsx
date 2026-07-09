@@ -30,31 +30,31 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
             const learner = firstRelation(submission.profiles);
 
             return (
-            <div key={submission.id} className="card rounded-3xl p-6">
+            <div key={submission.id} className="card rounded-[1.75rem] p-6">
               <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-700">{submission.status}</p>
                   <h2 className="mt-2 text-xl font-black text-slate-950">{assignment?.title}</h2>
                   <p className="mt-1 text-sm font-bold text-slate-500">Learner: {learner?.full_name}</p>
                   <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(submission.submitted_at)}</p>
-                  {submission.file_url ? <a className="mt-4 inline-block font-bold text-teal-700 hover:underline" href={submission.file_url} target="_blank" rel="noreferrer">Open submitted link →</a> : null}
+                  {submission.file_url ? <a className="mt-4 inline-block font-bold text-teal-700 hover:underline" href={submission.file_url} target="_blank" rel="noreferrer">Open submitted link</a> : null}
                   {submission.content_text ? <p className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">{submission.content_text}</p> : null}
                 </div>
 
-                <form action={scoreSubmissionAction} className="rounded-2xl border border-slate-200 bg-white p-4">
+                <form action={scoreSubmissionAction} className="rounded-2xl border border-white/70 bg-white/70 p-4 shadow-sm">
                   <input type="hidden" name="submission_id" value={submission.id} />
                   <input type="hidden" name="learner_id" value={submission.learner_id} />
                   <input type="hidden" name="assignment_title" value={assignment?.title ?? "Output"} />
                   <input type="hidden" name="max_score" value={assignment?.max_score ?? 100} />
                   <label className="grid gap-2 text-sm font-bold text-slate-700">
                     Score / {assignment?.max_score ?? 100}
-                    <input name="score" type="number" min={0} max={assignment?.max_score ?? 100} defaultValue={submission.score ?? 0} className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 font-normal" />
+                    <input name="score" type="number" min={0} max={assignment?.max_score ?? 100} defaultValue={submission.score ?? 0} className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm" />
                   </label>
                   <label className="mt-3 grid gap-2 text-sm font-bold text-slate-700">
                     Feedback
-                    <textarea name="feedback" rows={4} defaultValue={submission.feedback ?? ""} className="focus-ring rounded-2xl border border-slate-200 p-4 font-normal" />
+                    <textarea name="feedback" rows={4} defaultValue={submission.feedback ?? ""} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm" />
                   </label>
-                  <button className="mt-4 w-full rounded-2xl bg-teal-700 px-5 py-3 font-black text-white hover:bg-teal-800">Save Score</button>
+                  <button className="mt-4 w-full rounded-2xl bg-slate-950 px-5 py-3.5 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">Save Score</button>
                 </form>
               </div>
             </div>

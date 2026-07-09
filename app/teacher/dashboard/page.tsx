@@ -25,7 +25,7 @@ export default async function TeacherDashboardPage() {
         <StatCard label="Pending Checks" value={pending.count ?? 0} />
       </div>
 
-      <section className="mt-8 grid gap-4 lg:grid-cols-4">
+      <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {[
           ["Lesson Manager", "Publish competency-based lessons.", "/teacher/lessons"],
           ["Exam Manager", "Create and publish scheduled exams.", "/teacher/exams"],
@@ -33,10 +33,10 @@ export default async function TeacherDashboardPage() {
           ["Check Outputs", "Score learner performance tasks.", "/teacher/submissions"],
           ["Gradebook", "Monitor scores and mastery.", "/teacher/gradebook"]
         ].map(([title, text, href]) => (
-          <Link key={href} href={href} className="card rounded-3xl p-6 transition hover:-translate-y-1 hover:shadow-2xl">
-            <h2 className="text-lg font-black text-slate-950">{title}</h2>
-            <p className="mt-2 text-sm text-slate-600">{text}</p>
-            <p className="mt-5 font-bold text-teal-700">Open →</p>
+          <Link key={href} href={href} className="card rounded-[1.75rem] p-6 hover:-translate-y-0.5 hover:shadow-2xl">
+            <h2 className="text-lg font-black tracking-tight text-slate-950">{title}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+            <p className="mt-5 font-bold text-teal-700">Open</p>
           </Link>
         ))}
       </section>

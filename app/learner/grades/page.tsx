@@ -24,18 +24,18 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
 
       {params.message ? <div className="mb-5 rounded-2xl border border-teal-200 bg-teal-50 p-4 font-bold text-teal-800">{params.message}</div> : null}
 
-      <div className="card mb-6 rounded-3xl p-6">
+      <div className="card mb-6 rounded-[1.75rem] p-6">
         <p className="text-sm font-bold text-slate-500">Overall mastery estimate</p>
-        <p className="mt-2 text-5xl font-black text-slate-950">{percent(totalScore, totalMax)}%</p>
+        <p className="mt-2 text-5xl font-black tracking-tight text-slate-950">{percent(totalScore, totalMax)}%</p>
         <p className="mt-2 text-sm text-slate-500">Raw total: {totalScore}/{totalMax}</p>
       </div>
 
       {!rows.length ? (
         <EmptyState title="No grades yet" message="Scores will appear after exams or checked outputs." />
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
+        <div className="premium-table overflow-x-auto">
           <table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <thead className="bg-slate-50/80 text-xs tracking-wider text-slate-500">
               <tr>
                 <th className="p-4">Activity</th>
                 <th className="p-4">Component</th>

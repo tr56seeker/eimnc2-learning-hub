@@ -143,7 +143,7 @@ export default async function ExamBuilderPage({
                   <form action={updateExamQuestionAction.bind(null, id, row.id)} className="grid flex-1 gap-3 md:grid-cols-3">
                     <FormInput label="Order" name="order_index" type="number" defaultValue={row.order_index} />
                     <FormInput label="Points override" name="points_override" type="number" defaultValue={row.points_override ?? ""} placeholder={String(question.points ?? 1)} />
-                    <SubmitButton className="rounded-2xl bg-teal-700 px-5 py-3 font-black text-white hover:bg-teal-800 md:self-end">Update</SubmitButton>
+                    <SubmitButton className="rounded-2xl bg-slate-950 px-5 py-3 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 md:self-end">Update</SubmitButton>
                   </form>
                   <form action={removeExamQuestionAction.bind(null, id, row.id)}>
                     <ConfirmSubmitButton message="Remove this question from the exam?" className="rounded-2xl border border-red-200 px-5 py-3 font-black text-red-700 hover:bg-red-50">

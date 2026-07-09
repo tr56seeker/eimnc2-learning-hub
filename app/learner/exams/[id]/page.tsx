@@ -77,7 +77,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
   return (
     <PortalShell profile={profile}>
       <section className="card rounded-[2rem] p-6 sm:p-8">
-        <Link href="/learner/exams" className="text-sm font-bold text-teal-700">← Back to exams</Link>
+        <Link href="/learner/exams" className="text-sm font-bold text-teal-700 hover:text-teal-800">Back to exams</Link>
         <p className="mt-6 text-xs font-black uppercase tracking-[0.25em] text-teal-700">Online Assessment</p>
         <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-5xl">{exam.title}</h1>
         <p className="mt-3 max-w-3xl text-slate-600">{exam.description}</p>
@@ -86,7 +86,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
         {query.message ? <div className="mt-5 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 font-bold text-yellow-800">{query.message}</div> : null}
 
         {submitted ? (
-          <div className="mt-8 rounded-3xl bg-teal-50 p-6 text-teal-950 ring-1 ring-teal-100">
+          <div className="mt-8 rounded-[1.75rem] border border-teal-100/80 bg-teal-50/80 p-6 text-teal-950">
             <h2 className="text-xl font-black">Already submitted</h2>
             {showResult || reviewAllowed ? <p className="mt-2 font-bold">Score: {submitted.score}/{submitted.max_score}</p> : <p className="mt-2 font-bold">Your result will be released by your teacher.</p>}
           </div>
@@ -98,29 +98,29 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
               const choices = shuffleItems(question.choices ?? [], Boolean(exam.randomize_choices));
 
               return (
-                <fieldset key={question.question_id} className="rounded-3xl border border-slate-200 bg-white p-5">
+                <fieldset key={question.question_id} className="rounded-[1.75rem] border border-white/70 bg-white/74 p-5 shadow-sm">
                   <legend className="px-2 text-sm font-black text-slate-500">Question {index + 1} · {points} pt</legend>
                   <p className="mt-2 text-lg font-black text-slate-950">{question.question_text}</p>
 
                   {question.question_type === "multiple_choice" || question.question_type === "true_false" ? (
                     <div className="mt-4 grid gap-3">
                       {choices.map((choice) => (
-                        <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200 p-4 hover:border-teal-300 hover:bg-teal-50">
+                        <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200/80 bg-white/70 p-4 shadow-sm hover:border-teal-200 hover:bg-teal-50/80">
                           <input type="radio" name={`q_${question.question_id}`} value={choice.value} required />
                           <span className="font-semibold text-slate-700">{choice.label}</span>
                         </label>
                       ))}
                     </div>
                   ) : question.question_type === "essay" ? (
-                    <textarea name={`q_${question.question_id}`} rows={5} required className="focus-ring mt-4 w-full rounded-2xl border border-slate-200 p-4" placeholder="Write your answer here." />
+                    <textarea name={`q_${question.question_id}`} rows={5} required className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Write your answer here." />
                   ) : (
-                    <input name={`q_${question.question_id}`} required className="focus-ring mt-4 w-full rounded-2xl border border-slate-200 p-4" placeholder="Type your answer" />
+                    <input name={`q_${question.question_id}`} required className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Type your answer" />
                   )}
                 </fieldset>
               );
             })}
 
-            <button className="rounded-2xl bg-teal-700 px-6 py-4 font-black text-white hover:bg-teal-800">
+            <button className="rounded-2xl bg-slate-950 px-6 py-4 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
               Submit Exam
             </button>
           </form>

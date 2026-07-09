@@ -8,7 +8,7 @@ type FieldProps = {
   required?: boolean;
 };
 
-const fieldClass = "focus-ring rounded-2xl border border-slate-200 px-4 py-3 font-normal";
+const fieldClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm";
 
 export function FormInput({ label, name, defaultValue, placeholder, required, type = "text" }: FieldProps & { type?: string }) {
   return (
@@ -23,7 +23,7 @@ export function FormTextarea({ label, name, defaultValue, placeholder, required,
   return (
     <label className="grid gap-2 text-sm font-bold text-slate-700">
       {label}
-      <textarea name={name} rows={rows} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} className="focus-ring rounded-2xl border border-slate-200 p-4 font-normal" />
+      <textarea name={name} rows={rows} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm" />
     </label>
   );
 }
@@ -47,7 +47,7 @@ export function FormSelect({
 
 export function SubmitButton({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <button className={className ?? "rounded-2xl bg-teal-700 px-5 py-3 font-black text-white hover:bg-teal-800"}>
+    <button className={className ?? "rounded-2xl bg-slate-950 px-5 py-3 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700"}>
       {children}
     </button>
   );

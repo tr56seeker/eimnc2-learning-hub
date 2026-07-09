@@ -33,7 +33,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
             <form action={submitOutputAction} className="mt-5 grid gap-4">
               <label className="grid gap-2 text-sm font-bold text-slate-700">
                 Assignment
-                <select name="assignment_id" required className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 font-normal">
+                <select name="assignment_id" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm">
                   <option value="">Select task</option>
                   {assignments.map((assignment) => (
                     <option key={assignment.id} value={assignment.id}>{assignment.title}</option>
@@ -42,13 +42,13 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-700">
                 Output link
-                <input name="file_url" type="url" className="focus-ring rounded-2xl border border-slate-200 px-4 py-3 font-normal" placeholder="Google Drive / YouTube unlisted / image link" />
+                <input name="file_url" type="url" className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm" placeholder="Google Drive / YouTube unlisted / image link" />
               </label>
               <label className="grid gap-2 text-sm font-bold text-slate-700">
                 Notes / explanation
-                <textarea name="content_text" rows={6} className="focus-ring rounded-2xl border border-slate-200 p-4 font-normal" placeholder="Briefly explain your submitted work." />
+                <textarea name="content_text" rows={6} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm" placeholder="Briefly explain your submitted work." />
               </label>
-              <button className="rounded-2xl bg-teal-700 px-5 py-3 font-black text-white hover:bg-teal-800">Submit Output</button>
+              <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">Submit Output</button>
             </form>
           )}
         </section>
@@ -62,7 +62,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
               const assignment = firstRelation(submission.assignments);
 
               return (
-                <div key={submission.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+                <div key={submission.id} className="rounded-2xl border border-white/70 bg-white/70 p-4 shadow-sm">
                   <h3 className="font-black text-slate-950">{assignment?.title}</h3>
                   <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(submission.submitted_at)}</p>
                   <p className="mt-2 text-sm font-bold text-slate-700">Status: {submission.status}</p>

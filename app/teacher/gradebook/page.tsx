@@ -20,9 +20,9 @@ export default async function TeacherGradebookPage() {
       {!grades?.length ? (
         <EmptyState title="No grades encoded" message="Exam scores and checked outputs will appear here." />
       ) : (
-        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white">
+        <div className="premium-table overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <thead className="bg-slate-50/80 text-xs tracking-wider text-slate-500">
               <tr>
                 <th className="p-4">Learner</th>
                 <th className="p-4">Activity</th>

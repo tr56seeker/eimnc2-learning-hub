@@ -60,7 +60,7 @@ function ExamForm({
         <FormInput label="Opens" name="start_at" type="datetime-local" defaultValue={toDateInput(exam?.start_at ?? null)} />
         <FormInput label="Closes" name="end_at" type="datetime-local" defaultValue={toDateInput(exam?.end_at ?? null)} />
       </div>
-      <div className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-sm font-bold text-slate-700 md:grid-cols-2">
+      <div className="grid gap-3 rounded-2xl border border-white/70 bg-white/70 p-4 text-sm font-bold text-slate-700 shadow-sm md:grid-cols-2">
         <label className="flex items-center gap-3"><input name="is_published" type="checkbox" defaultChecked={exam?.status === "published"} /> Published</label>
         <label className="flex items-center gap-3"><input name="randomize_questions" type="checkbox" defaultChecked={exam?.randomize_questions ?? false} /> Randomize questions</label>
         <label className="flex items-center gap-3"><input name="randomize_choices" type="checkbox" defaultChecked={exam?.randomize_choices ?? false} /> Randomize choices</label>
@@ -118,7 +118,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
                       <h2 className="mt-2 text-2xl font-black text-slate-950">{exam.title}</h2>
                       <p className="mt-2 text-sm text-slate-600">{exam.description}</p>
                     </div>
-                    <Link href={`/teacher/exams/${exam.id}/builder`} className="rounded-2xl bg-teal-700 px-4 py-3 text-center text-sm font-black text-white hover:bg-teal-800">
+                    <Link href={`/teacher/exams/${exam.id}/builder`} className="rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
                       Builder
                     </Link>
                   </div>

@@ -36,10 +36,10 @@ export default async function LearnerDashboardPage() {
           ["Take Exam", "Answer available quizzes and summative exams.", "/learner/exams"],
           ["Submit Output", "Paste your output, photo, PDF, or video link.", "/learner/submissions"]
         ].map(([title, text, href]) => (
-          <Link key={href} href={href} className="card rounded-3xl p-6 transition hover:-translate-y-1 hover:shadow-2xl">
-            <h2 className="text-xl font-black text-slate-950">{title}</h2>
-            <p className="mt-2 text-slate-600">{text}</p>
-            <p className="mt-5 font-bold text-teal-700">Open →</p>
+          <Link key={href} href={href} className="card rounded-[1.75rem] p-6 hover:-translate-y-0.5 hover:shadow-2xl">
+            <h2 className="text-xl font-black tracking-tight text-slate-950">{title}</h2>
+            <p className="mt-2 leading-6 text-slate-600">{text}</p>
+            <p className="mt-5 font-bold text-teal-700">Open</p>
           </Link>
         ))}
       </section>

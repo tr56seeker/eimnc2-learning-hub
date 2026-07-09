@@ -38,7 +38,7 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
   return (
     <PortalShell profile={profile}>
       <article className="card rounded-[2rem] p-6 sm:p-8">
-        <Link href="/learner/lessons" className="text-sm font-bold text-teal-700">← Back to lessons</Link>
+        <Link href="/learner/lessons" className="text-sm font-bold text-teal-700 hover:text-teal-800">Back to lessons</Link>
         <p className="mt-6 text-xs font-black uppercase tracking-[0.25em] text-teal-700">{competency?.code ?? "EIM"}</p>
         <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">{lesson.title}</h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">{lesson.summary}</p>
@@ -47,7 +47,7 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
         </div>
 
         {resources?.length ? (
-          <div className="mt-8 rounded-3xl bg-teal-50 p-5 ring-1 ring-teal-100">
+          <div className="mt-8 rounded-[1.75rem] border border-teal-100/80 bg-teal-50/80 p-5">
             <h2 className="font-black text-teal-950">Resources</h2>
             <div className="mt-3 grid gap-2">
               {resources.map((resource) => (

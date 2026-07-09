@@ -30,11 +30,11 @@ export default async function LearnerExamsPage({ searchParams }: { searchParams:
             const competency = firstRelation(exam.competencies);
 
             return (
-              <Link key={exam.id} href={`/learner/exams/${exam.id}`} className="card rounded-3xl p-6 hover:-translate-y-1 hover:shadow-2xl">
+              <Link key={exam.id} href={`/learner/exams/${exam.id}`} className="card rounded-[1.75rem] p-6 hover:-translate-y-0.5 hover:shadow-2xl">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-700">
                   {competency?.code ?? "EIM"}
                 </p>
-                <h2 className="mt-2 text-2xl font-black text-slate-950">{exam.title}</h2>
+                <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950">{exam.title}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{exam.description}</p>
                 <div className="mt-5 grid gap-2 text-sm text-slate-500">
                   <p><strong>Duration:</strong> {exam.duration_minutes ?? 30} minutes</p>

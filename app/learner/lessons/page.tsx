@@ -26,11 +26,11 @@ export default async function LearnerLessonsPage() {
             const competency = firstRelation(lesson.competencies);
 
             return (
-              <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-3xl p-6 hover:-translate-y-1 hover:shadow-2xl">
+              <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-[1.75rem] p-6 hover:-translate-y-0.5 hover:shadow-2xl">
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-700">
                   {competency?.code ?? "EIM"}
                 </p>
-                <h2 className="mt-2 text-xl font-black text-slate-950">{lesson.title}</h2>
+                <h2 className="mt-2 text-xl font-black tracking-tight text-slate-950">{lesson.title}</h2>
                 <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{lesson.summary}</p>
                 <p className="mt-5 text-sm font-bold text-slate-500">{lesson.estimated_minutes ?? 30} minutes</p>
               </Link>
