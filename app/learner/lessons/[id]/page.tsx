@@ -37,10 +37,10 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
 
   return (
     <PortalShell profile={profile}>
-      <article className="card rounded-[2rem] p-6 sm:p-8">
-        <Link href="/learner/lessons" className="text-sm font-bold text-teal-700 hover:text-teal-800">Back to lessons</Link>
-        <p className="mt-6 text-xs font-black uppercase tracking-[0.25em] text-teal-700">{competency?.code ?? "EIM"}</p>
-        <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">{lesson.title}</h1>
+      <article className="card rounded-[1.75rem] p-7 sm:p-9">
+        <Link href="/learner/lessons" className="text-sm font-semibold text-teal-700 hover:text-teal-800">Back to lessons</Link>
+        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">{competency?.code ?? "EIM"}</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">{lesson.title}</h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">{lesson.summary}</p>
         <div className="prose-eim mt-8 max-w-4xl text-slate-700">
           {renderMarkdownLite(lesson.content_md ?? "No content yet.")}
@@ -48,10 +48,10 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
 
         {resources?.length ? (
           <div className="mt-8 rounded-[1.75rem] border border-teal-100/80 bg-teal-50/80 p-5">
-            <h2 className="font-black text-teal-950">Resources</h2>
+            <h2 className="font-semibold text-teal-950">Resources</h2>
             <div className="mt-3 grid gap-2">
               {resources.map((resource) => (
-                <a key={resource.id} href={resource.url} target="_blank" rel="noreferrer" className="font-bold text-teal-700 hover:underline">
+                <a key={resource.id} href={resource.url} target="_blank" rel="noreferrer" className="font-semibold text-teal-700 hover:underline">
                   {resource.title} <span className="text-xs uppercase text-slate-400">{resource.resource_type}</span>
                 </a>
               ))}

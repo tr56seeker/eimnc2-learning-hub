@@ -37,11 +37,11 @@ export default async function TeacherGradebookPage() {
 
                 return (
                   <tr key={grade.id} className="border-t border-slate-100">
-                    <td className="p-4 font-bold text-slate-900">{learner?.full_name}</td>
+                    <td className="p-4 font-semibold text-slate-900">{learner?.full_name}</td>
                     <td className="p-4 text-slate-700">{grade.title}</td>
                     <td className="p-4 capitalize text-slate-600">{grade.component.replaceAll("_", " ")}</td>
-                    <td className="p-4 font-bold">{grade.score}/{grade.max_score}</td>
-                    <td className="p-4 font-black text-teal-700">{percent(Number(grade.score), Number(grade.max_score))}%</td>
+                    <td className="p-4 font-medium">{grade.score}/{grade.max_score}</td>
+                    <td className="p-4 font-semibold text-teal-700">{percent(Number(grade.score), Number(grade.max_score))}%</td>
                   </tr>
                 );
               })}

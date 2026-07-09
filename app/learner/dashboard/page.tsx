@@ -23,23 +23,23 @@ export default async function LearnerDashboardPage() {
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Learner Dashboard" title={`Welcome, ${profile.full_name}`} description="Track your lessons, exams, outputs, and current learning performance." />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Published Lessons" value={lessons.count ?? 0} />
         <StatCard label="Available Exams" value={exams.count ?? 0} />
         <StatCard label="My Submissions" value={submissions.count ?? 0} />
         <StatCard label="Current Average" value={`${average}%`} helper="Based on encoded scores" />
       </div>
 
-      <section className="mt-8 grid gap-4 lg:grid-cols-3">
+      <section className="mt-10 grid gap-5 lg:grid-cols-3">
         {[
           ["Continue Lessons", "Read competency-based EIM topics.", "/learner/lessons"],
           ["Take Exam", "Answer available quizzes and summative exams.", "/learner/exams"],
           ["Submit Output", "Paste your output, photo, PDF, or video link.", "/learner/submissions"]
         ].map(([title, text, href]) => (
-          <Link key={href} href={href} className="card rounded-[1.75rem] p-6 hover:-translate-y-0.5 hover:shadow-2xl">
-            <h2 className="text-xl font-black tracking-tight text-slate-950">{title}</h2>
-            <p className="mt-2 leading-6 text-slate-600">{text}</p>
-            <p className="mt-5 font-bold text-teal-700">Open</p>
+          <Link key={href} href={href} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950">{title}</h2>
+            <p className="mt-3 leading-7 text-slate-600">{text}</p>
+            <p className="mt-6 text-sm font-semibold text-teal-700">Open</p>
           </Link>
         ))}
       </section>

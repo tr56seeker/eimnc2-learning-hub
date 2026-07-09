@@ -21,18 +21,18 @@ export default async function LearnerLessonsPage() {
       {!lessons?.length ? (
         <EmptyState title="No lessons yet" message="Your teacher has not published lessons yet." />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {lessons.map((lesson) => {
             const competency = firstRelation(lesson.competencies);
 
             return (
-              <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-[1.75rem] p-6 hover:-translate-y-0.5 hover:shadow-2xl">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-700">
+              <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
                   {competency?.code ?? "EIM"}
                 </p>
-                <h2 className="mt-2 text-xl font-black tracking-tight text-slate-950">{lesson.title}</h2>
-                <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{lesson.summary}</p>
-                <p className="mt-5 text-sm font-bold text-slate-500">{lesson.estimated_minutes ?? 30} minutes</p>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{lesson.title}</h2>
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{lesson.summary}</p>
+                <p className="mt-6 text-sm font-medium text-slate-500">{lesson.estimated_minutes ?? 30} minutes</p>
               </Link>
             );
           })}

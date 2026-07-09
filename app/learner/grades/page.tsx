@@ -22,12 +22,12 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Grades" title="My Grade Dashboard" description="This dashboard shows encoded scores from exams and checked outputs." />
 
-      {params.message ? <div className="mb-5 rounded-2xl border border-teal-200 bg-teal-50 p-4 font-bold text-teal-800">{params.message}</div> : null}
+      {params.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div> : null}
 
-      <div className="card mb-6 rounded-[1.75rem] p-6">
-        <p className="text-sm font-bold text-slate-500">Overall mastery estimate</p>
-        <p className="mt-2 text-5xl font-black tracking-tight text-slate-950">{percent(totalScore, totalMax)}%</p>
-        <p className="mt-2 text-sm text-slate-500">Raw total: {totalScore}/{totalMax}</p>
+      <div className="card mb-8 rounded-[1.5rem] p-6 sm:p-7">
+        <p className="text-sm font-medium text-slate-500">Overall mastery estimate</p>
+        <p className="mt-3 text-5xl font-semibold tracking-tight text-slate-950">{percent(totalScore, totalMax)}%</p>
+        <p className="mt-3 text-sm text-slate-500">Raw total: {totalScore}/{totalMax}</p>
       </div>
 
       {!rows.length ? (
@@ -46,10 +46,10 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
             <tbody>
               {rows.map((grade) => (
                 <tr key={grade.id} className="border-t border-slate-100">
-                  <td className="p-4 font-bold text-slate-900">{grade.title}</td>
+                  <td className="p-4 font-semibold text-slate-900">{grade.title}</td>
                   <td className="p-4 capitalize text-slate-600">{grade.component.replaceAll("_", " ")}</td>
-                  <td className="p-4 font-bold">{grade.score}/{grade.max_score}</td>
-                  <td className="p-4 font-black text-teal-700">{percent(Number(grade.score), Number(grade.max_score))}%</td>
+                  <td className="p-4 font-medium">{grade.score}/{grade.max_score}</td>
+                  <td className="p-4 font-semibold text-teal-700">{percent(Number(grade.score), Number(grade.max_score))}%</td>
                 </tr>
               ))}
             </tbody>

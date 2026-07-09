@@ -86,32 +86,32 @@ export default async function ExamBuilderPage({
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Exam Builder" title={exam.title} description="Add, remove, reorder, and score questions for this exam." />
 
-      <div className="mb-5 flex flex-wrap gap-3">
-        <Link href="/teacher/exams" className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-white">Back to Exams</Link>
-        <Link href="/teacher/question-bank" className="rounded-2xl border border-teal-200 px-4 py-2 text-sm font-bold text-teal-700 hover:bg-teal-50">Question Bank</Link>
+      <div className="mb-7 flex flex-wrap gap-3">
+        <Link href="/teacher/exams" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">Back to Exams</Link>
+        <Link href="/teacher/question-bank" className="rounded-2xl border border-teal-200 bg-white/70 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50">Question Bank</Link>
       </div>
 
-      {query.message ? <div className="mb-5 rounded-2xl border border-teal-200 bg-teal-50 p-4 font-bold text-teal-800">{query.message}</div> : null}
+      {query.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{query.message}</div> : null}
 
-      <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
-        <aside className="card rounded-[2rem] p-6">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-700">{competency?.code ?? "EIM"} · {exam.status}</p>
-          <h2 className="mt-2 text-xl font-black text-slate-950">Exam Setup</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{exam.description}</p>
-          <div className="mt-5 grid gap-2 text-sm font-bold text-slate-600">
+      <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+        <aside className="card rounded-[1.75rem] p-7 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{competency?.code ?? "EIM"} / {exam.status}</p>
+          <h2 className="mt-2 text-xl font-semibold text-slate-950">Exam Setup</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600">{exam.description}</p>
+          <div className="mt-6 grid gap-2.5 text-sm text-slate-600">
             <p>Duration: {exam.duration_minutes ?? 30} minutes</p>
             <p>Questions: {assigned.length}</p>
             <p>Total points: {totalPoints}</p>
           </div>
 
-          <form action={addExamQuestionAction.bind(null, id)} className="mt-6 grid gap-4">
+          <form action={addExamQuestionAction.bind(null, id)} className="mt-7 grid gap-5">
             <FormSelect label="Add from question bank" name="question_id" required>
               <option value="">Select active question</option>
               {available.map((question) => {
                 const itemCompetency = firstRelation(question.competencies);
                 return (
                   <option key={question.id} value={question.id}>
-                    {(itemCompetency?.code ?? "EIM")} · {question.question_text.slice(0, 80)}
+                    {(itemCompetency?.code ?? "EIM")} / {question.question_text.slice(0, 80)}
                   </option>
                 );
               })}
@@ -120,7 +120,7 @@ export default async function ExamBuilderPage({
           </form>
         </aside>
 
-        <section className="grid gap-4">
+        <section className="grid gap-5">
           {!assigned.length ? (
             <EmptyState title="No questions attached" message="Add active questions from the bank to assemble this exam." />
           ) : assigned.map((row, index) => {
@@ -130,23 +130,23 @@ export default async function ExamBuilderPage({
             const questionCompetency = firstRelation(question.competencies);
 
             return (
-              <div key={row.id} className="card rounded-[2rem] p-6">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div key={row.id} className="card rounded-[1.75rem] p-6 sm:p-7">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-teal-700">Question {index + 1} · {question.question_type} · {questionCompetency?.code ?? "EIM"}</p>
-                    <h3 className="mt-2 text-lg font-black text-slate-950">{question.question_text}</h3>
-                    <p className="mt-2 text-sm font-bold text-slate-500">{points} pt{points === 1 ? "" : "s"} · {question.difficulty ?? "average"}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">Question {index + 1} / {question.question_type} / {questionCompetency?.code ?? "EIM"}</p>
+                    <h3 className="mt-2 text-lg font-semibold leading-7 text-slate-950">{question.question_text}</h3>
+                    <p className="mt-3 text-sm text-slate-500">{points} pt{points === 1 ? "" : "s"} / {question.difficulty ?? "average"}</p>
                   </div>
                 </div>
 
-                <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-end">
-                  <form action={updateExamQuestionAction.bind(null, id, row.id)} className="grid flex-1 gap-3 md:grid-cols-3">
+                <div className="mt-6 flex flex-col gap-4 border-t border-slate-100 pt-6 md:flex-row md:items-end">
+                  <form action={updateExamQuestionAction.bind(null, id, row.id)} className="grid flex-1 gap-4 md:grid-cols-3">
                     <FormInput label="Order" name="order_index" type="number" defaultValue={row.order_index} />
                     <FormInput label="Points override" name="points_override" type="number" defaultValue={row.points_override ?? ""} placeholder={String(question.points ?? 1)} />
-                    <SubmitButton className="rounded-2xl bg-slate-950 px-5 py-3 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 md:self-end">Update</SubmitButton>
+                    <SubmitButton className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 md:self-end">Update</SubmitButton>
                   </form>
                   <form action={removeExamQuestionAction.bind(null, id, row.id)}>
-                    <ConfirmSubmitButton message="Remove this question from the exam?" className="rounded-2xl border border-red-200 px-5 py-3 font-black text-red-700 hover:bg-red-50">
+                    <ConfirmSubmitButton message="Remove this question from the exam?" className="rounded-2xl border border-red-200 px-5 py-3 font-semibold text-red-700 hover:bg-red-50">
                       Remove
                     </ConfirmSubmitButton>
                   </form>

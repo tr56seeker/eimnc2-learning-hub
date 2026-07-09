@@ -76,38 +76,38 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
 
   return (
     <PortalShell profile={profile}>
-      <section className="card rounded-[2rem] p-6 sm:p-8">
-        <Link href="/learner/exams" className="text-sm font-bold text-teal-700 hover:text-teal-800">Back to exams</Link>
-        <p className="mt-6 text-xs font-black uppercase tracking-[0.25em] text-teal-700">Online Assessment</p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-5xl">{exam.title}</h1>
-        <p className="mt-3 max-w-3xl text-slate-600">{exam.description}</p>
-        <p className="mt-3 text-sm font-bold text-slate-500">Duration: {exam.duration_minutes ?? 30} minutes · Submit by {deadline.toLocaleString()}</p>
+      <section className="card rounded-[1.75rem] p-7 sm:p-9">
+        <Link href="/learner/exams" className="text-sm font-semibold text-teal-700 hover:text-teal-800">Back to exams</Link>
+        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Online Assessment</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">{exam.title}</h1>
+        <p className="mt-4 max-w-3xl leading-7 text-slate-600">{exam.description}</p>
+        <p className="mt-4 text-sm font-medium text-slate-500">Duration: {exam.duration_minutes ?? 30} minutes / Submit by {deadline.toLocaleString()}</p>
 
-        {query.message ? <div className="mt-5 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 font-bold text-yellow-800">{query.message}</div> : null}
+        {query.message ? <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50/80 p-4 font-semibold text-yellow-800">{query.message}</div> : null}
 
         {submitted ? (
-          <div className="mt-8 rounded-[1.75rem] border border-teal-100/80 bg-teal-50/80 p-6 text-teal-950">
-            <h2 className="text-xl font-black">Already submitted</h2>
-            {showResult || reviewAllowed ? <p className="mt-2 font-bold">Score: {submitted.score}/{submitted.max_score}</p> : <p className="mt-2 font-bold">Your result will be released by your teacher.</p>}
+          <div className="mt-9 rounded-[1.5rem] border border-teal-100/80 bg-teal-50/80 p-6 text-teal-950">
+            <h2 className="text-xl font-semibold">Already submitted</h2>
+            {showResult || reviewAllowed ? <p className="mt-2 font-medium">Score: {submitted.score}/{submitted.max_score}</p> : <p className="mt-2 font-medium">Your result will be released by your teacher.</p>}
           </div>
         ) : (
-          <form action={action} className="mt-8 grid gap-5">
+          <form action={action} className="mt-9 grid gap-6">
             {questionRows.map((row, index) => {
               const question = row;
               const points = row.points_override ?? question.points ?? 1;
               const choices = shuffleItems(question.choices ?? [], Boolean(exam.randomize_choices));
 
               return (
-                <fieldset key={question.question_id} className="rounded-[1.75rem] border border-white/70 bg-white/74 p-5 shadow-sm">
-                  <legend className="px-2 text-sm font-black text-slate-500">Question {index + 1} · {points} pt</legend>
-                  <p className="mt-2 text-lg font-black text-slate-950">{question.question_text}</p>
+                <fieldset key={question.question_id} className="rounded-[1.5rem] border border-slate-200/70 bg-white/82 p-6 shadow-sm shadow-slate-200/40">
+                  <legend className="px-2 text-sm font-semibold text-slate-500">Question {index + 1} / {points} pt</legend>
+                  <p className="mt-2 text-lg font-semibold leading-7 text-slate-950">{question.question_text}</p>
 
                   {question.question_type === "multiple_choice" || question.question_type === "true_false" ? (
-                    <div className="mt-4 grid gap-3">
+                    <div className="mt-5 grid gap-3">
                       {choices.map((choice) => (
-                        <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200/80 bg-white/70 p-4 shadow-sm hover:border-teal-200 hover:bg-teal-50/80">
+                        <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200/80 bg-white/75 p-4 text-sm leading-6 shadow-sm shadow-slate-200/40 hover:border-teal-200 hover:bg-teal-50/80">
                           <input type="radio" name={`q_${question.question_id}`} value={choice.value} required />
-                          <span className="font-semibold text-slate-700">{choice.label}</span>
+                          <span className="font-medium text-slate-700">{choice.label}</span>
                         </label>
                       ))}
                     </div>
@@ -120,7 +120,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
               );
             })}
 
-            <button className="rounded-2xl bg-slate-950 px-6 py-4 font-black text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+            <button className="rounded-2xl bg-slate-950 px-6 py-4 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
               Submit Exam
             </button>
           </form>
