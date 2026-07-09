@@ -1,0 +1,9 @@
+{
+  "name": "EIM NC II Learning Hub",
+  "short_name": "EIM Hub",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
+  "description": "Distance learning portal for Electrical Installation and Maintenance NC II."
+}
