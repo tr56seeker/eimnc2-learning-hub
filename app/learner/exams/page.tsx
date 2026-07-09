@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { requireLearner } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
+import { firstRelation } from "@/lib/relations";
 
 export default async function LearnerExamsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
   const params = await searchParams;
@@ -26,9 +27,7 @@ export default async function LearnerExamsPage({ searchParams }: { searchParams:
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {exams.map((exam) => {
-            const competency = Array.isArray(exam.competencies)
-              ? exam.competencies[0]
-              : exam.competencies;
+            const competency = firstRelation(exam.competencies);
 
             return (
               <Link key={exam.id} href={`/learner/exams/${exam.id}`} className="card rounded-3xl p-6 hover:-translate-y-1 hover:shadow-2xl">

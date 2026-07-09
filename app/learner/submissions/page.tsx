@@ -3,6 +3,7 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { requireLearner } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
+import { firstRelation } from "@/lib/relations";
 import { submitOutputAction } from "./actions";
 
 export default async function LearnerSubmissionsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
@@ -57,15 +58,19 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
           <div className="mt-5 grid gap-3">
             {!submissions.length ? (
               <EmptyState title="No submissions yet" message="Your submitted outputs will appear here." />
-            ) : submissions.map((submission) => (
-              <div key={submission.id} className="rounded-2xl border border-slate-200 bg-white p-4">
-                <h3 className="font-black text-slate-950">{submission.assignments?.title}</h3>
-                <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(submission.submitted_at)}</p>
-                <p className="mt-2 text-sm font-bold text-slate-700">Status: {submission.status}</p>
-                {submission.score !== null ? <p className="text-sm font-bold text-teal-700">Score: {submission.score}/{submission.assignments?.max_score}</p> : null}
-                {submission.feedback ? <p className="mt-2 text-sm text-slate-600">Feedback: {submission.feedback}</p> : null}
-              </div>
-            ))}
+            ) : submissions.map((submission) => {
+              const assignment = firstRelation(submission.assignments);
+
+              return (
+                <div key={submission.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <h3 className="font-black text-slate-950">{assignment?.title}</h3>
+                  <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(submission.submitted_at)}</p>
+                  <p className="mt-2 text-sm font-bold text-slate-700">Status: {submission.status}</p>
+                  {submission.score !== null ? <p className="text-sm font-bold text-teal-700">Score: {submission.score}/{assignment?.max_score}</p> : null}
+                  {submission.feedback ? <p className="mt-2 text-sm text-slate-600">Feedback: {submission.feedback}</p> : null}
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>

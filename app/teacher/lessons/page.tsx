@@ -1,6 +1,7 @@
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
+import { firstRelation } from "@/lib/relations";
 import { createLessonAction } from "./actions";
 
 export default async function TeacherLessonsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
@@ -57,13 +58,17 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
         <section className="card rounded-[2rem] p-6">
           <h2 className="text-xl font-black text-slate-950">Existing Lessons</h2>
           <div className="mt-5 grid gap-3">
-            {(lessonsResult.data ?? []).map((lesson) => (
-              <div key={lesson.id} className="rounded-2xl border border-slate-200 bg-white p-4">
-                <p className="text-xs font-black uppercase tracking-widest text-teal-700">{lesson.competencies?.code ?? "EIM"}</p>
-                <h3 className="mt-1 font-black text-slate-950">{lesson.title}</h3>
-                <p className="mt-1 text-sm font-bold text-slate-500">{lesson.published ? "Published" : "Draft"}</p>
-              </div>
-            ))}
+            {(lessonsResult.data ?? []).map((lesson) => {
+              const competency = firstRelation(lesson.competencies);
+
+              return (
+                <div key={lesson.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-black uppercase tracking-widest text-teal-700">{competency?.code ?? "EIM"}</p>
+                  <h3 className="mt-1 font-black text-slate-950">{lesson.title}</h3>
+                  <p className="mt-1 text-sm font-bold text-slate-500">{lesson.published ? "Published" : "Draft"}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>

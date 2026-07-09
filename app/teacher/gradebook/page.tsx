@@ -3,6 +3,7 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { requireTeacher } from "@/lib/auth";
 import { percent } from "@/lib/format";
+import { firstRelation } from "@/lib/relations";
 
 export default async function TeacherGradebookPage() {
   const { profile, supabase } = await requireTeacher();
@@ -31,15 +32,19 @@ export default async function TeacherGradebookPage() {
               </tr>
             </thead>
             <tbody>
-              {grades.map((grade) => (
-                <tr key={grade.id} className="border-t border-slate-100">
-                  <td className="p-4 font-bold text-slate-900">{grade.profiles?.full_name}</td>
-                  <td className="p-4 text-slate-700">{grade.title}</td>
-                  <td className="p-4 capitalize text-slate-600">{grade.component.replaceAll("_", " ")}</td>
-                  <td className="p-4 font-bold">{grade.score}/{grade.max_score}</td>
-                  <td className="p-4 font-black text-teal-700">{percent(Number(grade.score), Number(grade.max_score))}%</td>
-                </tr>
-              ))}
+              {grades.map((grade) => {
+                const learner = firstRelation(grade.profiles);
+
+                return (
+                  <tr key={grade.id} className="border-t border-slate-100">
+                    <td className="p-4 font-bold text-slate-900">{learner?.full_name}</td>
+                    <td className="p-4 text-slate-700">{grade.title}</td>
+                    <td className="p-4 capitalize text-slate-600">{grade.component.replaceAll("_", " ")}</td>
+                    <td className="p-4 font-bold">{grade.score}/{grade.max_score}</td>
+                    <td className="p-4 font-black text-teal-700">{percent(Number(grade.score), Number(grade.max_score))}%</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

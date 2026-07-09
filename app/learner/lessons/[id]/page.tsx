@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortalShell } from "@/components/PortalShell";
 import { requireLearner } from "@/lib/auth";
+import { firstRelation } from "@/lib/relations";
 
 function renderMarkdownLite(markdown: string) {
   const lines = markdown.split("\n");
@@ -27,6 +28,8 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
 
   if (!lesson) notFound();
 
+  const competency = firstRelation(lesson.competencies);
+
   const { data: resources } = await supabase
     .from("lesson_resources")
     .select("id, title, url, resource_type")
@@ -36,7 +39,7 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
     <PortalShell profile={profile}>
       <article className="card rounded-[2rem] p-6 sm:p-8">
         <Link href="/learner/lessons" className="text-sm font-bold text-teal-700">← Back to lessons</Link>
-        <p className="mt-6 text-xs font-black uppercase tracking-[0.25em] text-teal-700">{lesson.competencies?.code ?? "EIM"}</p>
+        <p className="mt-6 text-xs font-black uppercase tracking-[0.25em] text-teal-700">{competency?.code ?? "EIM"}</p>
         <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">{lesson.title}</h1>
         <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">{lesson.summary}</p>
         <div className="prose-eim mt-8 max-w-4xl text-slate-700">
