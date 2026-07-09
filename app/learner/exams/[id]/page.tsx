@@ -14,6 +14,11 @@ type QuestionRow = {
   points: number | null;
 };
 
+function shuffleItems<T>(items: T[], enabled: boolean) {
+  if (!enabled) return items;
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
 export default async function ExamDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ message?: string }> }) {
   const { id } = await params;
   const query = await searchParams;
@@ -21,7 +26,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
 
   const { data: exam } = await supabase
     .from("exams")
-    .select("id, title, description, duration_minutes, status")
+    .select("id, title, description, duration_minutes, status, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close")
     .eq("id", id)
     .eq("status", "published")
     .single();
@@ -30,10 +35,11 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
 
   const { data: existingAttempts } = await supabase
     .from("exam_attempts")
-    .select("id, score, max_score, submitted_at")
+    .select("id, score, max_score, submitted_at, started_at, status")
     .eq("exam_id", id)
     .eq("learner_id", profile.id)
-    .eq("status", "submitted");
+    .in("status", ["submitted", "in_progress"])
+    .order("created_at", { ascending: false });
 
   const { data: rows } = await supabase
     .from("exam_question_public")
@@ -42,7 +48,30 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
     .order("order_index")
     .returns<QuestionRow[]>();
 
-  const submitted = existingAttempts?.[0];
+  const submitted = existingAttempts?.find((attempt) => attempt.status === "submitted");
+  let inProgress = existingAttempts?.find((attempt) => attempt.status === "in_progress");
+
+  if (!submitted && !inProgress) {
+    const { data: createdAttempt } = await supabase
+      .from("exam_attempts")
+      .insert({
+        exam_id: id,
+        learner_id: profile.id,
+        status: "in_progress",
+        score: 0,
+        max_score: 0
+      })
+      .select("id, score, max_score, submitted_at, started_at, status")
+      .single();
+
+    inProgress = createdAttempt ?? undefined;
+  }
+  const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
+  const closesAt = exam.end_at ? new Date(exam.end_at).getTime() : null;
+  const reviewAllowed = Boolean(exam.allow_review_after_close && closesAt && Date.now() > closesAt);
+  const startedAt = inProgress?.started_at ?? new Date().toISOString();
+  const deadline = new Date(new Date(startedAt).getTime() + Number(exam.duration_minutes ?? 30) * 60 * 1000);
+  const questionRows = shuffleItems(rows ?? [], Boolean(exam.randomize_questions));
   const action = submitExamAction.bind(null, id);
 
   return (
@@ -52,20 +81,21 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
         <p className="mt-6 text-xs font-black uppercase tracking-[0.25em] text-teal-700">Online Assessment</p>
         <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-5xl">{exam.title}</h1>
         <p className="mt-3 max-w-3xl text-slate-600">{exam.description}</p>
-        <p className="mt-3 text-sm font-bold text-slate-500">Duration guide: {exam.duration_minutes ?? 30} minutes</p>
+        <p className="mt-3 text-sm font-bold text-slate-500">Duration: {exam.duration_minutes ?? 30} minutes · Submit by {deadline.toLocaleString()}</p>
 
         {query.message ? <div className="mt-5 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 font-bold text-yellow-800">{query.message}</div> : null}
 
         {submitted ? (
           <div className="mt-8 rounded-3xl bg-teal-50 p-6 text-teal-950 ring-1 ring-teal-100">
             <h2 className="text-xl font-black">Already submitted</h2>
-            <p className="mt-2 font-bold">Score: {submitted.score}/{submitted.max_score}</p>
+            {showResult || reviewAllowed ? <p className="mt-2 font-bold">Score: {submitted.score}/{submitted.max_score}</p> : <p className="mt-2 font-bold">Your result will be released by your teacher.</p>}
           </div>
         ) : (
           <form action={action} className="mt-8 grid gap-5">
-            {(rows ?? []).map((row, index) => {
+            {questionRows.map((row, index) => {
               const question = row;
               const points = row.points_override ?? question.points ?? 1;
+              const choices = shuffleItems(question.choices ?? [], Boolean(exam.randomize_choices));
 
               return (
                 <fieldset key={question.question_id} className="rounded-3xl border border-slate-200 bg-white p-5">
@@ -74,7 +104,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
 
                   {question.question_type === "multiple_choice" || question.question_type === "true_false" ? (
                     <div className="mt-4 grid gap-3">
-                      {(question.choices ?? []).map((choice) => (
+                      {choices.map((choice) => (
                         <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200 p-4 hover:border-teal-300 hover:bg-teal-50">
                           <input type="radio" name={`q_${question.question_id}`} value={choice.value} required />
                           <span className="font-semibold text-slate-700">{choice.label}</span>

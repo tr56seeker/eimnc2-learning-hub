@@ -28,7 +28,8 @@ export default async function TeacherDashboardPage() {
       <section className="mt-8 grid gap-4 lg:grid-cols-4">
         {[
           ["Lesson Manager", "Publish competency-based lessons.", "/teacher/lessons"],
-          ["Exam Manager", "Review exams and question banks.", "/teacher/exams"],
+          ["Exam Manager", "Create and publish scheduled exams.", "/teacher/exams"],
+          ["Question Bank", "Build reusable objective and essay questions.", "/teacher/question-bank"],
           ["Check Outputs", "Score learner performance tasks.", "/teacher/submissions"],
           ["Gradebook", "Monitor scores and mastery.", "/teacher/gradebook"]
         ].map(([title, text, href]) => (

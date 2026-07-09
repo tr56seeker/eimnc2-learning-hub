@@ -14,6 +14,7 @@ const teacherLinks = [
   ["Dashboard", "/teacher/dashboard"],
   ["Lessons", "/teacher/lessons"],
   ["Exams", "/teacher/exams"],
+  ["Question Bank", "/teacher/question-bank"],
   ["Submissions", "/teacher/submissions"],
   ["Gradebook", "/teacher/gradebook"]
 ];

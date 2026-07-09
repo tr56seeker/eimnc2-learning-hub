@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { requireLearner } from "@/lib/auth";
+import { firstRelation } from "@/lib/relations";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type QuestionRow = {
@@ -11,7 +12,12 @@ type QuestionRow = {
     question_type: "multiple_choice" | "true_false" | "identification" | "essay";
     correct_answer: string | null;
     points: number | null;
-  } | null;
+  } | {
+    id: string;
+    question_type: "multiple_choice" | "true_false" | "identification" | "essay";
+    correct_answer: string | null;
+    points: number | null;
+  }[] | null;
 };
 
 function normalizeAnswer(value: string) {
@@ -24,12 +30,21 @@ export async function submitExamAction(examId: string, formData: FormData) {
 
   const { data: exam } = await admin
     .from("exams")
-    .select("id, title, status")
+    .select("id, title, status, start_at, end_at, duration_minutes, show_result_after_submit, show_score_after_submit")
     .eq("id", examId)
     .eq("status", "published")
     .single();
 
   if (!exam) redirect("/learner/exams?message=Exam is not available");
+
+  const now = Date.now();
+  if (exam.start_at && now < new Date(exam.start_at).getTime()) {
+    redirect("/learner/exams?message=Exam is not open yet.");
+  }
+
+  if (exam.end_at && now > new Date(exam.end_at).getTime()) {
+    redirect("/learner/exams?message=Exam is already closed.");
+  }
 
   const { data: existingAttempts } = await admin
     .from("exam_attempts")
@@ -40,6 +55,43 @@ export async function submitExamAction(examId: string, formData: FormData) {
 
   if ((existingAttempts?.length ?? 0) >= 1) {
     redirect(`/learner/exams/${examId}?message=You already submitted this exam.`);
+  }
+
+  const { data: inProgressAttempts } = await admin
+    .from("exam_attempts")
+    .select("id, started_at")
+    .eq("exam_id", examId)
+    .eq("learner_id", profile.id)
+    .eq("status", "in_progress")
+    .order("started_at", { ascending: true })
+    .limit(1);
+
+  let attempt = inProgressAttempts?.[0] ?? null;
+
+  if (attempt) {
+    const durationMs = Number(exam.duration_minutes ?? 30) * 60 * 1000;
+    const startedAt = new Date(attempt.started_at).getTime();
+    if (Number.isFinite(startedAt) && now > startedAt + durationMs + 30_000) {
+      redirect(`/learner/exams/${examId}?message=Time limit reached. Ask your teacher for assistance.`);
+    }
+  } else {
+    const { data: createdAttempt, error: createAttemptError } = await admin
+      .from("exam_attempts")
+      .insert({
+        exam_id: examId,
+        learner_id: profile.id,
+        status: "in_progress",
+        score: 0,
+        max_score: 0
+      })
+      .select("id, started_at")
+      .single();
+
+    if (createAttemptError || !createdAttempt) {
+      redirect(`/learner/exams/${examId}?message=Unable to create exam attempt.`);
+    }
+
+    attempt = createdAttempt;
   }
 
   const { data: rows, error: questionsError } = await admin
@@ -56,25 +108,8 @@ export async function submitExamAction(examId: string, formData: FormData) {
   let score = 0;
   let maxScore = 0;
 
-  const { data: attempt, error: attemptError } = await admin
-    .from("exam_attempts")
-    .insert({
-      exam_id: examId,
-      learner_id: profile.id,
-      status: "submitted",
-      submitted_at: new Date().toISOString(),
-      score: 0,
-      max_score: 0
-    })
-    .select("id")
-    .single();
-
-  if (attemptError || !attempt) {
-    redirect(`/learner/exams/${examId}?message=Unable to create exam attempt.`);
-  }
-
   const answers = rows.flatMap((row) => {
-    const question = row.question_bank;
+    const question = firstRelation(row.question_bank);
     if (!question) return [];
 
     const points = Number(row.points_override ?? question.points ?? 1);
@@ -109,7 +144,7 @@ export async function submitExamAction(examId: string, formData: FormData) {
 
   await admin
     .from("exam_attempts")
-    .update({ score, max_score: maxScore })
+    .update({ score, max_score: maxScore, status: "submitted", submitted_at: new Date().toISOString() })
     .eq("id", attempt.id);
 
   await admin.from("grades").insert({
@@ -122,5 +157,6 @@ export async function submitExamAction(examId: string, formData: FormData) {
     component: "written_work"
   });
 
-  redirect(`/learner/grades?message=Exam submitted. Score: ${score}/${maxScore}`);
+  const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
+  redirect(showResult ? `/learner/grades?message=Exam submitted. Score: ${score}/${maxScore}` : "/learner/exams?message=Exam submitted.");
 }
