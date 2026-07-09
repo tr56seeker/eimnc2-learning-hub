@@ -3,12 +3,16 @@ export type UserRole = "learner" | "teacher" | "admin";
 export type Profile = {
   id: string;
   full_name: string;
+  first_name: string | null;
+  last_name: string | null;
+  middle_initial: string | null;
   role: UserRole;
   email: string | null;
   lrn: string | null;
   section_id: string | null;
-  grade_level: number | null;
+  grade_level: string | number | null;
   status: "active" | "inactive" | null;
+  must_change_password: boolean;
 };
 
 export type Lesson = {

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 
-const PROFILE_SELECT = "id, full_name, role, email, lrn, section_id, grade_level, status";
+const PROFILE_SELECT = "id, full_name, first_name, last_name, middle_initial, role, email, lrn, section_id, grade_level, status, must_change_password";
 const LEGACY_PROFILE_SELECT = "id, full_name, role, lrn, section_id";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
@@ -12,12 +12,16 @@ function normalizeProfile(data: Partial<Profile>, fallbackEmail?: string | null)
   return {
     id: String(data.id),
     full_name: String(data.full_name ?? fallbackEmail ?? "Learner"),
+    first_name: data.first_name ?? null,
+    last_name: data.last_name ?? null,
+    middle_initial: data.middle_initial ?? null,
     role: data.role ?? "learner",
     email: data.email ?? fallbackEmail ?? null,
     lrn: data.lrn ?? null,
     section_id: data.section_id ?? null,
     grade_level: data.grade_level ?? null,
-    status: data.status ?? "active"
+    status: data.status ?? "active",
+    must_change_password: Boolean(data.must_change_password ?? false)
   };
 }
 
@@ -65,7 +69,8 @@ async function createDefaultLearnerProfile(supabase: SupabaseServerClient, user:
       ...baseProfile,
       email: user.email ?? null,
       grade_level: null,
-      status: "active"
+      status: "active",
+      must_change_password: false
     })
     .select(PROFILE_SELECT)
     .single();
@@ -128,6 +133,10 @@ export async function requireLearner() {
 
   if (result.profile.role !== "learner") {
     redirect("/teacher/dashboard");
+  }
+
+  if (result.profile.must_change_password) {
+    redirect("/account/change-password");
   }
 
   return result;

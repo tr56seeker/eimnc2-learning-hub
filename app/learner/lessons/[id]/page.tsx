@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { LessonBlockRenderer } from "@/components/lessons/LessonBlockRenderer";
 import { PortalShell } from "@/components/PortalShell";
 import { getCurrentUserAndProfile } from "@/lib/auth";
@@ -30,6 +30,10 @@ function renderMarkdownLite(markdown: string) {
 export default async function LessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { profile, supabase } = await getCurrentUserAndProfile();
+  if (profile.role === "learner" && profile.must_change_password) {
+    redirect("/account/change-password");
+  }
+
   const isTeacherPreview = profile.role === "teacher" || profile.role === "admin";
 
   let lessonQuery = supabase

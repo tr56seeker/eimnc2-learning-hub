@@ -45,7 +45,7 @@ export default async function TeacherDashboardPage() {
           ["Exam Manager", "Create and publish scheduled exams.", "/teacher/exams"],
           ["Question Bank", "Build reusable objective and essay questions.", "/teacher/question-bank"],
           ["Check Outputs", "Score learner performance tasks.", "/teacher/submissions"],
-          ["Gradebook", "Monitor scores and mastery.", "/teacher/gradebook"]
+          ["Term Gradebook", "Monitor term scores, summaries, and mastery.", "/teacher/gradebook"]
         ].map(([title, text, href]) => (
           <Link key={href} href={href} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
             <h2 className="text-lg font-semibold tracking-tight text-slate-950">{title}</h2>

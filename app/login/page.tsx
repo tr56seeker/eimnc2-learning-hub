@@ -19,8 +19,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
         <form action={loginAction} className="mt-7 grid gap-5">
           <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
-            Email
-            <input name="email" type="email" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm" placeholder="learner@example.com" />
+            Email or LRN
+            <input name="email" type="text" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm" placeholder="email@example.com or 123456789012" />
           </label>
           <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
             Password
