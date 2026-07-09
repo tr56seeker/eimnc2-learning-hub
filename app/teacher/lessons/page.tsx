@@ -3,6 +3,7 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
 import { firstRelation } from "@/lib/relations";
 import { createLessonAction } from "./actions";
+import Link from "next/link";
 
 const inputClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm";
 const textareaClass = "focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm";
@@ -69,6 +70,9 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">{competency?.code ?? "EIM"}</p>
                   <h3 className="mt-2 font-semibold text-slate-950">{lesson.title}</h3>
                   <p className="mt-2 text-sm font-medium text-slate-500">{lesson.published ? "Published" : "Draft"}</p>
+                  <Link href={`/teacher/lessons/${lesson.id}/studio`} className="mt-4 inline-flex rounded-2xl border border-teal-200 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50">
+                    Open Studio
+                  </Link>
                 </div>
               );
             })}

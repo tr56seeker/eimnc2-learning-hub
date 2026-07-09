@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { WelcomeHero } from "@/components/dashboard/WelcomeHero";
 import { PortalShell } from "@/components/PortalShell";
-import { SectionHeader } from "@/components/SectionHeader";
 import { StatCard } from "@/components/StatCard";
 import { requireTeacher } from "@/lib/auth";
 
@@ -19,9 +19,15 @@ export default async function TeacherDashboardPage() {
 
   return (
     <PortalShell profile={profile}>
-      <SectionHeader eyebrow="Teacher Dashboard" title="EIM Class Management" description="Manage lessons, online exams, learner submissions, and class performance." />
+      <WelcomeHero
+        fullName={profile.full_name}
+        role={profile.role === "admin" ? "admin" : "teacher"}
+        subtitle="Manage your lessons, exams, submissions, and learner progress from one clean workspace."
+        primaryAction={{ href: "/teacher/lessons", label: "Open Lesson Studio" }}
+        secondaryAction={{ href: "/teacher/submissions", label: "Check Submissions" }}
+      />
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total Learners" value={learners.count ?? 0} />
         <StatCard label="Active Learners" value={activeLearners.count ?? 0} />
         <StatCard label="Sections" value={sections.count ?? 0} />

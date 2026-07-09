@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { WelcomeHero } from "@/components/dashboard/WelcomeHero";
 import { PortalShell } from "@/components/PortalShell";
-import { SectionHeader } from "@/components/SectionHeader";
 import { StatCard } from "@/components/StatCard";
 import { requireLearner } from "@/lib/auth";
 
@@ -24,9 +24,15 @@ export default async function LearnerDashboardPage() {
 
   return (
     <PortalShell profile={profile}>
-      <SectionHeader eyebrow="Learner Dashboard" title={`Welcome, ${profile.full_name}`} description="Track your lessons, exams, outputs, and current learning performance." />
+      <WelcomeHero
+        fullName={profile.full_name}
+        role="learner"
+        subtitle="Make every minute count as you build your skills in Electrical Installation and Maintenance."
+        primaryAction={{ href: "/learner/lessons", label: "Continue Lessons" }}
+        secondaryAction={{ href: "/learner/exams", label: "View Exams" }}
+      />
 
-      <section className="card mb-10 rounded-[1.5rem] p-6 sm:p-7">
+      <section className="card my-10 rounded-[1.5rem] p-6 sm:p-7">
         <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr] md:items-end">
           <div>
             <p className="text-sm font-medium text-slate-500">Learner profile</p>
