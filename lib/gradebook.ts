@@ -157,6 +157,7 @@ type LearnerNameParts = {
   firstName?: string | null;
   middleName?: string | null;
   lastName?: string | null;
+  suffix?: string | null;
 };
 
 function cleanNamePart(value: string | null | undefined) {
@@ -178,15 +179,20 @@ function hasMiddleInitialShape(value: string | undefined) {
   return Boolean(value && /^[A-Za-z]\.?$/.test(value));
 }
 
-function formattedNameFromParts(lastName: string, firstName: string, middleName?: string | null) {
+function hasSuffixShape(value: string | undefined) {
+  return Boolean(value && /^(?:JR\.?|SR\.?|II|III|IV|V)$/i.test(value));
+}
+
+function formattedNameFromParts(lastName: string, firstName: string, middleName?: string | null, suffix?: string | null) {
   const last = upperNamePart(lastName);
   const first = upperNamePart(firstName);
   const middle = middleInitial(middleName);
+  const ending = upperNamePart(suffix);
 
   if (!last && !first) return "";
-  if (!last) return [first, middle].filter(Boolean).join(" ");
-  if (!first) return last;
-  return `${last}, ${[first, middle].filter(Boolean).join(" ")}`;
+  if (!last) return [first, middle, ending].filter(Boolean).join(" ");
+  if (!first) return [last, ending].filter(Boolean).join(" ");
+  return `${last}, ${[first, middle, ending].filter(Boolean).join(" ")}`;
 }
 
 export function formatClassRecordName(source: string | LearnerNameParts | null | undefined) {
@@ -194,9 +200,10 @@ export function formatClassRecordName(source: string | LearnerNameParts | null |
   const firstName = typeof source === "string" ? null : source?.firstName;
   const middleName = typeof source === "string" ? null : source?.middleName;
   const lastName = typeof source === "string" ? null : source?.lastName;
+  const suffix = typeof source === "string" ? null : source?.suffix;
 
   if (lastName || firstName) {
-    return formattedNameFromParts(lastName ?? "", firstName ?? "", middleName);
+    return formattedNameFromParts(lastName ?? "", firstName ?? "", middleName, suffix);
   }
 
   const cleaned = cleanNamePart(fullName);
@@ -205,28 +212,30 @@ export function formatClassRecordName(source: string | LearnerNameParts | null |
   if (cleaned.includes(",")) {
     const [last, ...givenParts] = cleaned.split(",");
     const givenTokens = cleanNamePart(givenParts.join(",")).split(" ").filter(Boolean);
+    const ending = hasSuffixShape(givenTokens.at(-1)) ? givenTokens.pop() : "";
     const middle = givenTokens.length > 1 ? givenTokens.at(-1) : "";
     const first = givenTokens.length > 1 ? givenTokens.slice(0, -1).join(" ") : givenTokens.join(" ");
-    return formattedNameFromParts(last, first, middle);
+    return formattedNameFromParts(last, first, middle, ending);
   }
 
   const tokens = cleaned.split(" ").filter(Boolean);
-  if (tokens.length === 1) return upperNamePart(tokens[0]);
-  if (tokens.length === 2) return formattedNameFromParts(tokens[1], tokens[0]);
-  if (tokens.length === 3) return formattedNameFromParts(tokens[2], tokens[0], tokens[1]);
+  const ending = hasSuffixShape(tokens.at(-1)) ? tokens.pop() : "";
+  if (tokens.length === 1) return [upperNamePart(tokens[0]), upperNamePart(ending)].filter(Boolean).join(" ");
+  if (tokens.length === 2) return formattedNameFromParts(tokens[1], tokens[0], null, ending);
+  if (tokens.length === 3) return formattedNameFromParts(tokens[2], tokens[0], tokens[1], ending);
 
   const surnamePrefixes = new Set(["DE", "DEL", "DELA", "LA", "LAS", "LOS", "SAN", "SANTA", "SANTO", "VAN", "VON"]);
   const possiblePrefix = tokens.at(-2)?.toLocaleUpperCase("en-US") ?? "";
   const lastStart = surnamePrefixes.has(possiblePrefix) ? tokens.length - 2 : tokens.length - 1;
 
   if (lastStart === tokens.length - 1 && hasMiddleInitialShape(tokens[1])) {
-    return formattedNameFromParts(tokens.slice(2).join(" "), tokens[0], tokens[1]);
+    return formattedNameFromParts(tokens.slice(2).join(" "), tokens[0], tokens[1], ending);
   }
 
   const first = tokens.slice(0, Math.max(1, lastStart - 1)).join(" ");
   const middle = tokens[lastStart - 1];
   const last = tokens.slice(lastStart).join(" ");
-  return formattedNameFromParts(last, first, middle);
+  return formattedNameFromParts(last, first, middle, ending);
 }
 
 export function formatGradebookNumber(value: number | null | undefined, digits = 2) {

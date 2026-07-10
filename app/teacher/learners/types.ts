@@ -14,6 +14,11 @@ export type LearnerListItem = {
   firstName: string | null;
   lastName: string | null;
   middleInitial: string | null;
+  middleName: string | null;
+  suffix: string | null;
+  sex: string | null;
+  birthdate: string | null;
+  lastSeenAt: string | null;
   lrn: string | null;
   loginId: string | null;
   gradeLevel: string | number | null;

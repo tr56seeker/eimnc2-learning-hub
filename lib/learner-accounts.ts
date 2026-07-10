@@ -28,8 +28,17 @@ export function normalizeMiddleInitial(value: string | null | undefined) {
   return cleaned ? `${cleaned.charAt(0).toLocaleUpperCase("en-US")}.` : null;
 }
 
-export function buildLearnerFullName(firstName: string, middleInitial: string | null, lastName: string) {
-  return [firstName.trim(), middleInitial, lastName.trim()].filter(Boolean).join(" ");
+export function normalizeLearnerSuffix(value: string | null | undefined) {
+  const cleaned = cleanNamePart(value).replace(/,$/, "");
+  if (!cleaned) return null;
+  if (/^jr\.?$/i.test(cleaned)) return "Jr.";
+  if (/^sr\.?$/i.test(cleaned)) return "Sr.";
+  if (/^(ii|iii|iv|v)$/i.test(cleaned)) return cleaned.toLocaleUpperCase("en-US");
+  return cleaned;
+}
+
+export function buildLearnerFullName(firstName: string, middleName: string | null, lastName: string, suffix?: string | null) {
+  return [firstName.trim(), cleanNamePart(middleName), lastName.trim(), normalizeLearnerSuffix(suffix)].filter(Boolean).join(" ");
 }
 
 type LearnerNameSource = {
@@ -41,6 +50,9 @@ type LearnerNameSource = {
   last_name?: string | null;
   middleInitial?: string | null;
   middle_initial?: string | null;
+  middleName?: string | null;
+  middle_name?: string | null;
+  suffix?: string | null;
 };
 
 function cleanNamePart(value: string | null | undefined) {
@@ -61,20 +73,59 @@ function formattedMiddleInitial(value: string | null | undefined) {
 export function formatLearnerName(profile: LearnerNameSource | null | undefined) {
   const firstName = profile?.firstName ?? profile?.first_name ?? null;
   const lastName = profile?.lastName ?? profile?.last_name ?? null;
-  const middleInitial = profile?.middleInitial ?? profile?.middle_initial ?? null;
+  const middleName = profile?.middleName ?? profile?.middle_name ?? null;
+  const middleInitial = middleName || profile?.middleInitial || profile?.middle_initial || null;
   const fullName = profile?.fullName ?? profile?.full_name ?? null;
+  const suffix = upperNamePart(normalizeLearnerSuffix(profile?.suffix));
 
   const last = upperNamePart(lastName);
   const first = upperNamePart(firstName);
   const middle = formattedMiddleInitial(middleInitial);
 
   if (last || first) {
-    if (!last) return [first, middle].filter(Boolean).join(" ");
-    if (!first) return last;
-    return `${last}, ${[first, middle].filter(Boolean).join(" ")}`;
+    if (!last) return [first, middle, suffix].filter(Boolean).join(" ");
+    if (!first) return [last, suffix].filter(Boolean).join(" ");
+    return `${last}, ${[first, middle, suffix].filter(Boolean).join(" ")}`;
   }
 
   return cleanNamePart(fullName) || "Unnamed learner";
+}
+
+export function formatLearnerCompleteName(profile: LearnerNameSource | null | undefined) {
+  const firstName = profile?.firstName ?? profile?.first_name ?? null;
+  const lastName = profile?.lastName ?? profile?.last_name ?? null;
+  const middleName = profile?.middleName ?? profile?.middle_name ?? null;
+  const fullName = profile?.fullName ?? profile?.full_name ?? null;
+  const suffix = upperNamePart(normalizeLearnerSuffix(profile?.suffix));
+
+  const last = upperNamePart(lastName);
+  const first = upperNamePart(firstName);
+  const middle = upperNamePart(middleName);
+
+  if (last || first) {
+    if (!last) return [first, middle, suffix].filter(Boolean).join(" ");
+    if (!first) return [last, suffix].filter(Boolean).join(" ");
+    return `${last}, ${[first, middle, suffix].filter(Boolean).join(" ")}`;
+  }
+
+  return upperNamePart(fullName) || "UNNAMED LEARNER";
+}
+
+export function formatGradeSection({
+  gradeLevel,
+  sectionName
+}: {
+  gradeLevel?: string | number | null;
+  sectionName?: string | null;
+}) {
+  const grade = cleanNamePart(gradeLevel === null || gradeLevel === undefined ? "" : String(gradeLevel));
+  const section = cleanNamePart(sectionName);
+
+  if (/^grade\s+\d+/i.test(section)) return section;
+  if (grade && section) return `Grade ${grade} - ${section}`;
+  if (grade) return `Grade ${grade}`;
+  if (section) return section;
+  return "Unassigned";
 }
 
 export function resolveLearnerLoginEmail(loginIdOrEmail: string, lrn: string | null) {

@@ -7,6 +7,7 @@ import {
   buildLearnerFullName,
   formatLearnerName,
   normalizeLearnerId,
+  normalizeLearnerSuffix,
   normalizeMiddleInitial,
   resolveLearnerLoginEmail
 } from "@/lib/learner-accounts";
@@ -33,6 +34,8 @@ export type LearnerPasswordResetState = {
   };
 };
 
+const DEFAULT_LEARNER_PASSWORD = "eimnc2password";
+
 function nullableText(value: FormDataEntryValue | null) {
   const text = String(value ?? "").trim();
   return text || null;
@@ -49,15 +52,20 @@ function passwordResetMessage(message: string): LearnerPasswordResetState {
 function learnerPayloadFromForm(formData: FormData) {
   const lastName = String(formData.get("last_name") ?? "").trim();
   const firstName = String(formData.get("first_name") ?? "").trim();
-  const middleInitial = normalizeMiddleInitial(String(formData.get("middle_initial") ?? ""));
+  const middleName = nullableText(formData.get("middle_name"));
+  const middleInitial = normalizeMiddleInitial(middleName);
+  const suffix = normalizeLearnerSuffix(String(formData.get("suffix") ?? ""));
+  const sexValue = String(formData.get("sex") ?? "").trim();
+  const sex = sexValue === "Male" || sexValue === "Female" ? sexValue : null;
+  const birthdate = nullableText(formData.get("birthdate"));
   const lrn = normalizeLearnerId(String(formData.get("lrn") ?? "")) || null;
   const loginId = String(formData.get("login_id") ?? "").trim();
   const sectionId = nullableText(formData.get("section_id"));
   const gradeLevel = nullableText(formData.get("grade_level"));
   const status = String(formData.get("status") ?? "active") === "inactive" ? "inactive" : "active";
-  const fullName = buildLearnerFullName(firstName, middleInitial, lastName);
+  const fullName = buildLearnerFullName(firstName, middleName, lastName, suffix);
 
-  return { lastName, firstName, middleInitial, lrn, loginId, sectionId, gradeLevel, status, fullName };
+  return { lastName, firstName, middleName, middleInitial, suffix, sex, birthdate, lrn, loginId, sectionId, gradeLevel, status, fullName };
 }
 
 export async function createLearnerAction(
@@ -67,14 +75,10 @@ export async function createLearnerAction(
   const { supabase } = await requireTeacher();
 
   const payload = learnerPayloadFromForm(formData);
-  const password = String(formData.get("password") ?? "");
+  const password = DEFAULT_LEARNER_PASSWORD;
 
-  if (!payload.lastName || !payload.firstName || !password) {
-    return enrollmentMessage("Last name, first name, and temporary password are required.");
-  }
-
-  if (password.length < 8) {
-    return enrollmentMessage("Temporary password must be at least 8 characters.");
+  if (!payload.lastName || !payload.firstName) {
+    return enrollmentMessage("Last name and first name are required.");
   }
 
   let email: string;
@@ -94,7 +98,11 @@ export async function createLearnerAction(
         full_name: payload.fullName,
         first_name: payload.firstName,
         last_name: payload.lastName,
+        middle_name: payload.middleName,
         middle_initial: payload.middleInitial,
+        suffix: payload.suffix,
+        sex: payload.sex,
+        birthdate: payload.birthdate,
         lrn: payload.lrn,
         role: "learner"
       }
@@ -110,7 +118,11 @@ export async function createLearnerAction(
         full_name: payload.fullName,
         first_name: payload.firstName,
         last_name: payload.lastName,
+        middle_name: payload.middleName,
         middle_initial: payload.middleInitial,
+        suffix: payload.suffix,
+        sex: payload.sex,
+        birthdate: payload.birthdate,
         role: "learner",
         email,
         lrn: payload.lrn,
@@ -175,7 +187,11 @@ export async function updateLearnerAction(learnerId: string, formData: FormData)
       full_name: payload.fullName,
       first_name: payload.firstName,
       last_name: payload.lastName,
+      middle_name: payload.middleName,
       middle_initial: payload.middleInitial,
+      suffix: payload.suffix,
+      sex: payload.sex,
+      birthdate: payload.birthdate,
       lrn: payload.lrn,
       role: "learner"
     }
@@ -191,7 +207,11 @@ export async function updateLearnerAction(learnerId: string, formData: FormData)
       full_name: payload.fullName,
       first_name: payload.firstName,
       last_name: payload.lastName,
+      middle_name: payload.middleName,
       middle_initial: payload.middleInitial,
+      suffix: payload.suffix,
+      sex: payload.sex,
+      birthdate: payload.birthdate,
       email,
       lrn: payload.lrn,
       section_id: payload.sectionId,
@@ -258,7 +278,7 @@ export async function resetLearnerPasswordAction(
 ): Promise<LearnerPasswordResetState> {
   await requireTeacher();
 
-  const password = String(formData.get("password") ?? "");
+  const password = String(formData.get("password") ?? DEFAULT_LEARNER_PASSWORD);
   if (password.length < 8) {
     return passwordResetMessage("Temporary password must be at least 8 characters.");
   }
@@ -266,7 +286,7 @@ export async function resetLearnerPasswordAction(
   const admin = createAdminClient();
   const { data: learner, error: learnerError } = await admin
     .from("profiles")
-    .select("id, full_name, first_name, last_name, middle_initial, email, role")
+    .select("id, full_name, first_name, last_name, middle_name, middle_initial, suffix, email, role")
     .eq("id", learnerId)
     .eq("role", "learner")
     .maybeSingle<{
@@ -274,7 +294,9 @@ export async function resetLearnerPasswordAction(
       full_name: string;
       first_name: string | null;
       last_name: string | null;
+      middle_name: string | null;
       middle_initial: string | null;
+      suffix: string | null;
       email: string | null;
       role: string;
     }>();
@@ -309,7 +331,9 @@ export async function resetLearnerPasswordAction(
         full_name: learner.full_name,
         first_name: learner.first_name,
         last_name: learner.last_name,
-        middle_initial: learner.middle_initial
+        middle_name: learner.middle_name,
+        middle_initial: learner.middle_initial,
+        suffix: learner.suffix
       }),
       loginId: learner.email ?? "",
       temporaryPassword: password

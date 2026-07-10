@@ -7,6 +7,11 @@ export type Profile = {
   first_name: string | null;
   last_name: string | null;
   middle_initial: string | null;
+  middle_name: string | null;
+  suffix: string | null;
+  sex: string | null;
+  birthdate: string | null;
+  last_seen_at: string | null;
   role: UserRole;
   email: string | null;
   lrn: string | null;

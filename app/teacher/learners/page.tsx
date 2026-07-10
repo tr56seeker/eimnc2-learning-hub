@@ -19,6 +19,11 @@ type LearnerRow = {
   first_name?: string | null;
   last_name?: string | null;
   middle_initial?: string | null;
+  middle_name?: string | null;
+  suffix?: string | null;
+  sex?: string | null;
+  birthdate?: string | null;
+  last_seen_at?: string | null;
   email?: string | null;
   lrn: string | null;
   grade_level?: string | number | null;
@@ -87,10 +92,12 @@ export default async function TeacherLearnersPage({
     supabase.from("sections").select("id, name, grade_level, school_year, is_active").order("grade_level").order("name").returns<SectionRow[]>(),
     supabase
       .from("profiles")
-      .select("id, full_name, first_name, last_name, middle_initial, email, lrn, grade_level, section_id, status, must_change_password")
+      .select("id, full_name, first_name, last_name, middle_name, middle_initial, suffix, sex, birthdate, last_seen_at, email, lrn, grade_level, section_id, status, must_change_password")
       .eq("role", "learner")
       .order("last_name", { nullsFirst: false })
       .order("first_name", { nullsFirst: false })
+      .order("middle_name", { nullsFirst: false })
+      .order("suffix", { nullsFirst: false })
       .order("full_name")
       .returns<LearnerRow[]>()
   ]);
@@ -147,6 +154,11 @@ export default async function TeacherLearnersPage({
         firstName,
         lastName,
         middleInitial,
+        middleName: learner.middle_name ?? null,
+        suffix: learner.suffix ?? null,
+        sex: learner.sex ?? null,
+        birthdate: learner.birthdate ?? null,
+        lastSeenAt: learner.last_seen_at ?? null,
         lrn: learner.lrn,
         loginId: learner.email?.trim() || (learner.lrn ? `${learner.lrn}@eimnc2.local` : ""),
         gradeLevel: learner.grade_level ?? null,
@@ -167,6 +179,7 @@ export default async function TeacherLearnersPage({
         learner.loginId,
         learner.lrn,
         learner.status,
+        learner.sex,
         learner.gradeLevel ? `grade ${learner.gradeLevel}` : "",
         learner.sectionName
       ]

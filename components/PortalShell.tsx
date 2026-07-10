@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signOutAction } from "@/app/actions/auth";
 import { PortalNav } from "@/components/PortalNav";
+import { PresenceHeartbeat } from "@/components/presence/PresenceHeartbeat";
 import type { Profile } from "@/lib/types";
 
 const learnerLinks = [
@@ -28,6 +29,7 @@ export function PortalShell({ profile, children }: { profile: Profile; children:
 
   return (
     <div className="min-h-screen">
+      <PresenceHeartbeat />
       <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/88 shadow-sm shadow-slate-200/30 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
           <div className="min-w-0">

@@ -5,7 +5,8 @@ import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
-import { formatLearnerName } from "@/lib/learner-accounts";
+import { formatGradeSection, formatLearnerCompleteName, formatLearnerName } from "@/lib/learner-accounts";
+import { calculateAge, getOnlineStatus, type OnlineStatus } from "@/lib/presence";
 import { firstRelation } from "@/lib/relations";
 import type { ProfileStatus } from "@/lib/types";
 import { ProfileDangerActions } from "./ProfileDangerActions";
@@ -21,16 +22,21 @@ type SectionRow = {
 type LearnerProfileRow = {
   id: string;
   full_name: string;
-  first_name: string | null;
-  last_name: string | null;
-  middle_initial: string | null;
-  email: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  middle_initial?: string | null;
+  middle_name?: string | null;
+  suffix?: string | null;
+  sex?: string | null;
+  birthdate?: string | null;
+  last_seen_at?: string | null;
+  email?: string | null;
   lrn: string | null;
-  grade_level: string | number | null;
+  grade_level?: string | number | null;
   section_id: string | null;
   role: string;
   status: ProfileStatus | null;
-  must_change_password: boolean | null;
+  must_change_password?: boolean | null;
   created_at: string | null;
   sections: SectionRow | SectionRow[] | null;
 };
@@ -83,6 +89,18 @@ function statusBadgeClass(status: ProfileStatus | null) {
   return "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700";
 }
 
+function onlineBadgeClass(status: OnlineStatus) {
+  if (status === "online") return "rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700";
+  if (status === "away") return "rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700";
+  return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
+}
+
+function formatBirthdate(value: string | null | undefined) {
+  if (!value) return "Not set";
+  const [year, month, day] = value.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-PH", { dateStyle: "long" }).format(new Date(year, month - 1, day));
+}
+
 function scoreLabel(score: number | null | undefined, maxScore: number | null | undefined) {
   if (score === null || score === undefined) return "Not scored";
   return maxScore ? `${score} / ${maxScore}` : String(score);
@@ -101,12 +119,24 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
   const { id } = await params;
   const { profile, supabase } = await requireTeacher();
 
-  const learnerResult = await supabase
+  const richLearnerResult = await supabase
     .from("profiles")
-    .select("id, full_name, first_name, last_name, middle_initial, email, lrn, grade_level, section_id, role, status, must_change_password, created_at, sections(id, name, grade_level, school_year, is_active)")
+    .select("id, full_name, first_name, last_name, middle_name, middle_initial, suffix, sex, birthdate, last_seen_at, email, lrn, grade_level, section_id, role, status, must_change_password, created_at, sections(id, name, grade_level, school_year, is_active)")
     .eq("id", id)
     .eq("role", "learner")
     .maybeSingle<LearnerProfileRow>();
+
+  // Avoid a false 404 when the deployed database has the core profile but a
+  // newly added optional learner-management column has not reached its schema
+  // cache yet. The core lookup still verifies both the id and learner role.
+  const learnerResult = richLearnerResult.error
+    ? await supabase
+        .from("profiles")
+        .select("id, full_name, lrn, section_id, role, status, created_at, sections(id, name, grade_level, school_year, is_active)")
+        .eq("id", id)
+        .eq("role", "learner")
+        .maybeSingle<LearnerProfileRow>()
+    : richLearnerResult;
 
   if (!learnerResult.data) {
     notFound();
@@ -117,9 +147,21 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
     full_name: learner.full_name,
     first_name: learner.first_name,
     last_name: learner.last_name,
-    middle_initial: learner.middle_initial
+    middle_name: learner.middle_name,
+    middle_initial: learner.middle_initial,
+    suffix: learner.suffix
   });
+  const completeName = formatLearnerCompleteName({
+    full_name: learner.full_name,
+    first_name: learner.first_name,
+    last_name: learner.last_name,
+    middle_name: learner.middle_name,
+    suffix: learner.suffix
+  });
+  const onlineStatus = getOnlineStatus(learner.last_seen_at);
+  const age = calculateAge(learner.birthdate);
   const section = firstRelation(learner.sections);
+  const gradeSection = formatGradeSection({ gradeLevel: learner.grade_level, sectionName: section?.name });
 
   const [attemptsResult, submissionsResult, gradesResult, gradebookResult] = await Promise.all([
     supabase
@@ -162,17 +204,20 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
         Back to learners
       </Link>
 
-      <SectionHeader eyebrow="Learner Profile" title={learner.full_name} description="Profile, account, activity, and management details." />
+      <SectionHeader eyebrow="Learner Profile" title={learner.full_name} description="Profile, demographics, account activity, and learning records." />
 
       <div className="grid gap-7">
         <section className="card rounded-[1.75rem] p-6 sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-700">{formalName}</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{learner.full_name}</h2>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{completeName}</h2>
               <p className="mt-2 text-slate-500">{sectionLabel(section)}</p>
             </div>
-            <span className={statusBadgeClass(learner.status)}>{learner.status ?? "active"}</span>
+            <div className="flex flex-wrap gap-2">
+              <span className={onlineBadgeClass(onlineStatus)}>{onlineStatus.charAt(0).toUpperCase() + onlineStatus.slice(1)}</span>
+              <span className={statusBadgeClass(learner.status)}>{learner.status ?? "active"}</span>
+            </div>
           </div>
 
           <dl className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -184,6 +229,13 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
             <DetailItem label="Password Change" value={learner.must_change_password ? "Required" : "Not required"} />
             <DetailItem label="Section" value={section?.name ?? null} />
             <DetailItem label="School Year" value={section?.school_year ?? null} />
+            <DetailItem label="Grade & Section" value={gradeSection} />
+            <DetailItem label="Sex" value={learner.sex ?? "Not specified"} />
+            <DetailItem label="Birthday" value={formatBirthdate(learner.birthdate)} />
+            <DetailItem label="Age" value={age === null ? "Not set" : String(age)} />
+            <DetailItem label="Online Status" value={onlineStatus.charAt(0).toUpperCase() + onlineStatus.slice(1)} />
+            <DetailItem label="Last Seen" value={learner.last_seen_at ? formatDateTime(learner.last_seen_at) : "No recent activity"} />
+            <DetailItem label="Account Status" value={learner.status ?? "active"} />
           </dl>
         </section>
 

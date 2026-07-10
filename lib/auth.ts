@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
 
-const PROFILE_SELECT = "id, full_name, first_name, last_name, middle_initial, role, email, lrn, section_id, grade_level, status, must_change_password";
+const PROFILE_SELECT = "id, full_name, first_name, last_name, middle_name, middle_initial, suffix, sex, birthdate, last_seen_at, role, email, lrn, section_id, grade_level, status, must_change_password";
 const LEGACY_PROFILE_SELECT = "id, full_name, role, lrn, section_id";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
@@ -15,6 +15,11 @@ function normalizeProfile(data: Partial<Profile>, fallbackEmail?: string | null)
     first_name: data.first_name ?? null,
     last_name: data.last_name ?? null,
     middle_initial: data.middle_initial ?? null,
+    middle_name: data.middle_name ?? null,
+    suffix: data.suffix ?? null,
+    sex: data.sex ?? null,
+    birthdate: data.birthdate ?? null,
+    last_seen_at: data.last_seen_at ?? null,
     role: data.role ?? "learner",
     email: data.email ?? fallbackEmail ?? null,
     lrn: data.lrn ?? null,

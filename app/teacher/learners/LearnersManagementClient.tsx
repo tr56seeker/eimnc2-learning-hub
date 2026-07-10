@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatLearnerName } from "@/lib/learner-accounts";
+import { formatGradeSection, formatLearnerCompleteName } from "@/lib/learner-accounts";
+import { getOnlineStatus, type OnlineStatus } from "@/lib/presence";
 import {
   createLearnerAction,
   resetLearnerPasswordAction,
@@ -31,7 +32,7 @@ const initialResetState: LearnerPasswordResetState = {
 };
 
 const fieldClass = "focus-ring min-h-11 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40";
-const compactButtonClass = "rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm hover:border-teal-200 hover:bg-teal-50 hover:text-teal-700";
+const menuItemClass = "block w-full px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-teal-700";
 
 function sectionLabel(section: SectionOption) {
   return `Grade ${section.grade_level} - ${section.name}`;
@@ -56,7 +57,7 @@ function AddLearnerForm({
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
           Last Name
           <input name="last_name" required className={fieldClass} placeholder="Dela Cruz" />
@@ -66,8 +67,27 @@ function AddLearnerForm({
           <input name="first_name" required className={fieldClass} placeholder="Juan" />
         </label>
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
-          Middle Initial
-          <input name="middle_initial" maxLength={3} className={fieldClass} placeholder="T." />
+          Middle Name
+          <input name="middle_name" className={fieldClass} placeholder="Tamayo" />
+        </label>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          Suffix
+          <input name="suffix" className={fieldClass} placeholder="Jr., Sr., III" />
+        </label>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          Sex
+          <select name="sex" defaultValue="" className={fieldClass}>
+            <option value="">Not specified</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </label>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          Birthday / Date of Birth
+          <input name="birthdate" type="date" className={fieldClass} />
         </label>
       </div>
 
@@ -82,7 +102,7 @@ function AddLearnerForm({
         </label>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
           Grade Level
           <select name="grade_level" className={fieldClass} defaultValue="">
@@ -95,7 +115,7 @@ function AddLearnerForm({
           Section
           <select name="section_id" className={fieldClass} defaultValue="">
             <option value="">No section</option>
-            {sections.map((section) => (
+            {sections.filter((section) => section.is_active !== false).map((section) => (
               <option key={section.id} value={section.id}>
                 {sectionLabel(section)} / SY {section.school_year}
               </option>
@@ -111,10 +131,9 @@ function AddLearnerForm({
         </label>
       </div>
 
-      <label className="grid gap-2 text-sm font-semibold text-slate-700">
-        Temporary Password
-        <input name="password" type="password" required minLength={8} className={fieldClass} placeholder="At least 8 characters" />
-      </label>
+      <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-sm text-teal-800">
+        Initial password: <span className="font-semibold">eimnc2password</span>. The learner will be required to change it after signing in.
+      </div>
 
       <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
         {isPending ? "Adding..." : "Add Learner"}
@@ -126,7 +145,7 @@ function AddLearnerForm({
 function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sections: SectionOption[] }) {
   return (
     <form action={updateLearnerAction.bind(null, learner.id)} className="grid gap-5">
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
           Last Name
           <input name="last_name" required defaultValue={learner.lastName ?? ""} className={fieldClass} />
@@ -136,8 +155,27 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
           <input name="first_name" required defaultValue={learner.firstName ?? ""} className={fieldClass} />
         </label>
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
-          Middle Initial
-          <input name="middle_initial" maxLength={3} defaultValue={learner.middleInitial ?? ""} className={fieldClass} />
+          Middle Name
+          <input name="middle_name" defaultValue={learner.middleName ?? learner.middleInitial ?? ""} className={fieldClass} />
+        </label>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          Suffix
+          <input name="suffix" defaultValue={learner.suffix ?? ""} className={fieldClass} placeholder="Jr., Sr., III" />
+        </label>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          Sex
+          <select name="sex" defaultValue={learner.sex ?? ""} className={fieldClass}>
+            <option value="">Not specified</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </label>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          Birthday / Date of Birth
+          <input name="birthdate" type="date" defaultValue={learner.birthdate ?? ""} className={fieldClass} />
         </label>
       </div>
 
@@ -165,7 +203,7 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
           Section
           <select name="section_id" defaultValue={learner.sectionId ?? ""} className={fieldClass}>
             <option value="">No section</option>
-            {sections.map((section) => (
+            {sections.filter((section) => section.is_active !== false || section.id === learner.sectionId).map((section) => (
               <option key={section.id} value={section.id}>
                 {sectionLabel(section)} / SY {section.school_year}
               </option>
@@ -192,6 +230,12 @@ function statusBadgeClass(status: LearnerListItem["status"]) {
   if (status === "deleted") return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
   if (status === "inactive") return "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700";
   return "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700";
+}
+
+function onlineBadgeClass(status: OnlineStatus) {
+  if (status === "online") return "rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700";
+  if (status === "away") return "rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700";
+  return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
 }
 
 function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
@@ -245,7 +289,7 @@ function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
       <form action={action} className="grid gap-4">
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
           New Temporary Password
-          <input name="password" type="password" required minLength={8} className={fieldClass} placeholder="At least 8 characters" />
+          <input name="password" type="text" required minLength={8} defaultValue="eimnc2password" className={fieldClass} placeholder="At least 8 characters" />
         </label>
         <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
           {isPending ? "Resetting..." : "Reset Password"}
@@ -292,6 +336,20 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
   const [mode, setMode] = useState<"edit" | "reset">("edit");
   const [showCredentials, setShowCredentials] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!openMenuId) return;
+
+    const closeMenu = (event: PointerEvent) => {
+      if (!(event.target instanceof Element) || !event.target.closest("[data-actions-menu]")) {
+        setOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener("pointerdown", closeMenu);
+    return () => document.removeEventListener("pointerdown", closeMenu);
+  }, [openMenuId]);
 
   useEffect(() => {
     if (state.ok && state.credentials) {
@@ -313,8 +371,8 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
 
   return (
     <>
-      <section className="card rounded-[1.75rem] p-5 sm:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <section className="overflow-hidden border border-slate-200/80 bg-white shadow-sm shadow-slate-200/40">
+        <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-slate-950">Enrolled learners</h2>
             <p className="mt-1 text-sm text-slate-500">{learners.length} learner{learners.length === 1 ? "" : "s"} shown</p>
@@ -328,15 +386,15 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
           </button>
         </div>
 
-        <div className="mt-6 overflow-x-auto">
-          <table className="min-w-[1040px] border-separate border-spacing-0 text-left text-sm">
+        <div className={`overflow-x-auto ${openMenuId ? "pb-28" : ""}`}>
+          <table className="min-w-[940px] w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                <th className="border-b border-slate-200 px-4 py-3">Learner Name</th>
-                <th className="border-b border-slate-200 px-4 py-3">LRN</th>
-                <th className="border-b border-slate-200 px-4 py-3">Login ID / Email</th>
-                <th className="border-b border-slate-200 px-4 py-3">Grade Level</th>
-                <th className="border-b border-slate-200 px-4 py-3">Section</th>
+              <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                <th className="w-[34%] border-b border-slate-200 px-5 py-3.5">Learner&apos;s Complete Name</th>
+                <th className="whitespace-nowrap border-b border-slate-200 px-4 py-3">LRN</th>
+                <th className="border-b border-slate-200 px-4 py-3">Grade &amp; Section</th>
+                <th className="border-b border-slate-200 px-4 py-3">Sex</th>
+                <th className="border-b border-slate-200 px-4 py-3">Online Status</th>
                 <th className="border-b border-slate-200 px-4 py-3">Status</th>
                 <th className="border-b border-slate-200 px-4 py-3 text-right">Actions</th>
               </tr>
@@ -344,52 +402,49 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
             <tbody>
               {learners.map((learner) => {
                 const nextStatus = learner.status === "inactive" || learner.status === "deleted" ? "active" : "inactive";
-                const formalName = formatLearnerName(learner);
+                const completeName = formatLearnerCompleteName(learner);
+                const onlineStatus = getOnlineStatus(learner.lastSeenAt);
+                const gradeSection = formatGradeSection({
+                  gradeLevel: learner.gradeLevel,
+                  sectionName: learner.sectionId ? learner.sectionName : null
+                });
 
                 return (
-                  <tr key={learner.id} className="align-middle text-slate-700">
-                    <td className="border-b border-slate-100 px-4 py-4 font-semibold text-slate-950">
-                      {formalName}
+                  <tr key={learner.id} className="align-middle text-slate-700 hover:bg-slate-50/60">
+                    <td className="border-b border-slate-200/70 px-5 py-3.5">
+                      <Link href={`/teacher/learners/${learner.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline hover:underline-offset-4">
+                        {completeName}
+                      </Link>
                     </td>
-                    <td className="border-b border-slate-100 px-4 py-4 tabular-nums">{learner.lrn ?? ""}</td>
-                    <td className="border-b border-slate-100 px-4 py-4">{learner.loginId ?? ""}</td>
-                    <td className="border-b border-slate-100 px-4 py-4">{learner.gradeLevel ? `Grade ${learner.gradeLevel}` : ""}</td>
-                    <td className="border-b border-slate-100 px-4 py-4">{learner.sectionName}</td>
+                    <td className="whitespace-nowrap border-b border-slate-100 px-4 py-4 tabular-nums">{learner.lrn ?? ""}</td>
+                    <td className="border-b border-slate-100 px-4 py-4 font-medium">{gradeSection}</td>
+                    <td className="border-b border-slate-100 px-4 py-4">{learner.sex ?? "Not specified"}</td>
+                    <td className="border-b border-slate-100 px-4 py-4"><span className={onlineBadgeClass(onlineStatus)}>{onlineStatus.charAt(0).toUpperCase() + onlineStatus.slice(1)}</span></td>
                     <td className="border-b border-slate-100 px-4 py-4">
                       <span className={statusBadgeClass(learner.status)}>
                         {learner.status ?? "active"}
                       </span>
                     </td>
-                    <td className="border-b border-slate-100 px-4 py-4">
-                      <div className="flex flex-wrap justify-end gap-2">
-                        <Link href={`/teacher/learners/${learner.id}`} className={compactButtonClass}>
-                          View Profile
-                        </Link>
+                    <td className="border-b border-slate-200/70 px-4 py-3 text-right">
+                      <div className="relative inline-block" data-actions-menu>
                         <button
                           type="button"
-                          onClick={() => {
-                            setSelectedLearner(learner);
-                            setMode("edit");
-                          }}
-                          className={compactButtonClass}
+                          aria-label={`Actions for ${completeName}`}
+                          aria-expanded={openMenuId === learner.id}
+                          onClick={() => setOpenMenuId((current) => current === learner.id ? null : learner.id)}
+                          className="grid h-9 w-9 place-items-center rounded-lg text-xl font-semibold leading-none text-slate-500 hover:bg-slate-100 hover:text-slate-950"
                         >
-                          Edit
+                          ⋯
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedLearner(learner);
-                            setMode("reset");
-                          }}
-                          className={compactButtonClass}
-                        >
-                          Reset Password
-                        </button>
-                        <form action={toggleLearnerStatusAction.bind(null, learner.id, nextStatus)}>
-                          <button className={compactButtonClass}>
-                            {nextStatus === "active" ? "Activate" : "Deactivate"}
-                          </button>
-                        </form>
+                        {openMenuId === learner.id ? (
+                          <div className="absolute right-0 top-10 z-30 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl shadow-slate-950/10">
+                            <Link href={`/teacher/learners/${learner.id}`} onClick={() => setOpenMenuId(null)} className={menuItemClass}>View Profile</Link>
+                            <button type="button" onClick={() => { setOpenMenuId(null); setSelectedLearner(learner); setMode("edit"); }} className={menuItemClass}>Edit</button>
+                            <button type="button" onClick={() => { setOpenMenuId(null); setSelectedLearner(learner); setMode("reset"); }} className={menuItemClass}>Reset Password</button>
+                            <form action={toggleLearnerStatusAction.bind(null, learner.id, nextStatus)} onSubmit={() => setOpenMenuId(null)}>
+                              <button className={menuItemClass}>{nextStatus === "active" ? "Activate" : "Deactivate"}</button>
+                            </form>
+                            <div className="my-1 border-t border-slate-100" />
                         <form
                           action={softDeleteLearnerAction.bind(null, learner.id)}
                           onSubmit={(event) => {
@@ -400,12 +455,13 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
                             ) {
                               event.preventDefault();
                             }
+                            setOpenMenuId(null);
                           }}
                         >
-                          <button className="rounded-full border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-50">
-                            Delete
-                          </button>
+                              <button className="block w-full px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50">Delete</button>
                         </form>
+                          </div>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
@@ -416,7 +472,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
         </div>
 
         {!learners.length ? (
-          <div className="mt-6 rounded-[1.5rem] border border-dashed border-slate-300/80 bg-white/70 p-10 text-center text-slate-500">
+          <div className="m-6 rounded-xl border border-dashed border-slate-300/80 bg-slate-50/60 p-10 text-center text-slate-500">
             No learners match the current filters.
           </div>
         ) : null}

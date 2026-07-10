@@ -21,6 +21,7 @@ import {
   type GradebookTerm,
   type TermSummaryRow
 } from "@/lib/gradebook";
+import { formatLearnerName } from "@/lib/learner-accounts";
 import { firstRelation } from "@/lib/relations";
 
 type SectionRow = {
@@ -28,11 +29,17 @@ type SectionRow = {
   name: string;
   grade_level: number;
   school_year: string;
+  is_active: boolean | null;
 };
 
 type LearnerRow = {
   id: string;
   full_name: string;
+  first_name: string | null;
+  middle_name: string | null;
+  middle_initial: string | null;
+  last_name: string | null;
+  suffix: string | null;
   lrn: string | null;
   section_id: string | null;
   sections: SectionRow | SectionRow[] | null;
@@ -192,7 +199,7 @@ export default async function TeacherGradebookPage({
 
   let learnersQuery = supabase
     .from("profiles")
-    .select("id, full_name, lrn, section_id, sections(id, name, grade_level, school_year)")
+    .select("id, full_name, first_name, middle_name, middle_initial, last_name, suffix, lrn, section_id, sections(id, name, grade_level, school_year)")
     .eq("role", "learner");
 
   if (selectedSectionId) {
@@ -212,7 +219,7 @@ export default async function TeacherGradebookPage({
     .eq("is_active", true);
 
   const [sectionsResult, learnersResult, selectedAssessmentsResult, allTermAssessmentsResult] = await Promise.all([
-    supabase.from("sections").select("id, name, grade_level, school_year").order("grade_level").order("name").returns<SectionRow[]>(),
+    supabase.from("sections").select("id, name, grade_level, school_year, is_active").order("grade_level").order("name").returns<SectionRow[]>(),
     learnersQuery.order("full_name").returns<LearnerRow[]>(),
     sectionIdForGradebook
       ? selectedAssessmentQuery.eq("section_id", sectionIdForGradebook).order("category").order("display_order").returns<AssessmentRow[]>()
@@ -229,7 +236,10 @@ export default async function TeacherGradebookPage({
     name: section.name,
     gradeLevel: section.grade_level,
     schoolYear: section.school_year
-  }));
+  })).filter((section) => {
+    const source = (sectionsResult.data ?? []).find((row) => row.id === section.id);
+    return source?.is_active !== false || section.id === selectedSectionId;
+  });
   const selectedAssessments = (selectedAssessmentsResult.data ?? []).map(toClientAssessment);
   const allTermAssessments = (allTermAssessmentsResult.data ?? []).map(toClientAssessment);
   const assessmentIds = new Set([...selectedAssessments, ...allTermAssessments].map((assessment) => assessment.id));
@@ -250,7 +260,13 @@ export default async function TeacherGradebookPage({
     return {
       id: learner.id,
       rowNumber: index + 1,
-      fullName: learner.full_name,
+      fullName: formatLearnerName({
+        fullName: learner.full_name,
+        firstName: learner.first_name,
+        middleName: learner.middle_name ?? learner.middle_initial,
+        lastName: learner.last_name,
+        suffix: learner.suffix
+      }),
       lrn: learner.lrn,
       sectionName: sectionLabel(section)
     };
