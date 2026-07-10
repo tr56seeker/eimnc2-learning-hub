@@ -20,7 +20,7 @@ function normalizeProfile(data: Partial<Profile>, fallbackEmail?: string | null)
     lrn: data.lrn ?? null,
     section_id: data.section_id ?? null,
     grade_level: data.grade_level ?? null,
-    status: data.status ?? "active",
+    status: data.status === "inactive" || data.status === "deleted" ? data.status : "active",
     must_change_password: Boolean(data.must_change_password ?? false)
   };
 }
@@ -133,6 +133,10 @@ export async function requireLearner() {
 
   if (result.profile.role !== "learner") {
     redirect("/teacher/dashboard");
+  }
+
+  if (result.profile.status === "inactive" || result.profile.status === "deleted") {
+    redirect("/account/inactive");
   }
 
   if (result.profile.must_change_password) {

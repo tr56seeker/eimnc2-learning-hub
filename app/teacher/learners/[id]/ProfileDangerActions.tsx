@@ -1,0 +1,45 @@
+"use client";
+
+import { softDeleteLearnerAction, toggleLearnerStatusAction } from "../actions";
+import type { ProfileStatus } from "@/lib/types";
+
+const buttonClass = "rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-sm";
+
+export function ProfileDangerActions({ learnerId, status }: { learnerId: string; status: ProfileStatus | null }) {
+  const nextStatus = status === "active" ? "inactive" : "active";
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      <form
+        action={toggleLearnerStatusAction.bind(null, learnerId, nextStatus)}
+        onSubmit={(event) => {
+          const label = nextStatus === "active" ? "activate" : "deactivate";
+          if (!window.confirm(`Are you sure you want to ${label} this learner?`)) {
+            event.preventDefault();
+          }
+        }}
+      >
+        <button className={`${buttonClass} border border-slate-200 bg-white text-slate-700 hover:bg-slate-50`}>
+          {nextStatus === "active" ? "Activate learner" : "Deactivate learner"}
+        </button>
+      </form>
+
+      <form
+        action={softDeleteLearnerAction.bind(null, learnerId)}
+        onSubmit={(event) => {
+          if (
+            !window.confirm(
+              "This may remove the learner account and related profile data. This action cannot be undone."
+            )
+          ) {
+            event.preventDefault();
+          }
+        }}
+      >
+        <button className={`${buttonClass} border border-red-200 bg-red-50 text-red-700 hover:bg-red-100`}>
+          Delete learner
+        </button>
+      </form>
+    </div>
+  );
+}

@@ -1,3 +1,5 @@
+import type { ProfileStatus } from "@/lib/types";
+
 export type SectionOption = {
   id: string;
   name: string;
@@ -17,6 +19,6 @@ export type LearnerListItem = {
   gradeLevel: string | number | null;
   sectionId: string | null;
   sectionName: string;
-  status: "active" | "inactive" | null;
+  status: ProfileStatus | null;
   mustChangePassword: boolean;
 };

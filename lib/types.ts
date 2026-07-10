@@ -1,4 +1,5 @@
 export type UserRole = "learner" | "teacher" | "admin";
+export type ProfileStatus = "active" | "inactive" | "deleted";
 
 export type Profile = {
   id: string;
@@ -11,7 +12,7 @@ export type Profile = {
   lrn: string | null;
   section_id: string | null;
   grade_level: string | number | null;
-  status: "active" | "inactive" | null;
+  status: ProfileStatus | null;
   must_change_password: boolean;
 };
 

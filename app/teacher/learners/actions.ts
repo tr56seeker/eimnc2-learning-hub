@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth";
 import {
   buildLearnerFullName,
+  formatLearnerName,
   normalizeLearnerId,
   normalizeMiddleInitial,
   resolveLearnerLoginEmail
@@ -22,12 +23,26 @@ export type LearnerEnrollmentState = {
   };
 };
 
+export type LearnerPasswordResetState = {
+  ok: boolean;
+  message: string;
+  credentials?: {
+    learnerName: string;
+    loginId: string;
+    temporaryPassword: string;
+  };
+};
+
 function nullableText(value: FormDataEntryValue | null) {
   const text = String(value ?? "").trim();
   return text || null;
 }
 
 function enrollmentMessage(message: string): LearnerEnrollmentState {
+  return { ok: false, message };
+}
+
+function passwordResetMessage(message: string): LearnerPasswordResetState {
   return { ok: false, message };
 }
 
@@ -191,6 +206,7 @@ export async function updateLearnerAction(learnerId: string, formData: FormData)
   }
 
   revalidatePath("/teacher/learners");
+  revalidatePath(`/teacher/learners/${learnerId}`);
   revalidatePath("/teacher/dashboard");
   redirect("/teacher/learners?message=Learner%20updated");
 }
@@ -210,6 +226,93 @@ export async function toggleLearnerStatusAction(learnerId: string, nextStatus: "
   }
 
   revalidatePath("/teacher/learners");
+  revalidatePath(`/teacher/learners/${learnerId}`);
   revalidatePath("/teacher/dashboard");
   redirect(`/teacher/learners?message=${encodeURIComponent(`Learner ${nextStatus === "active" ? "activated" : "deactivated"}`)}`);
+}
+
+export async function softDeleteLearnerAction(learnerId: string) {
+  await requireTeacher();
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("profiles")
+    .update({ status: "deleted" })
+    .eq("id", learnerId)
+    .eq("role", "learner");
+
+  if (error) {
+    redirect(`/teacher/learners?message=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/teacher/learners");
+  revalidatePath(`/teacher/learners/${learnerId}`);
+  revalidatePath("/teacher/dashboard");
+  redirect("/teacher/learners?message=Learner%20soft%20deleted");
+}
+
+export async function resetLearnerPasswordAction(
+  learnerId: string,
+  _previousState: LearnerPasswordResetState,
+  formData: FormData
+): Promise<LearnerPasswordResetState> {
+  await requireTeacher();
+
+  const password = String(formData.get("password") ?? "");
+  if (password.length < 8) {
+    return passwordResetMessage("Temporary password must be at least 8 characters.");
+  }
+
+  const admin = createAdminClient();
+  const { data: learner, error: learnerError } = await admin
+    .from("profiles")
+    .select("id, full_name, first_name, last_name, middle_initial, email, role")
+    .eq("id", learnerId)
+    .eq("role", "learner")
+    .maybeSingle<{
+      id: string;
+      full_name: string;
+      first_name: string | null;
+      last_name: string | null;
+      middle_initial: string | null;
+      email: string | null;
+      role: string;
+    }>();
+
+  if (learnerError || !learner) {
+    return passwordResetMessage(learnerError?.message ?? "Learner profile was not found.");
+  }
+
+  const { error: authError } = await admin.auth.admin.updateUserById(learnerId, { password });
+  if (authError) {
+    return passwordResetMessage(authError.message);
+  }
+
+  const { error: profileError } = await admin
+    .from("profiles")
+    .update({ must_change_password: true })
+    .eq("id", learnerId)
+    .eq("role", "learner");
+
+  if (profileError) {
+    return passwordResetMessage(profileError.message);
+  }
+
+  revalidatePath("/teacher/learners");
+  revalidatePath(`/teacher/learners/${learnerId}`);
+
+  return {
+    ok: true,
+    message: "Password reset.",
+    credentials: {
+      learnerName: formatLearnerName({
+        full_name: learner.full_name,
+        first_name: learner.first_name,
+        last_name: learner.last_name,
+        middle_initial: learner.middle_initial
+      }),
+      loginId: learner.email ?? "",
+      temporaryPassword: password
+    }
+  };
 }

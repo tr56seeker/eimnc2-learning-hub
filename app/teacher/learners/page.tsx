@@ -1,7 +1,7 @@
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
-import { firstRelation } from "@/lib/relations";
+import type { ProfileStatus } from "@/lib/types";
 import { LearnersManagementClient } from "./LearnersManagementClient";
 import type { LearnerListItem, SectionOption } from "./types";
 
@@ -16,21 +16,40 @@ type SectionRow = {
 type LearnerRow = {
   id: string;
   full_name: string;
-  first_name: string | null;
-  last_name: string | null;
-  middle_initial: string | null;
-  email: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  middle_initial?: string | null;
+  email?: string | null;
   lrn: string | null;
-  grade_level: string | number | null;
+  grade_level?: string | number | null;
   section_id: string | null;
-  status: "active" | "inactive" | null;
-  must_change_password: boolean | null;
-  sections: SectionRow | SectionRow[] | null;
+  status: ProfileStatus | null;
+  must_change_password?: boolean | null;
 };
 
 function sectionLabel(section?: SectionRow | null) {
-  if (!section) return "No section";
+  if (!section) return "Unassigned";
   return `Grade ${section.grade_level} - ${section.name}`;
+}
+
+function normalizedFilter(value: string | string[] | undefined) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const normalized = String(raw ?? "").trim();
+  return normalized && normalized !== "all" ? normalized : "";
+}
+
+function normalizedStatusFilter(value: string | string[] | undefined) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const normalized = String(raw ?? "").trim().toLowerCase();
+
+  if (normalized === "all") return "all";
+  if (normalized === "inactive" || normalized === "deleted") return normalized;
+  return "active";
+}
+
+function normalizeLearnerStatus(status: string | null | undefined): ProfileStatus {
+  if (status === "inactive" || status === "deleted") return status;
+  return "active";
 }
 
 function bestEffortNameParts(fullName: string) {
@@ -59,22 +78,35 @@ function bestEffortNameParts(fullName: string) {
 export default async function TeacherLearnersPage({
   searchParams
 }: {
-  searchParams: Promise<{ q?: string; section_id?: string; message?: string }>;
+  searchParams: Promise<{ q?: string; section_id?: string; status?: string; message?: string }>;
 }) {
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
-  const [sectionsResult, learnersResult] = await Promise.all([
+  const [sectionsResult, richLearnersResult] = await Promise.all([
     supabase.from("sections").select("id, name, grade_level, school_year, is_active").order("grade_level").order("name").returns<SectionRow[]>(),
     supabase
       .from("profiles")
-      .select("id, full_name, first_name, last_name, middle_initial, email, lrn, grade_level, section_id, status, must_change_password, sections(id, name, grade_level, school_year, is_active)")
+      .select("id, full_name, first_name, last_name, middle_initial, email, lrn, grade_level, section_id, status, must_change_password")
       .eq("role", "learner")
       .order("last_name", { nullsFirst: false })
       .order("first_name", { nullsFirst: false })
       .order("full_name")
       .returns<LearnerRow[]>()
   ]);
+
+  // Some deployed databases have the core learner columns but not the newer
+  // name/password-management columns yet. A missing optional column makes
+  // PostgREST reject the entire select, so retry with the compatible profile
+  // shape instead of turning that query error into an empty learner list.
+  const learnersResult = richLearnersResult.error
+    ? await supabase
+        .from("profiles")
+        .select("id, full_name, lrn, section_id, status")
+        .eq("role", "learner")
+        .order("full_name")
+        .returns<LearnerRow[]>()
+    : richLearnersResult;
 
   const sections: SectionOption[] = (sectionsResult.data ?? []).map((section) => ({
     id: section.id,
@@ -83,17 +115,31 @@ export default async function TeacherLearnersPage({
     school_year: section.school_year,
     is_active: section.is_active
   }));
+  const sectionById = new Map((sectionsResult.data ?? []).map((section) => [section.id, section]));
 
-  const query = String(params.q ?? "").trim().toLowerCase();
-  const sectionFilter = String(params.section_id ?? "").trim();
+  const query = normalizedFilter(params.q).toLowerCase();
+  const sectionFilter = normalizedFilter(params.section_id);
+  const statusFilter = normalizedStatusFilter(params.status);
+  const rawLearners = learnersResult.data ?? [];
 
-  const learners: LearnerListItem[] = (learnersResult.data ?? [])
+  if (process.env.NODE_ENV !== "production") {
+    console.info("[teacher/learners] filters", {
+      hasSearch: Boolean(query),
+      sectionFilter: sectionFilter || "all",
+      statusFilter,
+      fetchedLearners: rawLearners.length,
+      queryError: learnersResult.error?.message ?? null
+    });
+  }
+
+  const learners: LearnerListItem[] = rawLearners
     .map((learner) => {
-      const section = firstRelation(learner.sections);
+      const section = learner.section_id ? sectionById.get(learner.section_id) ?? null : null;
       const inferred = bestEffortNameParts(learner.full_name);
       const firstName = learner.first_name ?? inferred.firstName;
       const lastName = learner.last_name ?? inferred.lastName;
       const middleInitial = learner.middle_initial ?? inferred.middleInitial;
+      const status = normalizeLearnerStatus(learner.status);
 
       return {
         id: learner.id,
@@ -102,16 +148,17 @@ export default async function TeacherLearnersPage({
         lastName,
         middleInitial,
         lrn: learner.lrn,
-        loginId: learner.email,
-        gradeLevel: learner.grade_level,
+        loginId: learner.email?.trim() || (learner.lrn ? `${learner.lrn}@eimnc2.local` : ""),
+        gradeLevel: learner.grade_level ?? null,
         sectionId: learner.section_id,
         sectionName: sectionLabel(section),
-        status: learner.status ?? "active",
+        status,
         mustChangePassword: Boolean(learner.must_change_password ?? false)
       };
     })
     .filter((learner) => {
       const matchesSection = !sectionFilter || learner.sectionId === sectionFilter;
+      const matchesStatus = statusFilter === "all" || learner.status === statusFilter;
       const searchable = [
         learner.fullName,
         learner.firstName,
@@ -127,7 +174,7 @@ export default async function TeacherLearnersPage({
         .join(" ")
         .toLowerCase();
 
-      return matchesSection && (!query || searchable.includes(query));
+      return matchesSection && matchesStatus && (!query || searchable.includes(query));
     });
 
   return (
@@ -135,7 +182,7 @@ export default async function TeacherLearnersPage({
       <SectionHeader
         eyebrow="Teacher"
         title="Learners"
-        description="Enroll, manage, and assign EIM learners to their sections."
+        description="Enroll, view, and manage EIM learners."
       />
 
       {params.message ? (
@@ -144,7 +191,7 @@ export default async function TeacherLearnersPage({
         </div>
       ) : null}
 
-      <form className="card mb-7 grid gap-4 rounded-[1.75rem] p-5 sm:grid-cols-[1fr_260px_auto] sm:items-end" action="/teacher/learners">
+      <form className="card mb-7 grid gap-4 rounded-[1.75rem] p-5 sm:grid-cols-[1fr_220px_180px_auto] sm:items-end" action="/teacher/learners">
         <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
           Search learners
           <input
@@ -167,6 +214,19 @@ export default async function TeacherLearnersPage({
                 {sectionLabel(section)}
               </option>
             ))}
+          </select>
+        </label>
+        <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+          Status
+          <select
+            name="status"
+            defaultValue={statusFilter}
+            className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal shadow-sm shadow-slate-200/40"
+          >
+            <option value="active">Active learners</option>
+            <option value="all">All statuses</option>
+            <option value="inactive">Inactive</option>
+            <option value="deleted">Deleted</option>
           </select>
         </label>
         <button className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">

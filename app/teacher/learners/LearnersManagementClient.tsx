@@ -1,9 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatClassRecordName } from "@/lib/gradebook";
-import { createLearnerAction, toggleLearnerStatusAction, updateLearnerAction, type LearnerEnrollmentState } from "./actions";
+import { formatLearnerName } from "@/lib/learner-accounts";
+import {
+  createLearnerAction,
+  resetLearnerPasswordAction,
+  softDeleteLearnerAction,
+  toggleLearnerStatusAction,
+  updateLearnerAction,
+  type LearnerEnrollmentState,
+  type LearnerPasswordResetState
+} from "./actions";
 import type { LearnerListItem, SectionOption } from "./types";
 
 type LearnersManagementClientProps = {
@@ -12,6 +21,11 @@ type LearnersManagementClientProps = {
 };
 
 const initialEnrollmentState: LearnerEnrollmentState = {
+  ok: false,
+  message: ""
+};
+
+const initialResetState: LearnerPasswordResetState = {
   ok: false,
   message: ""
 };
@@ -174,6 +188,73 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
   );
 }
 
+function statusBadgeClass(status: LearnerListItem["status"]) {
+  if (status === "deleted") return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
+  if (status === "inactive") return "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700";
+  return "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700";
+}
+
+function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
+  const [state, action, isPending] = useActionState(resetLearnerPasswordAction.bind(null, learner.id), initialResetState);
+  const [copied, setCopied] = useState(false);
+  const credentialText = state.credentials
+    ? [
+        `Learner Name: ${state.credentials.learnerName}`,
+        `Login ID: ${state.credentials.loginId}`,
+        `Temporary Password: ${state.credentials.temporaryPassword}`
+      ].join("\n")
+    : "";
+
+  return (
+    <div className="grid gap-5">
+      {state.credentials ? (
+        <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5">
+          <dl className="grid gap-4 text-sm sm:grid-cols-2">
+            <div>
+              <dt className="font-semibold text-slate-500">Learner Name</dt>
+              <dd className="mt-1 font-semibold text-slate-950">{state.credentials.learnerName}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-500">Login ID</dt>
+              <dd className="mt-1 font-semibold text-slate-950">{state.credentials.loginId}</dd>
+            </div>
+            <div className="sm:col-span-2">
+              <dt className="font-semibold text-slate-500">Temporary Password</dt>
+              <dd className="mt-1 font-semibold text-slate-950">{state.credentials.temporaryPassword}</dd>
+            </div>
+          </dl>
+          <button
+            type="button"
+            onClick={async () => {
+              await navigator.clipboard.writeText(credentialText);
+              setCopied(true);
+            }}
+            className="mt-5 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700"
+          >
+            {copied ? "Copied" : "Copy Credentials"}
+          </button>
+        </div>
+      ) : null}
+
+      {state.message && !state.ok ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
+          {state.message}
+        </div>
+      ) : null}
+
+      <form action={action} className="grid gap-4">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+          New Temporary Password
+          <input name="password" type="password" required minLength={8} className={fieldClass} placeholder="At least 8 characters" />
+        </label>
+        <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
+          {isPending ? "Resetting..." : "Reset Password"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function Modal({
   title,
   description,
@@ -208,7 +289,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
   const [state, formAction, isPending] = useActionState(createLearnerAction, initialEnrollmentState);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedLearner, setSelectedLearner] = useState<LearnerListItem | null>(null);
-  const [mode, setMode] = useState<"view" | "edit">("view");
+  const [mode, setMode] = useState<"edit" | "reset">("edit");
   const [showCredentials, setShowCredentials] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -262,39 +343,28 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
             </thead>
             <tbody>
               {learners.map((learner) => {
-                const nextStatus = learner.status === "inactive" ? "active" : "inactive";
+                const nextStatus = learner.status === "inactive" || learner.status === "deleted" ? "active" : "inactive";
+                const formalName = formatLearnerName(learner);
 
                 return (
                   <tr key={learner.id} className="align-middle text-slate-700">
                     <td className="border-b border-slate-100 px-4 py-4 font-semibold text-slate-950">
-                      {formatClassRecordName({
-                        fullName: learner.fullName,
-                        firstName: learner.firstName,
-                        middleName: learner.middleInitial,
-                        lastName: learner.lastName
-                      })}
+                      {formalName}
                     </td>
                     <td className="border-b border-slate-100 px-4 py-4 tabular-nums">{learner.lrn ?? ""}</td>
                     <td className="border-b border-slate-100 px-4 py-4">{learner.loginId ?? ""}</td>
                     <td className="border-b border-slate-100 px-4 py-4">{learner.gradeLevel ? `Grade ${learner.gradeLevel}` : ""}</td>
                     <td className="border-b border-slate-100 px-4 py-4">{learner.sectionName}</td>
                     <td className="border-b border-slate-100 px-4 py-4">
-                      <span className={learner.status === "inactive" ? "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700" : "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700"}>
+                      <span className={statusBadgeClass(learner.status)}>
                         {learner.status ?? "active"}
                       </span>
                     </td>
                     <td className="border-b border-slate-100 px-4 py-4">
                       <div className="flex flex-wrap justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedLearner(learner);
-                            setMode("view");
-                          }}
-                          className={compactButtonClass}
-                        >
-                          View
-                        </button>
+                        <Link href={`/teacher/learners/${learner.id}`} className={compactButtonClass}>
+                          View Profile
+                        </Link>
                         <button
                           type="button"
                           onClick={() => {
@@ -307,15 +377,33 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
                         </button>
                         <button
                           type="button"
-                          disabled
-                          title="TODO: Add secure teacher password reset confirmation flow."
-                          className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-400"
+                          onClick={() => {
+                            setSelectedLearner(learner);
+                            setMode("reset");
+                          }}
+                          className={compactButtonClass}
                         >
-                          Reset Password TODO
+                          Reset Password
                         </button>
                         <form action={toggleLearnerStatusAction.bind(null, learner.id, nextStatus)}>
                           <button className={compactButtonClass}>
                             {nextStatus === "active" ? "Activate" : "Deactivate"}
+                          </button>
+                        </form>
+                        <form
+                          action={softDeleteLearnerAction.bind(null, learner.id)}
+                          onSubmit={(event) => {
+                            if (
+                              !window.confirm(
+                                "This may remove the learner account and related profile data. This action cannot be undone."
+                              )
+                            ) {
+                              event.preventDefault();
+                            }
+                          }}
+                        >
+                          <button className="rounded-full border border-red-200 bg-white px-3 py-2 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-50">
+                            Delete
                           </button>
                         </form>
                       </div>
@@ -385,27 +473,14 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
 
       {selectedLearner ? (
         <Modal
-          title={mode === "edit" ? "Edit Learner" : "Learner Profile"}
-          description={mode === "edit" ? "Update profile, login ID, section, and status." : "Review learner enrollment details."}
+          title={mode === "edit" ? "Edit Learner" : "Reset Password"}
+          description={mode === "edit" ? "Update profile, login ID, section, and status." : "Set a temporary password and require the learner to change it on next login."}
           onClose={() => setSelectedLearner(null)}
         >
           {mode === "edit" ? (
             <EditLearnerForm learner={selectedLearner} sections={sections} />
           ) : (
-            <div className="grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-5 text-sm sm:grid-cols-2">
-              <p><span className="font-semibold text-slate-500">Name:</span> <span className="font-semibold text-slate-950">{formatClassRecordName({
-                fullName: selectedLearner.fullName,
-                firstName: selectedLearner.firstName,
-                middleName: selectedLearner.middleInitial,
-                lastName: selectedLearner.lastName
-              })}</span></p>
-              <p><span className="font-semibold text-slate-500">LRN:</span> {selectedLearner.lrn ?? ""}</p>
-              <p><span className="font-semibold text-slate-500">Login ID:</span> {selectedLearner.loginId ?? ""}</p>
-              <p><span className="font-semibold text-slate-500">Grade:</span> {selectedLearner.gradeLevel ? `Grade ${selectedLearner.gradeLevel}` : ""}</p>
-              <p><span className="font-semibold text-slate-500">Section:</span> {selectedLearner.sectionName}</p>
-              <p><span className="font-semibold text-slate-500">Status:</span> {selectedLearner.status ?? "active"}</p>
-              <p><span className="font-semibold text-slate-500">Password Change:</span> {selectedLearner.mustChangePassword ? "Required" : "Not required"}</p>
-            </div>
+            <ResetPasswordForm learner={selectedLearner} />
           )}
         </Modal>
       ) : null}
