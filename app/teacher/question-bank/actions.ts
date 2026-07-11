@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireTeacher } from "@/lib/auth";
+import { createBulkQuestionRow, validateBulkQuestionRows, type BulkQuestionColumn } from "./bulk-upload";
 
 const questionTypes = ["multiple_choice", "true_false", "identification", "essay"] as const;
 const difficulties = ["easy", "average", "hots"] as const;
@@ -91,4 +92,105 @@ export async function deleteQuestionAction(questionId: string) {
   if (error) redirect(`/teacher/question-bank?message=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/question-bank");
   redirect("/teacher/question-bank?message=Question deleted.");
+}
+
+export type BulkImportSummary = {
+  ok: boolean;
+  message: string;
+  total: number;
+  imported: number;
+  skipped: number;
+  errors: number;
+};
+
+export async function bulkImportQuestionsAction(formData: FormData): Promise<BulkImportSummary> {
+  const { profile, supabase } = await requireTeacher();
+  const includeDuplicates = formData.get("include_duplicates") === "true";
+  let rawRows: unknown;
+
+  try {
+    rawRows = JSON.parse(String(formData.get("rows") ?? "[]"));
+  } catch {
+    return { ok: false, message: "The uploaded question data could not be read.", total: 0, imported: 0, skipped: 0, errors: 1 };
+  }
+
+  if (!Array.isArray(rawRows) || !rawRows.length) {
+    return { ok: false, message: "No question rows were provided.", total: 0, imported: 0, skipped: 0, errors: 1 };
+  }
+
+  if (rawRows.length > 1000) {
+    return { ok: false, message: "A bulk upload can contain at most 1,000 rows.", total: rawRows.length, imported: 0, skipped: rawRows.length, errors: rawRows.length };
+  }
+
+  const rows = rawRows.map((rawRow, index) => {
+    const record = rawRow && typeof rawRow === "object" ? rawRow as Record<string, unknown> : {};
+    return createBulkQuestionRow(record as Partial<Record<BulkQuestionColumn, unknown>>, Number(record.sourceRow) || index + 2);
+  });
+
+  const [competenciesResult, existingQuestionsResult] = await Promise.all([
+    supabase.from("competencies").select("id, code"),
+    supabase.from("question_bank").select("competency_id, question_text, question_type")
+  ]);
+
+  if (competenciesResult.error || existingQuestionsResult.error) {
+    const message = competenciesResult.error?.message ?? existingQuestionsResult.error?.message ?? "Unable to validate questions.";
+    return { ok: false, message, total: rows.length, imported: 0, skipped: rows.length, errors: rows.length };
+  }
+
+  const competencies = (competenciesResult.data ?? []).flatMap((competency) =>
+    competency.code ? [{ id: competency.id, code: competency.code }] : []
+  );
+  const existingQuestions = (existingQuestionsResult.data ?? []).map((question) => ({
+    competencyId: question.competency_id,
+    questionText: question.question_text,
+    questionType: question.question_type
+  }));
+  const validated = validateBulkQuestionRows(rows, competencies, existingQuestions);
+  const invalidCount = validated.filter((row) => row.status === "error").length;
+  const candidates = validated.filter((row) => row.payload && (row.status === "valid" || (includeDuplicates && row.status === "duplicate")));
+  const payloads = candidates.flatMap((row) => row.payload ? [{
+    competency_id: row.payload.competencyId,
+    question_type: row.payload.questionType,
+    difficulty: row.payload.difficulty,
+    question_text: row.payload.questionText,
+    choices: row.payload.choices,
+    correct_answer: row.payload.correctAnswer,
+    points: row.payload.points,
+    explanation: row.payload.explanation,
+    is_active: row.payload.isActive,
+    created_by: profile.id
+  }] : []);
+
+  if (!payloads.length) {
+    return {
+      ok: false,
+      message: "No valid questions are available to import.",
+      total: rows.length,
+      imported: 0,
+      skipped: rows.length,
+      errors: invalidCount
+    };
+  }
+
+  const { error } = await supabase.from("question_bank").insert(payloads);
+  if (error) {
+    return {
+      ok: false,
+      message: error.message,
+      total: rows.length,
+      imported: 0,
+      skipped: rows.length,
+      errors: invalidCount + payloads.length
+    };
+  }
+
+  revalidatePath("/teacher/question-bank");
+  return {
+    ok: true,
+    message: `${payloads.length} question${payloads.length === 1 ? "" : "s"} imported successfully.`,
+    total: rows.length,
+    imported: payloads.length,
+    skipped: rows.length - payloads.length,
+    errors: invalidCount
+  };
 }

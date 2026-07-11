@@ -10,13 +10,18 @@ type QuestionRow = {
   question_id: string;
   question_text: string;
   question_type: string;
-  choices: { label: string; value: string }[] | null;
+  choices: ({ label: string; value: string } | { key: string; text: string })[] | null;
   points: number | null;
 };
 
 function shuffleItems<T>(items: T[], enabled: boolean) {
   if (!enabled) return items;
   return [...items].sort(() => Math.random() - 0.5);
+}
+
+function normalizedChoice(choice: { label: string; value: string } | { key: string; text: string }) {
+  if ("value" in choice) return choice;
+  return { value: choice.key, label: `${choice.key.length === 1 ? `${choice.key}. ` : ""}${choice.text}` };
 }
 
 export default async function ExamDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ message?: string }> }) {
@@ -95,7 +100,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
             {questionRows.map((row, index) => {
               const question = row;
               const points = row.points_override ?? question.points ?? 1;
-              const choices = shuffleItems(question.choices ?? [], Boolean(exam.randomize_choices));
+              const choices = shuffleItems((question.choices ?? []).map(normalizedChoice), Boolean(exam.randomize_choices));
 
               return (
                 <fieldset key={question.question_id} className="rounded-[1.5rem] border border-slate-200/70 bg-white/82 p-6 shadow-sm shadow-slate-200/40">
