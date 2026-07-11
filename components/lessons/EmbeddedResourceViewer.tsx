@@ -114,7 +114,11 @@ export function EmbeddedResourceViewer({ title, url, caption, blockType }: Embed
         <p className={isFullscreen ? "px-1 pt-3 text-xs leading-5 text-slate-300" : "px-1 pt-3 text-xs leading-5 text-slate-500"}>
           If the presentation does not respond inside the frame, use the fullscreen button or open it in a new tab.
         </p>
-      ) : null}
+      ) : (
+        <p className={isFullscreen ? "px-1 pt-3 text-xs leading-5 text-slate-300" : "px-1 pt-3 text-xs leading-5 text-slate-500"}>
+          If this resource is blocked by its provider, open it in a new tab.
+        </p>
+      )}
 
       {fullscreenMessage ? (
         <p role="status" className={isFullscreen ? "px-1 pt-2 text-xs leading-5 text-amber-200" : "px-1 pt-2 text-xs leading-5 text-amber-700"}>

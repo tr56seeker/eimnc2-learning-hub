@@ -145,10 +145,38 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
     );
   }
 
+  if (block.block_type === "objectives") {
+    const objectives = linesFrom(block.body);
+    return (
+      <section className="rounded-[1.5rem] border border-teal-100 bg-teal-50/70 p-6 sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">Learning Objectives</p>
+        <h3 className="mt-2 text-xl font-semibold text-teal-950">{title}</h3>
+        <ul className="mt-5 grid gap-3">
+          {objectives.map((objective, index) => (
+            <li key={`${objective}-${index}`} className="flex gap-3 rounded-2xl bg-white/70 p-4 text-sm leading-6 text-slate-700">
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-teal-600" />
+              <span>{objective}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
   if (block.block_type === "embed") {
     return (
       <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">
         <h3 className="text-xl font-semibold text-slate-950">{title}</h3>
+        <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
+      </section>
+    );
+  }
+
+  if (block.block_type === "video") {
+    return (
+      <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">Lesson Video</p>
+        <h3 className="mt-2 text-xl font-semibold text-slate-950">{title}</h3>
         <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
       </section>
     );
@@ -165,6 +193,16 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
     );
   }
 
+  if (block.block_type === "module_pdf") {
+    return (
+      <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">Module PDF</p>
+        <h3 className="mt-2 text-xl font-semibold text-slate-950">{title}</h3>
+        <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
+      </section>
+    );
+  }
+
   if (block.block_type === "activity") {
     return (
       <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">
@@ -176,7 +214,45 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
     );
   }
 
-  if (block.block_type === "glossary" || block.block_type === "references") {
+  if (block.block_type === "checklist") {
+    const items = linesFrom(block.body);
+    return (
+      <section className="rounded-[1.5rem] border border-sky-100 bg-sky-50/70 p-6 sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">Preparation Checklist</p>
+        <h3 className="mt-2 text-xl font-semibold text-sky-950">{title}</h3>
+        <ul className="mt-5 grid gap-3">
+          {items.map((item, index) => (
+            <li key={`${item}-${index}`} className="flex items-start gap-3 rounded-2xl bg-white/75 p-4 text-sm leading-6 text-slate-700">
+              <span aria-hidden="true" className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 border-sky-300 bg-white" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
+  if (block.block_type === "quick_question") {
+    return (
+      <section className="rounded-[1.5rem] border border-violet-100 bg-violet-50/75 p-6 sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-700">Quick Question</p>
+        <h3 className="mt-2 text-xl font-semibold text-violet-950">{title}</h3>
+        <Paragraphs body={block.body} />
+      </section>
+    );
+  }
+
+  if (block.block_type === "reflection") {
+    return (
+      <section className="rounded-[1.5rem] border border-amber-100 bg-amber-50/75 p-6 sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">Reflection Prompt</p>
+        <h3 className="mt-2 text-xl font-semibold text-amber-950">{title}</h3>
+        <Paragraphs body={block.body} />
+      </section>
+    );
+  }
+
+  if (block.block_type === "glossary" || block.block_type === "references" || block.block_type === "resources") {
     const items = linesFrom(block.body);
     return (
       <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">

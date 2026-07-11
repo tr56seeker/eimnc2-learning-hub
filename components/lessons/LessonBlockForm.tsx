@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { lessonBlockLabels, lessonBlockTypes, type LessonBlock, type LessonBlockType } from "@/lib/lesson-blocks";
+import { lessonBlockDescriptions, lessonBlockLabels, type LessonBlock, type LessonBlockType } from "@/lib/lesson-blocks";
 
 type LessonBlockFormProps = {
   action: (formData: FormData) => void;
   block?: LessonBlock;
+  defaultOrder?: number;
   submitLabel: string;
 };
 
@@ -13,46 +14,69 @@ const inputClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 b
 const textareaClass = "focus-ring rounded-2xl border border-slate-200/80 bg-white/90 p-4 font-normal text-slate-900 shadow-sm shadow-slate-200/40";
 const labelClass = "grid gap-2.5 text-sm font-semibold text-slate-700";
 
+const blockTypeGroups: Array<{ label: string; types: LessonBlockType[] }> = [
+  { label: "Lesson structure", types: ["heading", "paragraph", "objectives", "safety", "image"] },
+  { label: "Media and learning tasks", types: ["video", "embed", "module_pdf", "activity", "checklist", "quick_question", "reflection", "resources"] },
+  { label: "Technical content", types: ["definition", "procedure", "tools_materials", "formula", "glossary"] },
+  { label: "Legacy blocks", types: ["module", "references"] }
+];
+
 function usesTitle(type: LessonBlockType) {
   return type !== "paragraph" && type !== "image";
 }
 
 function usesBody(type: LessonBlockType) {
-  return type !== "image" && type !== "embed" && type !== "module";
+  return type !== "image" && type !== "video" && type !== "embed" && type !== "module" && type !== "module_pdf";
 }
 
 function usesUrl(type: LessonBlockType) {
-  return type === "image" || type === "embed" || type === "module";
+  return type === "image" || type === "video" || type === "embed" || type === "module" || type === "module_pdf" || type === "activity";
 }
 
 function usesCaption(type: LessonBlockType) {
-  return type === "image" || type === "embed" || type === "module";
+  return type === "image" || type === "video" || type === "embed" || type === "module" || type === "module_pdf";
 }
 
-export function LessonBlockForm({ action, block, submitLabel }: LessonBlockFormProps) {
+function acceptsIframe(type: LessonBlockType) {
+  return type === "video" || type === "embed" || type === "module" || type === "module_pdf";
+}
+
+function urlLabel(type: LessonBlockType) {
+  if (type === "embed") return "Embed URL or iframe code";
+  if (type === "video") return "Video embed URL or iframe code";
+  if (type === "module_pdf") return "Module PDF URL or iframe code";
+  if (type === "module") return "Module URL or iframe code";
+  if (type === "activity") return "Activity link (optional)";
+  return "Image URL";
+}
+
+export function LessonBlockForm({ action, block, defaultOrder, submitLabel }: LessonBlockFormProps) {
   const [blockType, setBlockType] = useState<LessonBlockType>(block?.block_type ?? "paragraph");
 
   return (
     <form action={action} className="grid gap-5">
       <div className="grid gap-5 md:grid-cols-[1fr_160px_160px]">
         <label className={labelClass}>
-          Block type
+          Choose block type
           <select
             name="block_type"
             value={blockType}
             onChange={(event) => setBlockType(event.target.value as LessonBlockType)}
             className={inputClass}
           >
-            {lessonBlockTypes.map((type) => (
-              <option key={type} value={type}>
-                {lessonBlockLabels[type]}
-              </option>
+            {blockTypeGroups.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.types.map((type) => (
+                  <option key={type} value={type}>{lessonBlockLabels[type]}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
+          <span className="font-normal leading-5 text-slate-500">{lessonBlockDescriptions[blockType]}</span>
         </label>
         <label className={labelClass}>
           Order
-          <input name="display_order" type="number" defaultValue={block?.display_order ?? 0} className={inputClass} />
+          <input name="display_order" type="number" defaultValue={block?.display_order ?? defaultOrder ?? 0} className={inputClass} />
         </label>
         <label className="flex items-center gap-3 self-end rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-sm font-medium text-slate-700">
           <input name="is_active" type="checkbox" defaultChecked={block?.is_active ?? true} /> Active
@@ -81,8 +105,8 @@ export function LessonBlockForm({ action, block, submitLabel }: LessonBlockFormP
 
       {usesUrl(blockType) ? (
         <label className={labelClass}>
-          {blockType === "embed" ? "Embed URL or iframe code" : "URL"}
-          {blockType === "embed" ? (
+          {urlLabel(blockType)}
+          {acceptsIframe(blockType) ? (
             <>
               <textarea
                 name="image_url"
@@ -92,7 +116,9 @@ export function LessonBlockForm({ action, block, submitLabel }: LessonBlockFormP
                 placeholder={'https://... or <iframe src="https://..." ...></iframe>'}
               />
               <span className="font-normal leading-6 text-slate-500">
-                Paste the embed URL or the full iframe code. If you paste iframe code, the system will automatically use the src link.
+                {blockType === "embed"
+                  ? "Paste the embed URL or full iframe code. If iframe code is pasted, the system will automatically use the src link."
+                  : "Paste a provider embed URL or full iframe code. Only the safe src URL will be saved."}
               </span>
             </>
           ) : (

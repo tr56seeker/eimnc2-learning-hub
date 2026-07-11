@@ -41,6 +41,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
       <div className="grid gap-8 xl:grid-cols-[0.72fr_1.28fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold tracking-tight text-slate-950">Create Lesson</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-500">Create the lesson shell here, then use Lesson Studio to build the full module with content blocks.</p>
           <form action={createLessonAction} className="mt-7 grid gap-5">
             <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
               Competency
@@ -60,17 +61,17 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
               <textarea name="summary" rows={3} className={textareaClass} />
             </label>
             <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
-              Lesson content
-              <textarea name="content_md" rows={8} className={textareaClass} placeholder="Use ## headings and - bullets" />
+              Starter notes (optional)
+              <textarea name="content_md" rows={4} className={textareaClass} placeholder="Add a short outline, or leave blank and build with content blocks in Studio." />
             </label>
             <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
               Estimated minutes
-              <input name="estimated_minutes" type="number" defaultValue={45} className={inputClass} />
+              <input name="estimated_minutes" type="number" min={1} defaultValue={45} className={inputClass} />
             </label>
             <label className="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-sm font-medium text-slate-700">
-              <input name="published" type="checkbox" /> Publish now
+              <input name="published" type="checkbox" /> Publish immediately after creation
             </label>
-            <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">Save Lesson</button>
+            <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">Create Lesson</button>
           </form>
         </section>
 
