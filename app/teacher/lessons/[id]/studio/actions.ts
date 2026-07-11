@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth";
-import { isLessonBlockType } from "@/lib/lesson-blocks";
+import { extractEmbedSrc, isLessonBlockType } from "@/lib/lesson-blocks";
 
 function nullableText(value: FormDataEntryValue | null) {
   const text = String(value ?? "").trim();
@@ -17,11 +17,13 @@ function blockPayload(formData: FormData) {
     throw new Error("Unsupported lesson block type.");
   }
 
+  const submittedUrl = String(formData.get("image_url") ?? "");
+
   return {
     block_type: blockType,
     title: nullableText(formData.get("title")),
     body: nullableText(formData.get("body")),
-    image_url: nullableText(formData.get("image_url")),
+    image_url: blockType === "embed" ? extractEmbedSrc(submittedUrl) || null : nullableText(submittedUrl),
     caption: nullableText(formData.get("caption")),
     alt_text: nullableText(formData.get("alt_text")),
     metadata: {},

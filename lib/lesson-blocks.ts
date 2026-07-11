@@ -51,3 +51,29 @@ export const lessonBlockLabels: Record<LessonBlockType, string> = {
 export function isLessonBlockType(value: string): value is LessonBlockType {
   return lessonBlockTypes.includes(value as LessonBlockType);
 }
+
+export function extractEmbedSrc(input: string) {
+  const value = input.trim();
+  if (!value) return "";
+
+  let candidate = value;
+
+  if (/<iframe\b/i.test(value)) {
+    const iframeSrc = value.match(
+      /<iframe\b[^>]*\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/i
+    );
+
+    candidate = (iframeSrc?.[1] ?? iframeSrc?.[2] ?? iframeSrc?.[3] ?? "")
+      .replace(/&(?:amp|#0*38|#x0*26);/gi, "&")
+      .trim();
+  }
+
+  if (!candidate) return "";
+
+  try {
+    const url = new URL(candidate);
+    return url.protocol === "https:" || url.protocol === "http:" ? candidate : "";
+  } catch {
+    return "";
+  }
+}

@@ -1,3 +1,4 @@
+import { EmbeddedResourceViewer } from "@/components/lessons/EmbeddedResourceViewer";
 import { type LessonBlock, lessonBlockLabels } from "@/lib/lesson-blocks";
 
 function safeHttpUrl(value: string | null) {
@@ -44,23 +45,6 @@ function ExternalLinkButton({ href, label = "Open in New Tab" }: { href: string 
     >
       {label}
     </a>
-  );
-}
-
-function EmbedFrame({ url, title }: { url: string | null; title: string }) {
-  const safeUrl = safeHttpUrl(url);
-  if (!safeUrl) return null;
-
-  return (
-    <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-slate-50 shadow-sm">
-      <iframe
-        src={safeUrl}
-        title={title}
-        loading="lazy"
-        sandbox="allow-same-origin allow-scripts allow-presentation"
-        className="aspect-video w-full"
-      />
-    </div>
   );
 }
 
@@ -165,21 +149,29 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
     return (
       <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">
         <h3 className="text-xl font-semibold text-slate-950">{title}</h3>
-        {block.caption ? <p className="mt-3 text-sm leading-6 text-slate-500">{block.caption}</p> : null}
-        <EmbedFrame url={block.image_url} title={title} />
-        <ExternalLinkButton href={block.image_url} />
+        <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
       </section>
     );
   }
 
-  if (block.block_type === "module" || block.block_type === "activity") {
+  if (block.block_type === "module") {
     return (
       <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{lessonBlockLabels[block.block_type]}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{lessonBlockLabels.module}</p>
+        <h3 className="mt-2 text-xl font-semibold text-slate-950">{title}</h3>
+        <Paragraphs body={block.body} />
+        <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
+      </section>
+    );
+  }
+
+  if (block.block_type === "activity") {
+    return (
+      <section className="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-6 shadow-sm shadow-slate-200/50">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{lessonBlockLabels.activity}</p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950">{title}</h3>
         <Paragraphs body={block.body ?? block.caption} />
-        {block.block_type === "module" ? <EmbedFrame url={block.image_url} title={title} /> : null}
-        <ExternalLinkButton href={block.image_url} label={block.block_type === "module" ? "Open Module" : "Open Activity Link"} />
+        <ExternalLinkButton href={block.image_url} label="Open Activity Link" />
       </section>
     );
   }

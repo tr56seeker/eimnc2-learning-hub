@@ -81,14 +81,29 @@ export function LessonBlockForm({ action, block, submitLabel }: LessonBlockFormP
 
       {usesUrl(blockType) ? (
         <label className={labelClass}>
-          URL
-          <input
-            name="image_url"
-            type="url"
-            defaultValue={block?.image_url ?? ""}
-            className={inputClass}
-            placeholder="https://..."
-          />
+          {blockType === "embed" ? "Embed URL or iframe code" : "URL"}
+          {blockType === "embed" ? (
+            <>
+              <textarea
+                name="image_url"
+                rows={5}
+                defaultValue={block?.image_url ?? ""}
+                className={textareaClass}
+                placeholder={'https://... or <iframe src="https://..." ...></iframe>'}
+              />
+              <span className="font-normal leading-6 text-slate-500">
+                Paste the embed URL or the full iframe code. If you paste iframe code, the system will automatically use the src link.
+              </span>
+            </>
+          ) : (
+            <input
+              name="image_url"
+              type="url"
+              defaultValue={block?.image_url ?? ""}
+              className={inputClass}
+              placeholder="https://..."
+            />
+          )}
         </label>
       ) : null}
 

@@ -8,14 +8,29 @@ import Link from "next/link";
 const inputClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm";
 const textareaClass = "focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm";
 
+type LessonListRow = {
+  id: string;
+  title: string;
+  summary: string | null;
+  published: boolean;
+  competencies: { code: string | null; title: string | null } | { code: string | null; title: string | null }[] | null;
+  lesson_blocks: { count: number } | { count: number }[] | null;
+};
+
 export default async function TeacherLessonsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
   const [lessonsResult, competenciesResult] = await Promise.all([
-    supabase.from("lessons").select("id, title, published, competencies(code, title)").order("created_at", { ascending: false }),
+    supabase
+      .from("lessons")
+      .select("id, title, summary, published, competencies(code, title), lesson_blocks(count)")
+      .order("created_at", { ascending: false })
+      .returns<LessonListRow[]>(),
     supabase.from("competencies").select("id, code, title").order("order_index")
   ]);
+
+  const lessons = lessonsResult.data ?? [];
 
   return (
     <PortalShell profile={profile}>
@@ -23,7 +38,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
 
       {params.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div> : null}
 
-      <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="grid gap-8 xl:grid-cols-[0.72fr_1.28fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold tracking-tight text-slate-950">Create Lesson</h2>
           <form action={createLessonAction} className="mt-7 grid gap-5">
@@ -59,24 +74,74 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
           </form>
         </section>
 
-        <section className="card rounded-[1.75rem] p-7 sm:p-8">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-950">Existing Lessons</h2>
-          <div className="mt-7 grid gap-4">
-            {(lessonsResult.data ?? []).map((lesson) => {
-              const competency = firstRelation(lesson.competencies);
-
-              return (
-                <div key={lesson.id} className="rounded-2xl border border-slate-200/70 bg-white/75 p-5 shadow-sm shadow-slate-200/40">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">{competency?.code ?? "EIM"}</p>
-                  <h3 className="mt-2 font-semibold text-slate-950">{lesson.title}</h3>
-                  <p className="mt-2 text-sm font-medium text-slate-500">{lesson.published ? "Published" : "Draft"}</p>
-                  <Link href={`/teacher/lessons/${lesson.id}/studio`} className="mt-4 inline-flex rounded-2xl border border-teal-200 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50">
-                    Open Studio
-                  </Link>
-                </div>
-              );
-            })}
+        <section className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-xl shadow-slate-200/40">
+          <div className="flex items-center justify-between gap-4 border-b border-slate-200/80 px-5 py-5 sm:px-6">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight text-slate-950">Existing Lessons</h2>
+              <p className="mt-1 text-sm text-slate-500">Open a lesson to manage its content blocks.</p>
+            </div>
+            <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+              {lessons.length} lesson{lessons.length === 1 ? "" : "s"}
+            </span>
           </div>
+
+          {lessons.length ? (
+            <div>
+              <div className="hidden grid-cols-[100px_minmax(0,1fr)_80px_72px_auto] items-center gap-4 border-b border-slate-200/80 bg-slate-50/80 px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 lg:grid sm:px-6">
+                <span>Competency</span>
+                <span>Lesson Title</span>
+                <span>Status</span>
+                <span>Blocks</span>
+                <span className="text-right">Action</span>
+              </div>
+
+              <div className="divide-y divide-slate-200/70">
+                {lessons.map((lesson) => {
+                  const competency = firstRelation(lesson.competencies);
+                  const blockCount = firstRelation(lesson.lesson_blocks)?.count ?? 0;
+
+                  return (
+                    <div
+                      key={lesson.id}
+                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-5 py-4 transition-colors hover:bg-slate-50/70 sm:px-6 lg:grid-cols-[100px_minmax(0,1fr)_80px_72px_auto] lg:gap-4"
+                    >
+                      <span className="col-start-1 row-start-1 w-fit rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-teal-700 lg:col-start-1">
+                        {competency?.code ?? "EIM"}
+                      </span>
+
+                      <div className="col-span-2 row-start-2 min-w-0 lg:col-span-1 lg:col-start-2 lg:row-start-1">
+                        <h3 className="text-sm font-semibold leading-5 text-slate-950">{lesson.title}</h3>
+                        {lesson.summary ? <p className="mt-0.5 hidden truncate text-xs leading-5 text-slate-500 sm:block">{lesson.summary}</p> : null}
+                      </div>
+
+                      <span
+                        className={
+                          lesson.published
+                            ? "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-semibold text-teal-700 lg:col-start-3 lg:justify-self-start"
+                            : "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 lg:col-start-3 lg:justify-self-start"
+                        }
+                      >
+                        {lesson.published ? "Published" : "Draft"}
+                      </span>
+
+                      <span className="col-start-1 row-start-3 text-xs font-medium text-slate-500 lg:col-start-4 lg:row-start-1">
+                        {blockCount} block{blockCount === 1 ? "" : "s"}
+                      </span>
+
+                      <Link
+                        href={`/teacher/lessons/${lesson.id}/studio`}
+                        className="col-start-2 row-start-3 inline-flex min-h-9 items-center justify-center justify-self-end rounded-xl border border-teal-200 bg-white px-3.5 py-2 text-xs font-semibold text-teal-700 transition hover:bg-teal-50 lg:col-start-5 lg:row-start-1"
+                      >
+                        Open Studio
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <p className="px-6 py-10 text-center text-sm text-slate-500">No lessons yet. Create the first lesson using the form.</p>
+          )}
         </section>
       </div>
     </PortalShell>
