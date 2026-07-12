@@ -46,17 +46,6 @@ export async function submitExamAction(examId: string, formData: FormData) {
     redirect("/learner/exams?message=Exam is already closed.");
   }
 
-  const { data: existingAttempts } = await admin
-    .from("exam_attempts")
-    .select("id")
-    .eq("exam_id", examId)
-    .eq("learner_id", profile.id)
-    .eq("status", "submitted");
-
-  if ((existingAttempts?.length ?? 0) >= 1) {
-    redirect(`/learner/exams/${examId}?message=You already submitted this exam.`);
-  }
-
   const { data: inProgressAttempts } = await admin
     .from("exam_attempts")
     .select("id, started_at")
@@ -68,13 +57,18 @@ export async function submitExamAction(examId: string, formData: FormData) {
 
   let attempt = inProgressAttempts?.[0] ?? null;
 
-  if (attempt) {
-    const durationMs = Number(exam.duration_minutes ?? 30) * 60 * 1000;
-    const startedAt = new Date(attempt.started_at).getTime();
-    if (Number.isFinite(startedAt) && now > startedAt + durationMs + 30_000) {
-      redirect(`/learner/exams/${examId}?message=Time limit reached. Ask your teacher for assistance.`);
+  if (!attempt) {
+    const { data: existingAttempts } = await admin
+      .from("exam_attempts")
+      .select("id")
+      .eq("exam_id", examId)
+      .eq("learner_id", profile.id)
+      .eq("status", "submitted");
+
+    if ((existingAttempts?.length ?? 0) >= 1) {
+      redirect(`/learner/exams/${examId}?message=You already submitted this exam.`);
     }
-  } else {
+
     const { data: createdAttempt, error: createAttemptError } = await admin
       .from("exam_attempts")
       .insert({
@@ -92,6 +86,12 @@ export async function submitExamAction(examId: string, formData: FormData) {
     }
 
     attempt = createdAttempt;
+  } else {
+    const durationMs = Number(exam.duration_minutes ?? 30) * 60 * 1000;
+    const startedAt = new Date(attempt.started_at).getTime();
+    if (Number.isFinite(startedAt) && now > startedAt + durationMs + 30_000) {
+      redirect(`/learner/exams/${examId}?message=Time limit reached. Ask your teacher for assistance.`);
+    }
   }
 
   const { data: rows, error: questionsError } = await admin
@@ -167,6 +167,13 @@ export async function submitExamAction(examId: string, formData: FormData) {
     max_score: maxScore,
     component: "written_work"
   });
+
+  await admin
+    .from("exam_retake_grants")
+    .update({ used: true })
+    .eq("exam_id", examId)
+    .eq("learner_id", profile.id)
+    .eq("used", false);
 
   const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
   if (terminationReason) {

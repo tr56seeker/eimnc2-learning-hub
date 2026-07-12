@@ -271,6 +271,45 @@ export async function softDeleteLearnerAction(learnerId: string) {
   redirect("/teacher/learners?message=Learner%20soft%20deleted");
 }
 
+export async function grantExamRetakeAction(learnerId: string, formData: FormData) {
+  const { profile } = await requireTeacher();
+
+  const examId = String(formData.get("exam_id") ?? "").trim();
+  const note = String(formData.get("note") ?? "").trim() || null;
+
+  if (!examId) {
+    redirect(`/teacher/learners/${learnerId}?message=${encodeURIComponent("Missing exam reference for retake grant.")}`);
+  }
+
+  const admin = createAdminClient();
+
+  const { data: existingUnused } = await admin
+    .from("exam_retake_grants")
+    .select("id")
+    .eq("exam_id", examId)
+    .eq("learner_id", learnerId)
+    .eq("used", false)
+    .limit(1);
+
+  if ((existingUnused?.length ?? 0) > 0) {
+    redirect(`/teacher/learners/${learnerId}?message=${encodeURIComponent("A retake is already pending for this exam.")}`);
+  }
+
+  const { error } = await admin.from("exam_retake_grants").insert({
+    exam_id: examId,
+    learner_id: learnerId,
+    granted_by: profile.id,
+    note
+  });
+
+  if (error) {
+    redirect(`/teacher/learners/${learnerId}?message=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath(`/teacher/learners/${learnerId}`);
+  redirect(`/teacher/learners/${learnerId}?message=${encodeURIComponent("Retake approved. Learner can attempt the exam again.")}`);
+}
+
 export async function resetLearnerPasswordAction(
   learnerId: string,
   _previousState: LearnerPasswordResetState,

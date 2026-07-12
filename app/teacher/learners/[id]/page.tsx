@@ -9,6 +9,7 @@ import { formatGradeSection, formatLearnerCompleteName, formatLearnerName } from
 import { calculateAge, getOnlineStatus, type OnlineStatus } from "@/lib/presence";
 import { firstRelation } from "@/lib/relations";
 import type { ProfileStatus } from "@/lib/types";
+import { grantExamRetakeAction } from "../actions";
 import { ProfileDangerActions } from "./ProfileDangerActions";
 
 type SectionRow = {
@@ -43,6 +44,7 @@ type LearnerProfileRow = {
 
 type ExamAttemptRow = {
   id: string;
+  exam_id: string;
   score: number | null;
   max_score: number | null;
   status: string;
@@ -165,10 +167,10 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
   const section = firstRelation(learner.sections);
   const gradeSection = formatGradeSection({ gradeLevel: learner.grade_level, sectionName: section?.name });
 
-  const [attemptsResult, submissionsResult, gradesResult, gradebookResult] = await Promise.all([
+  const [attemptsResult, submissionsResult, gradesResult, gradebookResult, retakeGrantsResult] = await Promise.all([
     supabase
       .from("exam_attempts")
-      .select("id, score, max_score, status, submitted_at, started_at, violation_count, termination_reason, exams(title)")
+      .select("id, exam_id, score, max_score, status, submitted_at, started_at, violation_count, termination_reason, exams(title)")
       .eq("learner_id", id)
       .order("started_at", { ascending: false })
       .limit(5)
@@ -192,8 +194,15 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
       .select("id, score, gradebook_assessments(label, term, category, highest_possible)")
       .eq("learner_id", id)
       .limit(6)
-      .returns<GradebookScoreRow[]>()
+      .returns<GradebookScoreRow[]>(),
+    supabase
+      .from("exam_retake_grants")
+      .select("exam_id")
+      .eq("learner_id", id)
+      .eq("used", false)
   ]);
+
+  const pendingRetakeExamIds = new Set((retakeGrantsResult.data ?? []).map((grant) => grant.exam_id));
 
   const attempts = attemptsResult.data ?? [];
   const submissions = submissionsResult.data ?? [];
@@ -257,6 +266,25 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
                         <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium leading-5 text-red-700">
                           ⚠️ Ended early ({attempt.violation_count ?? 0} violations): {attempt.termination_reason}
                         </p>
+                      ) : null}
+                      {attempt.status === "submitted" ? (
+                        pendingRetakeExamIds.has(attempt.exam_id) ? (
+                          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800">
+                            Retake approved — waiting for learner to attempt again.
+                          </p>
+                        ) : (
+                          <form action={grantExamRetakeAction.bind(null, id)} className="mt-3 flex flex-wrap items-center gap-2">
+                            <input type="hidden" name="exam_id" value={attempt.exam_id} />
+                            <input
+                              name="note"
+                              placeholder="Optional note (e.g. remediation reason)"
+                              className="focus-ring min-w-[220px] flex-1 rounded-xl border border-slate-200/80 bg-white/90 px-3 py-2 text-xs"
+                            />
+                            <button className="rounded-xl bg-teal-700 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-800">
+                              Grant Retake
+                            </button>
+                          </form>
+                        )
                       ) : null}
                     </div>
                   );

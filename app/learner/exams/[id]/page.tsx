@@ -55,10 +55,22 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
     .order("order_index")
     .returns<QuestionRow[]>();
 
+  const { data: retakeGrant } = await supabase
+    .from("exam_retake_grants")
+    .select("id, note")
+    .eq("exam_id", id)
+    .eq("learner_id", profile.id)
+    .eq("used", false)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const canRetake = Boolean(retakeGrant);
+
   const submitted = existingAttempts?.find((attempt) => attempt.status === "submitted");
   let inProgress = existingAttempts?.find((attempt) => attempt.status === "in_progress");
 
-  if (!submitted && !inProgress) {
+  if ((!submitted || canRetake) && !inProgress) {
     const { data: createdAttempt } = await supabase
       .from("exam_attempts")
       .insert({
@@ -72,6 +84,10 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
       .single();
 
     inProgress = createdAttempt ?? undefined;
+
+    if (submitted && retakeGrant) {
+      await supabase.from("exam_retake_grants").update({ used: true }).eq("id", retakeGrant.id);
+    }
   }
   const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
   const closesAt = exam.end_at ? new Date(exam.end_at).getTime() : null;
@@ -92,13 +108,20 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
 
         {query.message ? <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50/80 p-4 font-semibold text-yellow-800">{query.message}</div> : null}
 
-        {submitted ? (
+        {submitted && !canRetake ? (
           <div className="mt-9 rounded-[1.5rem] border border-teal-100/80 bg-teal-50/80 p-6 text-teal-950">
             <h2 className="text-xl font-semibold">Already submitted</h2>
             {showResult || reviewAllowed ? <p className="mt-2 font-medium">Score: {submitted.score}/{submitted.max_score}</p> : <p className="mt-2 font-medium">Your result will be released by your teacher.</p>}
+            <p className="mt-3 text-sm">Need another attempt? Ask your teacher — they can approve a retake for you.</p>
           </div>
         ) : (
           <>
+            {submitted && canRetake ? (
+              <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm font-medium text-amber-900">
+                Retake approved by your teacher. Your previous score was {submitted.score}/{submitted.max_score}.
+                {retakeGrant?.note ? <span className="block mt-1 italic">Note: {retakeGrant.note}</span> : null}
+              </div>
+            ) : null}
             <ExamTimer deadlineIso={deadline.toISOString()} formId="exam-attempt-form" />
             <ExamIntegrityGuard formId="exam-attempt-form" maxViolations={exam.max_violations ?? 3} />
             <form id="exam-attempt-form" action={action} className="mt-2 grid gap-6">
