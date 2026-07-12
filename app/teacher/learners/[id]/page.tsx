@@ -48,6 +48,8 @@ type ExamAttemptRow = {
   status: string;
   submitted_at: string | null;
   started_at: string | null;
+  violation_count: number | null;
+  termination_reason: string | null;
   exams: { title: string } | { title: string }[] | null;
 };
 
@@ -166,7 +168,7 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
   const [attemptsResult, submissionsResult, gradesResult, gradebookResult] = await Promise.all([
     supabase
       .from("exam_attempts")
-      .select("id, score, max_score, status, submitted_at, started_at, exams(title)")
+      .select("id, score, max_score, status, submitted_at, started_at, violation_count, termination_reason, exams(title)")
       .eq("learner_id", id)
       .order("started_at", { ascending: false })
       .limit(5)
@@ -251,6 +253,11 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
                       <p className="font-semibold text-slate-950">{exam?.title ?? "Exam"}</p>
                       <p className="mt-1 text-sm text-slate-500">{attempt.status} / {scoreLabel(attempt.score, attempt.max_score)}</p>
                       <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{formatDateTime(attempt.submitted_at ?? attempt.started_at)}</p>
+                      {attempt.termination_reason ? (
+                        <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium leading-5 text-red-700">
+                          ⚠️ Ended early ({attempt.violation_count ?? 0} violations): {attempt.termination_reason}
+                        </p>
+                      ) : null}
                     </div>
                   );
                 })}

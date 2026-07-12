@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortalShell } from "@/components/PortalShell";
+import { ExamTimer } from "@/components/ExamTimer";
+import { ExamIntegrityGuard } from "@/components/ExamIntegrityGuard";
 import { requireLearner } from "@/lib/auth";
 import { submitExamAction } from "../actions";
 
@@ -31,7 +33,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
 
   const { data: exam } = await supabase
     .from("exams")
-    .select("id, title, description, duration_minutes, status, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close")
+    .select("id, title, description, duration_minutes, status, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, max_violations")
     .eq("id", id)
     .eq("status", "published")
     .single();
@@ -96,7 +98,10 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
             {showResult || reviewAllowed ? <p className="mt-2 font-medium">Score: {submitted.score}/{submitted.max_score}</p> : <p className="mt-2 font-medium">Your result will be released by your teacher.</p>}
           </div>
         ) : (
-          <form action={action} className="mt-9 grid gap-6">
+          <>
+            <ExamTimer deadlineIso={deadline.toISOString()} formId="exam-attempt-form" />
+            <ExamIntegrityGuard formId="exam-attempt-form" maxViolations={exam.max_violations ?? 3} />
+            <form id="exam-attempt-form" action={action} className="mt-2 grid gap-6">
             {questionRows.map((row, index) => {
               const question = row;
               const points = row.points_override ?? question.points ?? 1;
@@ -129,6 +134,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
               Submit Exam
             </button>
           </form>
+          </>
         )}
       </section>
     </PortalShell>

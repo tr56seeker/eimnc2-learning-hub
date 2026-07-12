@@ -10,11 +10,11 @@ type FieldProps = {
 
 const fieldClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40";
 
-export function FormInput({ label, name, defaultValue, placeholder, required, type = "text" }: FieldProps & { type?: string }) {
+export function FormInput({ label, name, defaultValue, placeholder, required, type = "text", min, max }: FieldProps & { type?: string; min?: number; max?: number }) {
   return (
     <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
       {label}
-      <input name={name} type={type} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} className={fieldClass} />
+      <input name={name} type={type} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} min={min} max={max} className={fieldClass} />
     </label>
   );
 }

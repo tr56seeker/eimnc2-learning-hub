@@ -84,6 +84,7 @@ create table public.exams (
   attempts_allowed int not null default 1,
   randomize_questions boolean not null default false,
   show_score_after_submit boolean not null default true,
+  max_violations int not null default 3,
   status public.exam_status not null default 'draft',
   created_by uuid references public.profiles(id) on delete set null,
   created_at timestamptz not null default now()
@@ -125,6 +126,8 @@ create table public.exam_attempts (
   score numeric(8,2) not null default 0,
   max_score numeric(8,2) not null default 0,
   status text not null default 'in_progress',
+  violation_count int not null default 0,
+  termination_reason text,
   created_at timestamptz not null default now()
 );
 

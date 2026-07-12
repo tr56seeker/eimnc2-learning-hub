@@ -142,9 +142,19 @@ export async function submitExamAction(examId: string, formData: FormData) {
     await admin.from("exam_answers").insert(answers);
   }
 
+  const violationCount = Number(formData.get("violation_count") ?? 0);
+  const terminationReason = formData.get("termination_reason");
+
   await admin
     .from("exam_attempts")
-    .update({ score, max_score: maxScore, status: "submitted", submitted_at: new Date().toISOString() })
+    .update({
+      score,
+      max_score: maxScore,
+      status: "submitted",
+      submitted_at: new Date().toISOString(),
+      violation_count: violationCount,
+      termination_reason: terminationReason ? String(terminationReason) : null
+    })
     .eq("id", attempt.id);
 
   await admin.from("grades").insert({
@@ -158,5 +168,8 @@ export async function submitExamAction(examId: string, formData: FormData) {
   });
 
   const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
+  if (terminationReason) {
+    redirect("/learner/exams?message=Exam ended early due to policy violations. Your teacher has been notified.");
+  }
   redirect(showResult ? `/learner/grades?message=Exam submitted. Score: ${score}/${maxScore}` : "/learner/exams?message=Exam submitted.");
 }

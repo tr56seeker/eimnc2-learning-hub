@@ -23,6 +23,7 @@ type ExamRow = {
   show_result_after_submit: boolean | null;
   show_score_after_submit: boolean | null;
   allow_review_after_close: boolean | null;
+  max_violations: number | null;
   competencies: { code: string | null; title: string | null } | { code: string | null; title: string | null }[] | null;
   exam_questions: { id: string }[] | null;
 };
@@ -60,6 +61,15 @@ function ExamForm({
         <FormInput label="Opens" name="start_at" type="datetime-local" defaultValue={toDateInput(exam?.start_at ?? null)} />
         <FormInput label="Closes" name="end_at" type="datetime-local" defaultValue={toDateInput(exam?.end_at ?? null)} />
       </div>
+      <FormInput
+        label="Max violations before auto-submit (1-5)"
+        name="max_violations"
+        type="number"
+        min={1}
+        max={5}
+        required
+        defaultValue={exam?.max_violations ?? 3}
+      />
       <div className="grid gap-3 rounded-2xl border border-slate-200/70 bg-white/75 p-4 text-sm font-medium text-slate-700 shadow-sm shadow-slate-200/40 md:grid-cols-2">
         <label className="flex items-center gap-3"><input name="is_published" type="checkbox" defaultChecked={exam?.status === "published"} /> Published</label>
         <label className="flex items-center gap-3"><input name="randomize_questions" type="checkbox" defaultChecked={exam?.randomize_questions ?? false} /> Randomize questions</label>
@@ -80,7 +90,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
     supabase.from("competencies").select("id, code, title").order("order_index"),
     supabase
       .from("exams")
-      .select("id, competency_id, title, description, status, duration_minutes, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, competencies(code, title), exam_questions(id)")
+      .select("id, competency_id, title, description, status, duration_minutes, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, max_violations, competencies(code, title), exam_questions(id)")
       .order("created_at", { ascending: false })
       .returns<ExamRow[]>()
   ]);

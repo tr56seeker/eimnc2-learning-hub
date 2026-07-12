@@ -34,6 +34,7 @@ function examPayload(formData: FormData, createdBy?: string) {
     show_result_after_submit: showResult,
     show_score_after_submit: showResult,
     allow_review_after_close: formData.get("allow_review_after_close") === "on",
+    max_violations: Math.min(5, Math.max(1, Number(value(formData, "max_violations") || 3))),
     status: isPublished ? "published" : "draft",
     ...(createdBy ? { created_by: createdBy } : {})
   };
