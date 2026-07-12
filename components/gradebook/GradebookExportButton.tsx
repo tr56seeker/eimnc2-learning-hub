@@ -51,7 +51,7 @@ async function exportSummary(rows: TermSummaryRow[], sectionLabel: string) {
     { header: "Average", key: "average", width: 11 },
     { header: "Remarks", key: "remarks", width: 12 }
   ];
-  worksheet.getRow(2).values = worksheet.columns.map((column) => column.header);
+  worksheet.getRow(2).values = worksheet.columns.map((column) => String(column.header ?? ""));
   worksheet.getRow(2).font = { bold: true };
   worksheet.spliceRows(1, 0);
 

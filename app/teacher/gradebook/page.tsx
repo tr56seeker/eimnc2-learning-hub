@@ -273,15 +273,14 @@ export default async function TeacherGradebookPage({
 
   const learners = learnersResult.data ?? [];
   const learnerIds = new Set(learners.map((learner) => learner.id));
-  const sections: SectionOption[] = (sectionsResult.data ?? []).map((section) => ({
-    id: section.id,
-    name: section.name,
-    gradeLevel: section.grade_level,
-    schoolYear: section.school_year
-  })).filter((section) => {
-    const source = (sectionsResult.data ?? []).find((row) => row.id === section.id);
-    return source?.is_active !== false || section.id === selectedSectionId;
-  });
+  const sections: SectionOption[] = (sectionsResult.data ?? [])
+    .filter((section) => section.is_active !== false || section.id === selectedSectionId)
+    .map((section) => ({
+      id: section.id,
+      name: section.name,
+      gradeLevel: section.grade_level,
+      schoolYear: section.school_year
+    }));
   const selectedAssessments = (selectedAssessmentsResult.data ?? []).map(toClientAssessment);
   const allTermAssessments = (allTermAssessmentsResult.data ?? []).map(toClientAssessment);
   const assessmentIds = new Set([...selectedAssessments, ...allTermAssessments].map((assessment) => assessment.id));
