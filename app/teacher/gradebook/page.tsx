@@ -1,4 +1,6 @@
 import { addGradebookAssessmentAction } from "@/app/teacher/gradebook/actions";
+import { DepedClassRecordExportButton } from "@/components/gradebook/DepedClassRecordExportButton";
+import { GradebookExportButton } from "@/components/gradebook/GradebookExportButton";
 import { GradebookToolbar } from "@/components/gradebook/GradebookToolbar";
 import { TermGradebookMatrix } from "@/components/gradebook/TermGradebookMatrix";
 import { TermSummaryTable } from "@/components/gradebook/TermSummaryTable";
@@ -22,6 +24,7 @@ import {
   type TermSummaryRow
 } from "@/lib/gradebook";
 import { formatLearnerName } from "@/lib/learner-accounts";
+import { buildDepedTermData, type DepedExportPayload } from "@/lib/deped-export";
 import { firstRelation } from "@/lib/relations";
 
 type SectionRow = {
@@ -41,6 +44,7 @@ type LearnerRow = {
   last_name: string | null;
   suffix: string | null;
   lrn: string | null;
+  sex: string | null;
   section_id: string | null;
   sections: SectionRow | SectionRow[] | null;
 };
@@ -84,6 +88,10 @@ function toNumber(value: number | string | null | undefined) {
 
 function sectionLabel(section?: SectionRow) {
   return section ? `Grade ${section.grade_level} - ${section.name}` : null;
+}
+
+function normalizeSex(value: string | null): "Male" | "Female" | null {
+  return value === "Male" || value === "Female" ? value : null;
 }
 
 function toClientAssessment(row: AssessmentRow): EditableGradebookAssessment {
@@ -159,6 +167,40 @@ function computeTermGrade(learnerId: string, assessments: EditableGradebookAsses
   return transmutedGrade(initialGrade(written.ws, performance.ws, exam.ws));
 }
 
+function computeTermGradeDetail(learnerId: string, assessments: EditableGradebookAssessment[], scoreMap: Map<string, number | null>) {
+  const byCategory = {
+    written: assessments.filter((assessment) => assessment.category === "written"),
+    performance: assessments.filter((assessment) => assessment.category === "performance"),
+    exam: assessments.filter((assessment) => assessment.category === "summative" || assessment.category === "term_exam")
+  };
+
+  function categoryScore(categoryAssessments: EditableGradebookAssessment[], weight: number) {
+    const cells: GradebookCell[] = categoryAssessments.map((assessment) => ({
+      score: scoreMap.get(`${assessment.id}:${learnerId}`) ?? null,
+      maxScore: assessment.highestPossible,
+      title: assessment.label
+    }));
+    const hpsTotal = categoryAssessments.reduce((sum, assessment) => sum + (assessment.highestPossible ?? 0), 0);
+    return categoryComputed(cells, hpsTotal, weight);
+  }
+
+  const written = categoryScore(byCategory.written, gradebookWeights.written);
+  const performance = categoryScore(byCategory.performance, gradebookWeights.performance);
+  const exam = categoryScore(byCategory.exam, gradebookWeights.exam);
+  const initial = initialGrade(written.ws, performance.ws, exam.ws);
+
+  return {
+    writtenPS: written.ps,
+    writtenWS: written.ws,
+    performancePS: performance.ps,
+    performanceWS: performance.ws,
+    examPS: exam.ps,
+    examWS: exam.ws,
+    initialGrade: initial,
+    transmutedGrade: transmutedGrade(initial)
+  };
+}
+
 function AddAssessmentButtons({ term, sectionId }: { term: string; sectionId: string }) {
   const buttons = [
     ["written", "Add Written / Oral Work"],
@@ -199,7 +241,7 @@ export default async function TeacherGradebookPage({
 
   let learnersQuery = supabase
     .from("profiles")
-    .select("id, full_name, first_name, middle_name, middle_initial, last_name, suffix, lrn, section_id, sections(id, name, grade_level, school_year)")
+    .select("id, full_name, first_name, middle_name, middle_initial, last_name, suffix, lrn, sex, section_id, sections(id, name, grade_level, school_year)")
     .eq("role", "learner");
 
   if (selectedSectionId) {
@@ -305,10 +347,79 @@ export default async function TeacherGradebookPage({
     };
   });
 
+  const detailExportRows = editableLearners.map((learner) => {
+    const breakdown = computeTermGradeDetail(learner.id, selectedAssessments, scoreMap);
+    const scores: Record<string, number | null> = {};
+    for (const assessment of selectedAssessments) {
+      scores[assessment.id] = scoreMap.get(`${assessment.id}:${learner.id}`) ?? null;
+    }
+
+    return {
+      rowNumber: learner.rowNumber,
+      lrn: learner.lrn,
+      fullName: learner.fullName,
+      scores,
+      ...breakdown
+    };
+  });
+
+  const detailExportColumns = selectedAssessments.map((assessment) => ({
+    id: assessment.id,
+    category: assessment.category,
+    label: assessment.label,
+    highestPossible: assessment.highestPossible
+  }));
+
+  const selectedSectionOption = sections.find((section) => section.id === selectedSectionId);
+  const exportSectionLabel = selectedSectionOption ? `Grade ${selectedSectionOption.gradeLevel} - ${selectedSectionOption.name}` : "All Sections";
+
+  const depedLearners = learners.map((learner) => ({
+    id: learner.id,
+    fullName: formatLearnerName({
+      fullName: learner.full_name,
+      firstName: learner.first_name,
+      middleName: learner.middle_name ?? learner.middle_initial,
+      lastName: learner.last_name,
+      suffix: learner.suffix
+    }),
+    sex: normalizeSex(learner.sex)
+  }));
+
+  const depedPayload: DepedExportPayload | null = selectedSectionOption
+    ? {
+        schoolYear: selectedSectionOption.schoolYear,
+        gradeLevel: selectedSectionOption.gradeLevel,
+        section: selectedSectionOption.name,
+        teacherName: profile.full_name,
+        learners: depedLearners,
+        terms: {
+          "First Term": buildDepedTermData(assessmentsByTerm.get("First Term") ?? [], depedLearners, scoreMap),
+          "Second Term": buildDepedTermData(assessmentsByTerm.get("Second Term") ?? [], depedLearners, scoreMap),
+          "Third Term": buildDepedTermData(assessmentsByTerm.get("Third Term") ?? [], depedLearners, scoreMap)
+        }
+      }
+    : null;
+
   return (
     <PortalShell profile={profile}>
       <div className="grid gap-7">
         <GradebookToolbar sections={sections} selectedSectionId={selectedSectionId} selectedTerm={selectedTerm} selectedView={selectedView} />
+
+        <div className="flex flex-wrap justify-end gap-3">
+          <GradebookExportButton
+            view={selectedView}
+            term={selectedTerm}
+            sectionLabel={exportSectionLabel}
+            summaryRows={summaryRows}
+            detailRows={detailExportRows}
+            detailColumns={detailExportColumns}
+          />
+          {depedPayload ? (
+            <DepedClassRecordExportButton payload={depedPayload} />
+          ) : (
+            <p className="self-center text-xs font-medium text-slate-400">Select a section to export the official DepEd Class Record.</p>
+          )}
+        </div>
 
         {selectedView === "detail" ? <AddAssessmentButtons term={selectedTerm} sectionId={selectedSectionId} /> : null}
 
@@ -319,10 +430,6 @@ export default async function TeacherGradebookPage({
         ) : (
           <TermGradebookMatrix learners={editableLearners} assessments={selectedAssessments} scores={selectedScores} />
         )}
-
-        <p className="text-sm leading-6 text-slate-500">
-          Term Gradebook scores are saved to editable assessment columns. Export to Excel and Print are placeholders for a future reporting sprint.
-        </p>
       </div>
     </PortalShell>
   );
