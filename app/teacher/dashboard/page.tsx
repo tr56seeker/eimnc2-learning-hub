@@ -3,18 +3,26 @@ import { WelcomeHero } from "@/components/dashboard/WelcomeHero";
 import { PortalShell } from "@/components/PortalShell";
 import { StatCard } from "@/components/StatCard";
 import { requireTeacher } from "@/lib/auth";
+import { firstRelation } from "@/lib/relations";
+import { formatDateTime } from "@/lib/format";
 
 export default async function TeacherDashboardPage() {
   const { profile, supabase } = await requireTeacher();
 
-  const [learners, activeLearners, sections, learnersWithoutSection, lessons, exams, pending] = await Promise.all([
+  const [learners, activeLearners, sections, learnersWithoutSection, lessons, exams, pending, cheatingAlerts] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "learner"),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "learner").eq("status", "active"),
     supabase.from("sections").select("id", { count: "exact", head: true }),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "learner").is("section_id", null),
     supabase.from("lessons").select("id", { count: "exact", head: true }),
     supabase.from("exams").select("id", { count: "exact", head: true }),
-    supabase.from("submissions").select("id", { count: "exact", head: true }).eq("status", "submitted")
+    supabase.from("submissions").select("id", { count: "exact", head: true }).eq("status", "submitted"),
+    supabase
+      .from("exam_attempts")
+      .select("id, violation_count, termination_reason, submitted_at, learner_id, exam_id, profiles(full_name), exams(title)")
+      .not("termination_reason", "is", null)
+      .order("submitted_at", { ascending: false })
+      .limit(5)
   ]);
 
   return (
@@ -26,6 +34,29 @@ export default async function TeacherDashboardPage() {
         primaryAction={{ href: "/teacher/lessons", label: "Open Lesson Studio" }}
         secondaryAction={{ href: "/teacher/submissions", label: "Check Submissions" }}
       />
+
+      {cheatingAlerts.data && cheatingAlerts.data.length > 0 ? (
+        <section className="mt-8 rounded-[1.5rem] border border-red-200 bg-red-50/80 p-6">
+          <h2 className="text-lg font-semibold text-red-800">⚠️ Academic Integrity Alerts</h2>
+          <p className="mt-1 text-sm text-red-700">Exams auto-submitted due to policy violations (tab-switching, copy/paste, etc.).</p>
+          <div className="mt-4 grid gap-3">
+            {cheatingAlerts.data.map((alert) => {
+              const learner = firstRelation(alert.profiles);
+              const exam = firstRelation(alert.exams);
+              return (
+                <Link
+                  key={alert.id}
+                  href={`/teacher/learners/${alert.learner_id}`}
+                  className="block rounded-2xl border border-red-200/80 bg-white/80 p-4 hover:border-red-300 hover:bg-white"
+                >
+                  <p className="font-semibold text-slate-950">{learner?.full_name ?? "Learner"} — {exam?.title ?? "Exam"}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-red-600">{alert.violation_count ?? 0} violations · {formatDateTime(alert.submitted_at)}</p>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total Learners" value={learners.count ?? 0} />

@@ -144,6 +144,7 @@ export async function submitExamAction(examId: string, formData: FormData) {
 
   const violationCount = Number(formData.get("violation_count") ?? 0);
   const terminationReason = formData.get("termination_reason");
+  const terminationSummary = formData.get("termination_summary");
 
   await admin
     .from("exam_attempts")
@@ -169,7 +170,8 @@ export async function submitExamAction(examId: string, formData: FormData) {
 
   const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
   if (terminationReason) {
-    redirect("/learner/exams?message=Exam ended early due to policy violations. Your teacher has been notified.");
+    const reasonText = terminationSummary ? String(terminationSummary) : "Policy violations detected.";
+    redirect(`/learner/exams?violation=1&message=${encodeURIComponent(reasonText)}`);
   }
   redirect(showResult ? `/learner/grades?message=Exam submitted. Score: ${score}/${maxScore}` : "/learner/exams?message=Exam submitted.");
 }
