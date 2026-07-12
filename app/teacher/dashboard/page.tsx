@@ -75,6 +75,7 @@ export default async function TeacherDashboardPage() {
           ["Lesson Manager", "Publish competency-based lessons.", "/teacher/lessons"],
           ["Exam Manager", "Create and publish scheduled exams.", "/teacher/exams"],
           ["Question Bank", "Build reusable objective and essay questions.", "/teacher/question-bank"],
+          ["Mastery Report", "View exam mastery by learner, competency, or section.", "/teacher/mastery"],
           ["Check Outputs", "Score learner performance tasks.", "/teacher/submissions"],
           ["Term Gradebook", "Monitor term scores, summaries, and mastery.", "/teacher/gradebook"]
         ].map(([title, text, href]) => (
