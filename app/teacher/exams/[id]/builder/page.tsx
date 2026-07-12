@@ -89,6 +89,7 @@ export default async function ExamBuilderPage({
       <div className="mb-7 flex flex-wrap gap-3">
         <Link href="/teacher/exams" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">Back to Exams</Link>
         <Link href="/teacher/question-bank" className="rounded-2xl border border-teal-200 bg-white/70 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50">Question Bank</Link>
+        <Link href={`/teacher/exams/${id}/analysis`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">Item Analysis</Link>
       </div>
 
       {query.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{query.message}</div> : null}
