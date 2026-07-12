@@ -18,6 +18,9 @@ export type EimCompetency = {
 export type CompetencyLike = Partial<EimCompetency> & {
   grade_level?: number | string | null;
   order_index?: number | string | null;
+  value?: string;
+  id?: string;
+  label?: string;
 };
 
 export type CompetencyGroup = {
