@@ -126,7 +126,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
               </div>
             ) : null}
             <ExamTimer deadlineIso={deadline.toISOString()} formId="exam-attempt-form" />
-            <ExamIntegrityGuard formId="exam-attempt-form" maxViolations={exam.max_violations ?? 3} />
+            <ExamIntegrityGuard attemptId={inProgress?.id ?? ""} formId="exam-attempt-form" maxViolations={exam.max_violations ?? 3} />
             <form id="exam-attempt-form" action={action} className="mt-2 grid gap-6">
             {questionRows.map((row, index) => {
               const question = row;

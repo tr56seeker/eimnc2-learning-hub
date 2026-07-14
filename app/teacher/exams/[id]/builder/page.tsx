@@ -91,6 +91,7 @@ export default async function ExamBuilderPage({
         <Link href="/teacher/exams" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">Back to Exams</Link>
         <Link href="/teacher/question-bank" className="rounded-2xl border border-teal-200 bg-white/70 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50">Question Bank</Link>
         <Link href={`/teacher/exams/${id}/analysis`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">Item Analysis</Link>
+        <Link href={`/teacher/exams/${id}/grading`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">Grade Essays</Link>
       </div>
 
       <FlashMessage message={query.error} variant="error" className="mb-7" />

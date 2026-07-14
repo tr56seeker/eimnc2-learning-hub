@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
+import { latestAttemptPerLearner, type SubmittedAttemptRow } from "@/lib/exam-attempts";
 import { firstRelation } from "@/lib/relations";
 
 type ExamRow = {
@@ -50,10 +51,15 @@ export default async function ExamItemAnalysisPage({ params }: { params: Promise
       .eq("exam_id", id)
       .order("order_index")
       .returns<ExamQuestionRow[]>(),
-    supabase.from("exam_attempts").select("id").eq("exam_id", id).eq("status", "submitted")
+    supabase
+      .from("exam_attempts")
+      .select("id, learner_id, submitted_at")
+      .eq("exam_id", id)
+      .eq("status", "submitted")
+      .returns<SubmittedAttemptRow[]>()
   ]);
 
-  const submittedAttemptIds = (submittedAttempts ?? []).map((attempt) => attempt.id);
+  const submittedAttemptIds = latestAttemptPerLearner(submittedAttempts ?? []).map((attempt) => attempt.id);
   const totalSubmitted = submittedAttemptIds.length;
 
   const { data: answers } = submittedAttemptIds.length
@@ -89,9 +95,14 @@ export default async function ExamItemAnalysisPage({ params }: { params: Promise
 
   return (
     <PortalShell profile={profile}>
-      <Link href={`/teacher/exams/${id}/builder`} className="text-sm font-semibold text-teal-700 hover:text-teal-800">
-        Back to exam builder
-      </Link>
+      <div className="flex flex-wrap gap-3">
+        <Link href={`/teacher/exams/${id}/builder`} className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+          Back to exam builder
+        </Link>
+        <Link href={`/teacher/exams/${id}/grading`} className="text-sm font-semibold text-amber-700 hover:text-amber-800">
+          Grade Essays
+        </Link>
+      </div>
 
       <SectionHeader
         eyebrow="Item Analysis"

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { recordExamViolationAction } from "@/app/learner/exams/actions";
 
 type ViolationType = "tab_switch" | "copy_attempt" | "paste_attempt" | "right_click";
 
@@ -20,19 +21,19 @@ const FRIENDLY_LABELS: Record<ViolationType, string> = {
 };
 
 export function ExamIntegrityGuard({
+  attemptId,
   formId,
   maxViolations
 }: {
+  attemptId: string;
   formId: string;
   maxViolations: number;
 }) {
   const [mounted, setMounted] = useState(false);
   const [activeWarning, setActiveWarning] = useState<string | null>(null);
   const [terminated, setTerminated] = useState(false);
-  const logRef = useRef<string[]>([]);
   const friendlySetRef = useRef<Set<ViolationType>>(new Set());
   const terminatedRef = useRef(false);
-  const countRef = useRef(0);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- standard client-mount detection so createPortal only runs after hydration
@@ -58,14 +59,19 @@ export function ExamIntegrityGuard({
       input.value = value;
     }
 
-    function recordViolation(type: ViolationType) {
+    async function recordViolation(type: ViolationType) {
       if (terminatedRef.current) return;
 
-      countRef.current += 1;
-      logRef.current.push(`${VIOLATION_LABELS[type]} (violation #${countRef.current})`);
       friendlySetRef.current.add(type);
 
-      if (countRef.current > maxViolations) {
+      // The server persists the count against this attempt in real time and
+      // is the sole source of truth for whether the threshold was
+      // exceeded — the client only reflects what the server reports back.
+      const result = await recordExamViolationAction(attemptId, maxViolations);
+
+      if (terminatedRef.current) return;
+
+      if (result.terminated) {
         terminatedRef.current = true;
         setTerminated(true);
         setActiveWarning(
@@ -75,44 +81,38 @@ export function ExamIntegrityGuard({
         const form = document.getElementById(formId) as HTMLFormElement | null;
         if (form) {
           const summary = Array.from(friendlySetRef.current).map((t) => FRIENDLY_LABELS[t]).join("; ");
-          setHiddenField(form, "violation_count", String(countRef.current));
-          setHiddenField(
-            form,
-            "termination_reason",
-            `Auto-submitted after exceeding ${maxViolations} allowed violations. Log: ${logRef.current.join("; ")}.`
-          );
           setHiddenField(form, "termination_summary", summary);
           window.setTimeout(() => forceSubmit(form), 1200);
         }
       } else {
         setActiveWarning(
-          `Warning ${countRef.current} of ${maxViolations}: ${VIOLATION_LABELS[type]} is not allowed during the exam. Exceeding ${maxViolations} will auto-submit your exam and notify your teacher.`
+          `Warning ${result.violationCount} of ${maxViolations}: ${VIOLATION_LABELS[type]} is not allowed during the exam. Exceeding ${maxViolations} will auto-submit your exam and notify your teacher.`
         );
       }
     }
 
     function onVisibilityChange() {
-      if (document.hidden) recordViolation("tab_switch");
+      if (document.hidden) void recordViolation("tab_switch");
     }
 
     function onCopy(event: ClipboardEvent) {
       event.preventDefault();
-      recordViolation("copy_attempt");
+      void recordViolation("copy_attempt");
     }
 
     function onCut(event: ClipboardEvent) {
       event.preventDefault();
-      recordViolation("copy_attempt");
+      void recordViolation("copy_attempt");
     }
 
     function onPaste(event: ClipboardEvent) {
       event.preventDefault();
-      recordViolation("paste_attempt");
+      void recordViolation("paste_attempt");
     }
 
     function onContextMenu(event: MouseEvent) {
       event.preventDefault();
-      recordViolation("right_click");
+      void recordViolation("right_click");
     }
 
     document.addEventListener("visibilitychange", onVisibilityChange);
@@ -128,7 +128,7 @@ export function ExamIntegrityGuard({
       document.removeEventListener("paste", onPaste);
       document.removeEventListener("contextmenu", onContextMenu);
     };
-  }, [formId, maxViolations]);
+  }, [attemptId, formId, maxViolations]);
 
   if (!activeWarning || !mounted) return null;
 

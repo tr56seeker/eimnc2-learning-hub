@@ -8,12 +8,30 @@ import { firstRelation } from "@/lib/relations";
 
 type AttemptRow = {
   id: string;
+  exam_id: string;
   learner_id: string;
   score: number | null;
   max_score: number | null;
+  submitted_at: string | null;
   profiles: { full_name: string; section_id: string | null } | { full_name: string; section_id: string | null }[] | null;
   exams: { competency_id: string | null; competencies: { code: string; title: string } | { code: string; title: string }[] | null } | { competency_id: string | null; competencies: { code: string; title: string } | { code: string; title: string }[] | null }[] | null;
 };
+
+// A learner can have more than one submitted attempt for the same exam
+// after a teacher-approved retake. Only the most recent attempt should
+// count toward mastery, matching the same "latest attempt wins" rule
+// applied to the learner's own grade in app/learner/exams/actions.ts.
+function latestAttemptPerLearnerExam(attempts: AttemptRow[]) {
+  const latest = new Map<string, AttemptRow>();
+  for (const attempt of attempts) {
+    const key = `${attempt.learner_id}:${attempt.exam_id}`;
+    const existing = latest.get(key);
+    if (!existing || (attempt.submitted_at ?? "") > (existing.submitted_at ?? "")) {
+      latest.set(key, attempt);
+    }
+  }
+  return [...latest.values()];
+}
 
 function masteryLevel(percentValue: number) {
   if (percentValue >= 80) return { label: "Mastered", color: "text-emerald-700 border-emerald-200 bg-emerald-50", bar: "bg-emerald-500" };
@@ -29,7 +47,7 @@ export default async function MasteryReportPage({ searchParams }: { searchParams
   const [{ data: attempts }, { data: sections }] = await Promise.all([
     supabase
       .from("exam_attempts")
-      .select("id, learner_id, score, max_score, profiles(full_name, section_id), exams(competency_id, competencies(code, title))")
+      .select("id, exam_id, learner_id, score, max_score, submitted_at, profiles(full_name, section_id), exams(competency_id, competencies(code, title))")
       .eq("status", "submitted")
       .returns<AttemptRow[]>(),
     supabase.from("sections").select("id, name")
@@ -40,7 +58,7 @@ export default async function MasteryReportPage({ searchParams }: { searchParams
   type Bucket = { key: string; label: string; totalScore: number; totalMax: number; learnerIds: Set<string> };
   const buckets = new Map<string, Bucket>();
 
-  for (const attempt of attempts ?? []) {
+  for (const attempt of latestAttemptPerLearnerExam(attempts ?? [])) {
     const learner = firstRelation(attempt.profiles);
     const exam = firstRelation(attempt.exams);
     const competency = exam ? firstRelation(exam.competencies) : undefined;

@@ -45,7 +45,6 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
 
                 <form action={scoreSubmissionAction} className="rounded-2xl border border-slate-200/70 bg-white/75 p-5 shadow-sm shadow-slate-200/40">
                   <input type="hidden" name="submission_id" value={submission.id} />
-                  <input type="hidden" name="learner_id" value={submission.learner_id} />
                   <input type="hidden" name="assignment_title" value={assignment?.title ?? "Output"} />
                   <input type="hidden" name="max_score" value={assignment?.max_score ?? 100} />
                   <label className="grid gap-2.5 text-sm font-semibold text-slate-700">

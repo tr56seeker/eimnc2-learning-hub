@@ -24,6 +24,44 @@ function normalizeAnswer(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+// Called in real time by ExamIntegrityGuard as each violation happens, so
+// the violation count is a server-persisted tally instead of a single
+// client-supplied field trusted at submit time (a learner could otherwise
+// just submit a plain form post with violation_count=0 and bypass the
+// guard entirely). Ownership of the attempt is verified explicitly since
+// this uses the service-role client, which bypasses RLS.
+export async function recordExamViolationAction(attemptId: string, maxViolations: number) {
+  const { profile } = await requireLearner();
+  const admin = createAdminClient();
+
+  const { data: attempt } = await admin
+    .from("exam_attempts")
+    .select("id, violation_count")
+    .eq("id", attemptId)
+    .eq("learner_id", profile.id)
+    .eq("status", "in_progress")
+    .maybeSingle();
+
+  if (!attempt) {
+    return { violationCount: 0, terminated: false };
+  }
+
+  const nextCount = (attempt.violation_count ?? 0) + 1;
+  const terminated = nextCount > maxViolations;
+
+  await admin
+    .from("exam_attempts")
+    .update({
+      violation_count: nextCount,
+      ...(terminated
+        ? { termination_reason: `Auto-submitted after exceeding ${maxViolations} allowed violations during the exam.` }
+        : {})
+    })
+    .eq("id", attemptId);
+
+  return { violationCount: nextCount, terminated };
+}
+
 export async function submitExamAction(examId: string, formData: FormData) {
   const { profile } = await requireLearner();
   const admin = createAdminClient();
@@ -142,8 +180,17 @@ export async function submitExamAction(examId: string, formData: FormData) {
     await admin.from("exam_answers").insert(answers);
   }
 
-  const violationCount = Number(formData.get("violation_count") ?? 0);
-  const terminationReason = formData.get("termination_reason");
+  // violation_count and termination_reason are NOT read from the submitted
+  // form — they're already current on this row from real-time
+  // recordExamViolationAction calls during the attempt, which is the
+  // server-persisted source of truth. Trusting a client-supplied field here
+  // would let a learner submit a forged clean payload and bypass the guard.
+  const { data: attemptState } = await admin
+    .from("exam_attempts")
+    .select("termination_reason")
+    .eq("id", attempt.id)
+    .maybeSingle();
+  const terminationReason = attemptState?.termination_reason ?? null;
   const terminationSummary = formData.get("termination_summary");
 
   await admin
@@ -152,21 +199,27 @@ export async function submitExamAction(examId: string, formData: FormData) {
       score,
       max_score: maxScore,
       status: "submitted",
-      submitted_at: new Date().toISOString(),
-      violation_count: violationCount,
-      termination_reason: terminationReason ? String(terminationReason) : null
+      submitted_at: new Date().toISOString()
     })
     .eq("id", attempt.id);
 
-  await admin.from("grades").insert({
-    learner_id: profile.id,
-    source_type: "exam",
-    source_id: attempt.id,
-    title: exam.title,
-    score,
-    max_score: maxScore,
-    component: "written_work"
-  });
+  // source_id is the exam, not the attempt, and this is an upsert (not
+  // insert) so a retake replaces the learner's previous score for this exam
+  // instead of adding a second grades row that would double-count both the
+  // original and the retake in the learner's own average and every teacher
+  // report derived from `grades`.
+  await admin.from("grades").upsert(
+    {
+      learner_id: profile.id,
+      source_type: "exam",
+      source_id: examId,
+      title: exam.title,
+      score,
+      max_score: maxScore,
+      component: "written_work"
+    },
+    { onConflict: "learner_id,source_type,source_id" }
+  );
 
   await admin
     .from("exam_retake_grants")
