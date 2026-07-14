@@ -7,17 +7,66 @@ import { formatDateTime } from "@/lib/format";
 import { firstRelation } from "@/lib/relations";
 import { submitOutputAction } from "./actions";
 
+type AssignmentRow = {
+  id: string;
+  title: string;
+  instructions: string | null;
+  due_at: string | null;
+  max_score: number | null;
+  lessons: { title: string } | { title: string }[] | null;
+};
+
+type SubmissionRow = {
+  id: string;
+  assignment_id: string;
+  status: string;
+  score: number | null;
+  feedback: string | null;
+  submitted_at: string | null;
+  assignments: { title: string; max_score: number | null } | { title: string; max_score: number | null }[] | null;
+};
+
+function statusLabel(status: string, isLate: boolean) {
+  if (status === "returned") return "Returned for revision";
+  if (status === "checked") return "Checked";
+  return isLate ? "Submitted late" : "Submitted";
+}
+
+function statusClass(status: string) {
+  if (status === "returned") return "rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800";
+  if (status === "checked") return "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700";
+  return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
+}
+
 export default async function LearnerSubmissionsPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireLearner();
 
   const [assignmentsResult, submissionsResult] = await Promise.all([
-    supabase.from("assignments").select("id, title, instructions, due_at, max_score, lessons(title)").order("due_at", { ascending: true }),
-    supabase.from("submissions").select("id, status, score, feedback, submitted_at, assignments(title, max_score)").eq("learner_id", profile.id).order("submitted_at", { ascending: false })
+    supabase
+      .from("assignments")
+      .select("id, title, instructions, due_at, max_score, lessons(title)")
+      .eq("is_active", true)
+      .order("due_at", { ascending: true })
+      .returns<AssignmentRow[]>(),
+    supabase
+      .from("submissions")
+      .select("id, assignment_id, status, score, feedback, submitted_at, assignments(title, max_score)")
+      .eq("learner_id", profile.id)
+      .order("submitted_at", { ascending: false })
+      .returns<SubmissionRow[]>()
   ]);
 
   const assignments = assignmentsResult.data ?? [];
   const submissions = submissionsResult.data ?? [];
+  // eslint-disable-next-line react-hooks/purity -- server-rendered per request; needs the actual current time to flag overdue assignments
+  const now = Date.now();
+
+  const submissionsByAssignment = new Map<string, SubmissionRow[]>();
+  for (const submission of submissions) {
+    if (!submissionsByAssignment.has(submission.assignment_id)) submissionsByAssignment.set(submission.assignment_id, []);
+    submissionsByAssignment.get(submission.assignment_id)!.push(submission);
+  }
 
   return (
     <PortalShell profile={profile}>
@@ -28,11 +77,34 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
 
       <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
-          <h2 className="text-xl font-semibold text-slate-950">New Submission</h2>
+          <h2 className="text-xl font-semibold text-slate-950">My Activities</h2>
           {!assignments.length ? (
             <div className="mt-4"><EmptyState title="No assignments" message="Your teacher has not posted an output task yet." /></div>
           ) : (
-            <form action={submitOutputAction} className="mt-7 grid gap-5">
+            <div className="mt-6 grid gap-3">
+              {assignments.map((assignment) => {
+                const latest = submissionsByAssignment.get(assignment.id)?.[0];
+                const isLate = Boolean(latest?.submitted_at && assignment.due_at && new Date(latest.submitted_at).getTime() > new Date(assignment.due_at).getTime());
+                const isMissing = !latest && Boolean(assignment.due_at && new Date(assignment.due_at).getTime() < now);
+
+                return (
+                  <div key={assignment.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/70 bg-white/75 p-4">
+                    <div>
+                      <p className="font-semibold text-slate-950">{assignment.title}</p>
+                      <p className="mt-1 text-xs text-slate-500">{assignment.due_at ? `Due ${formatDateTime(assignment.due_at)}` : "No due date"}</p>
+                    </div>
+                    <span className={isMissing ? "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700" : latest ? statusClass(latest.status) : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"}>
+                      {isMissing ? "Missing" : latest ? statusLabel(latest.status, isLate) : "Not yet submitted"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <h2 className="mt-9 text-xl font-semibold text-slate-950">New Submission</h2>
+          {!assignments.length ? null : (
+            <form action={submitOutputAction} className="mt-5 grid gap-5">
               <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
                 Assignment
                 <select name="assignment_id" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm">
@@ -65,11 +137,16 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
 
               return (
                 <div key={submission.id} className="rounded-2xl border border-slate-200/70 bg-white/75 p-5 shadow-sm shadow-slate-200/40">
-                  <h3 className="font-semibold text-slate-950">{assignment?.title}</h3>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="font-semibold text-slate-950">{assignment?.title}</h3>
+                    <span className={statusClass(submission.status)}>{statusLabel(submission.status, false)}</span>
+                  </div>
                   <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(submission.submitted_at)}</p>
-                  <p className="mt-2 text-sm font-medium text-slate-700">Status: {submission.status}</p>
                   {submission.score !== null ? <p className="text-sm font-semibold text-teal-700">Score: {submission.score}/{assignment?.max_score}</p> : null}
                   {submission.feedback ? <p className="mt-2 text-sm text-slate-600">Feedback: {submission.feedback}</p> : null}
+                  {submission.status === "returned" ? (
+                    <p className="mt-2 text-sm font-semibold text-amber-800">Your teacher asked for a revision — submit an updated version above.</p>
+                  ) : null}
                 </div>
               );
             })}

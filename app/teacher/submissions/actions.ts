@@ -49,3 +49,32 @@ export async function scoreSubmissionAction(formData: FormData) {
 
   redirect("/teacher/submissions?message=Submission checked and encoded.");
 }
+
+export async function returnSubmissionForRevisionAction(formData: FormData) {
+  const { supabase } = await requireTeacher();
+  const submissionId = String(formData.get("submission_id") ?? "");
+  const feedback = String(formData.get("feedback") ?? "").trim();
+
+  if (!feedback) {
+    redirect(`/teacher/submissions?error=${encodeURIComponent("Add feedback explaining what needs revision before returning it.")}`);
+  }
+
+  const { data: submission, error: submissionError } = await supabase
+    .from("submissions")
+    .select("id")
+    .eq("id", submissionId)
+    .maybeSingle();
+
+  if (submissionError || !submission) {
+    redirect(`/teacher/submissions?error=${encodeURIComponent("Submission not found or not authorized.")}`);
+  }
+
+  const { error } = await supabase
+    .from("submissions")
+    .update({ status: "returned", feedback })
+    .eq("id", submissionId);
+
+  if (error) redirect(`/teacher/submissions?error=${encodeURIComponent(error.message)}`);
+
+  redirect("/teacher/submissions?message=Returned to learner for revision.");
+}
