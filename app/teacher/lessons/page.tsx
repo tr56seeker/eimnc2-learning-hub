@@ -2,6 +2,7 @@ import { FlashMessage } from "@/components/FlashMessage";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
+import { publishDueLessons } from "@/lib/lesson-scheduling";
 import { firstRelation } from "@/lib/relations";
 import { createLessonAction } from "./actions";
 import Link from "next/link";
@@ -14,6 +15,7 @@ type LessonListRow = {
   title: string;
   summary: string | null;
   published: boolean;
+  scheduled_publish_at: string | null;
   competencies: { code: string | null; title: string | null } | { code: string | null; title: string | null }[] | null;
   lesson_blocks: { count: number } | { count: number }[] | null;
 };
@@ -22,10 +24,12 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
+  await publishDueLessons();
+
   const [lessonsResult, competenciesResult] = await Promise.all([
     supabase
       .from("lessons")
-      .select("id, title, summary, published, competencies(code, title), lesson_blocks(count)")
+      .select("id, title, summary, published, scheduled_publish_at, competencies(code, title), lesson_blocks(count)")
       .order("created_at", { ascending: false })
       .returns<LessonListRow[]>(),
     supabase.from("competencies").select("id, code, title").order("order_index")
@@ -121,10 +125,16 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
                         className={
                           lesson.published
                             ? "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-semibold text-teal-700 lg:col-start-3 lg:justify-self-start"
-                            : "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 lg:col-start-3 lg:justify-self-start"
+                            : lesson.scheduled_publish_at
+                              ? "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-semibold text-sky-700 lg:col-start-3 lg:justify-self-start"
+                              : "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 lg:col-start-3 lg:justify-self-start"
                         }
                       >
-                        {lesson.published ? "Published" : "Draft"}
+                        {lesson.published
+                          ? "Published"
+                          : lesson.scheduled_publish_at
+                            ? `Scheduled ${new Date(lesson.scheduled_publish_at).toLocaleDateString("en-PH", { dateStyle: "medium" })}`
+                            : "Draft"}
                       </span>
 
                       <span className="col-start-1 row-start-3 text-xs font-medium text-slate-500 lg:col-start-4 lg:row-start-1">

@@ -5,6 +5,7 @@ import { LessonCompletionControl, LessonReadingAids } from "@/components/lessons
 import { PortalShell } from "@/components/PortalShell";
 import { getCurrentUserAndProfile } from "@/lib/auth";
 import { type LessonBlock, type LessonBlockType } from "@/lib/lesson-blocks";
+import { publishDueLessons } from "@/lib/lesson-scheduling";
 import { firstRelation } from "@/lib/relations";
 
 function slugify(text: string) {
@@ -122,6 +123,8 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
   }
 
   const isTeacherPreview = profile.role === "teacher" || profile.role === "admin";
+
+  await publishDueLessons();
 
   let lessonQuery = supabase
     .from("lessons")

@@ -3,10 +3,13 @@ import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { requireLearner } from "@/lib/auth";
+import { publishDueLessons } from "@/lib/lesson-scheduling";
 import { firstRelation } from "@/lib/relations";
 
 export default async function LearnerLessonsPage() {
   const { profile, supabase } = await requireLearner();
+
+  await publishDueLessons();
 
   const [lessonsResult, progressResult] = await Promise.all([
     supabase
