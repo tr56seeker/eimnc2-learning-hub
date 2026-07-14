@@ -1,10 +1,15 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { LessonBlockRenderer } from "@/components/lessons/LessonBlockRenderer";
+import { LessonCompletionControl, LessonReadingAids } from "@/components/lessons/LessonProgressTracker";
 import { PortalShell } from "@/components/PortalShell";
 import { getCurrentUserAndProfile } from "@/lib/auth";
 import { type LessonBlock, type LessonBlockType } from "@/lib/lesson-blocks";
 import { firstRelation } from "@/lib/relations";
+
+function slugify(text: string) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
 type LessonRow = {
   id: string;
@@ -69,18 +74,20 @@ const moduleGroups: Array<{
 ];
 
 function ModuleSection({
+  id,
   eyebrow,
   title,
   description,
   children
 }: {
+  id?: string;
   eyebrow: string;
   title: string;
   description: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-12">
+    <section id={id} className="mt-12 scroll-mt-24">
       <div className="mb-5 border-l-4 border-teal-500 pl-4">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{eyebrow}</p>
         <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{title}</h2>
@@ -165,6 +172,29 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
   ]);
   const legacyBlocks = blocks.filter((block) => !groupedTypes.has(block.block_type));
 
+  const { data: progress } = !isTeacherPreview
+    ? await supabase
+        .from("lesson_progress")
+        .select("completed, last_section")
+        .eq("lesson_id", id)
+        .eq("learner_id", profile.id)
+        .maybeSingle()
+    : { data: null };
+
+  const readerSections: { id: string; label: string }[] = [];
+  if (blocks.length) {
+    for (const group of moduleGroups) {
+      const sectionBlocks = blocks.filter((block) => group.types.includes(block.block_type));
+      if (sectionBlocks.length) readerSections.push({ id: slugify(group.title), label: group.title });
+    }
+    if (legacyBlocks.length) readerSections.push({ id: slugify("Additional Lesson Content"), label: "Additional Lesson Content" });
+  } else {
+    readerSections.push({ id: slugify("Explore the Lesson"), label: "Explore the Lesson" });
+  }
+  if (assignments.length) readerSections.push({ id: slugify("Performance Task"), label: "Performance Task" });
+  if (reflectionBlocks.length) readerSections.push({ id: slugify("Reflection"), label: "Reflection" });
+  if (resources.length || resourceBlocks.length) readerSections.push({ id: slugify("Resources"), label: "Resources" });
+
   return (
     <PortalShell profile={profile}>
       <article className="mx-auto max-w-6xl">
@@ -181,11 +211,27 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
                 Teacher Preview / {lesson.published ? "Published" : "Draft"}
               </span>
             ) : null}
+            {progress?.completed ? (
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700">
+                Completed ✓
+              </span>
+            ) : null}
           </div>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 sm:text-6xl">{lesson.title}</h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">{lesson.summary}</p>
           <p className="mt-6 text-sm font-medium text-slate-500">{lesson.estimated_minutes ?? 45} minute lesson</p>
         </header>
+
+        {!isTeacherPreview ? (
+          <div className="mt-8">
+            <LessonReadingAids
+              lessonId={id}
+              sections={readerSections}
+              initialLastSection={progress?.last_section ?? null}
+              initialCompleted={progress?.completed ?? false}
+            />
+          </div>
+        ) : null}
 
         {blocks.length ? (
           <>
@@ -194,20 +240,20 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
               if (!sectionBlocks.length) return null;
 
               return (
-                <ModuleSection key={group.title} eyebrow={group.eyebrow} title={group.title} description={group.description}>
+                <ModuleSection key={group.title} id={slugify(group.title)} eyebrow={group.eyebrow} title={group.title} description={group.description}>
                   {sectionBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
                 </ModuleSection>
               );
             })}
 
             {legacyBlocks.length ? (
-              <ModuleSection eyebrow="More to Explore" title="Additional Lesson Content" description="Review these supporting notes and references from your teacher.">
+              <ModuleSection id={slugify("Additional Lesson Content")} eyebrow="More to Explore" title="Additional Lesson Content" description="Review these supporting notes and references from your teacher.">
                 {legacyBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
               </ModuleSection>
             ) : null}
           </>
         ) : (
-          <ModuleSection eyebrow="Core Lesson" title="Explore the Lesson" description="Read the lesson notes and examples below.">
+          <ModuleSection id={slugify("Explore the Lesson")} eyebrow="Core Lesson" title="Explore the Lesson" description="Read the lesson notes and examples below.">
             <section className="card rounded-[1.75rem] p-7 sm:p-9">
               <div className="prose-eim max-w-4xl text-slate-700">{renderMarkdownLite(lesson.content_md ?? "No content yet.")}</div>
             </section>
@@ -215,7 +261,7 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
         )}
 
         {assignments.length ? (
-          <ModuleSection eyebrow="Application" title="Performance Task" description="Demonstrate the skill using the instructions and submission method below.">
+          <ModuleSection id={slugify("Performance Task")} eyebrow="Application" title="Performance Task" description="Demonstrate the skill using the instructions and submission method below.">
             {assignments.map((assignment) => (
               <div key={assignment.id} className="rounded-[1.75rem] border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:p-7">
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -230,13 +276,13 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
         ) : null}
 
         {reflectionBlocks.length ? (
-          <ModuleSection eyebrow="Learning Journal" title="Reflection" description="Connect the lesson to your own practice and identify your next step.">
+          <ModuleSection id={slugify("Reflection")} eyebrow="Learning Journal" title="Reflection" description="Connect the lesson to your own practice and identify your next step.">
             {reflectionBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
           </ModuleSection>
         ) : null}
 
         {resources.length || resourceBlocks.length ? (
-          <ModuleSection eyebrow="Further Learning" title="Resources" description="Use these supporting links for review, practice, and further reading.">
+          <ModuleSection id={slugify("Resources")} eyebrow="Further Learning" title="Resources" description="Use these supporting links for review, practice, and further reading.">
             {resourceBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
             {resources.length ? (
               <div className="rounded-[1.75rem] border border-teal-100/80 bg-teal-50/80 p-6">
@@ -255,6 +301,8 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
             ) : null}
           </ModuleSection>
         ) : null}
+
+        {!isTeacherPreview ? <LessonCompletionControl lessonId={id} initialCompleted={progress?.completed ?? false} /> : null}
       </article>
     </PortalShell>
   );
