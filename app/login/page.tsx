@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FlashMessage } from "@/components/FlashMessage";
 import { loginAction } from "./actions";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ message?: string; next?: string }> }) {
@@ -11,11 +12,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-950">Welcome back</h1>
         <p className="mt-2 text-sm leading-6 text-slate-500">Use the account provided by your EIM teacher to continue lessons, exams, and outputs.</p>
 
-        {params.message ? (
-          <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-            {params.message}
-          </div>
-        ) : null}
+        <FlashMessage message={params.message} variant="error" className="mt-5" />
 
         <form action={loginAction} className="mt-7 grid gap-5">
           <label className="grid gap-2.5 text-sm font-semibold text-slate-700">

@@ -17,7 +17,7 @@ export async function scoreSubmissionAction(formData: FormData) {
     .update({ score, feedback, status: "checked" })
     .eq("id", submissionId);
 
-  if (error) redirect(`/teacher/submissions?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/submissions?error=${encodeURIComponent(error.message)}`);
 
   await supabase.from("grades").insert({
     learner_id: learnerId,

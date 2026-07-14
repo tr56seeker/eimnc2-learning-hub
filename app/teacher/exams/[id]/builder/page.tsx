@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { EmptyState } from "@/components/EmptyState";
+import { FlashMessage } from "@/components/FlashMessage";
 import { FormInput, FormSelect, SubmitButton } from "@/components/FormFields";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -40,7 +41,7 @@ export default async function ExamBuilderPage({
   searchParams
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ message?: string }>;
+  searchParams: Promise<{ message?: string; error?: string }>;
 }) {
   const { id } = await params;
   const query = await searchParams;
@@ -92,7 +93,8 @@ export default async function ExamBuilderPage({
         <Link href={`/teacher/exams/${id}/analysis`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">Item Analysis</Link>
       </div>
 
-      {query.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{query.message}</div> : null}
+      <FlashMessage message={query.error} variant="error" className="mb-7" />
+      <FlashMessage message={query.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
         <aside className="card rounded-[1.75rem] p-7 sm:p-8">

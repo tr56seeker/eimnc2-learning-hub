@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { PortalShell } from "@/components/PortalShell";
 import { ExamTimer } from "@/components/ExamTimer";
 import { ExamIntegrityGuard } from "@/components/ExamIntegrityGuard";
+import { FlashMessage } from "@/components/FlashMessage";
 import { requireLearner } from "@/lib/auth";
 import { submitExamAction } from "../actions";
 
@@ -26,7 +27,7 @@ function normalizedChoice(choice: { label: string; value: string } | { key: stri
   return { value: choice.key, label: `${choice.key.length === 1 ? `${choice.key}. ` : ""}${choice.text}` };
 }
 
-export default async function ExamDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ message?: string }> }) {
+export default async function ExamDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ message?: string; error?: string }> }) {
   const { id } = await params;
   const query = await searchParams;
   const { profile, supabase } = await requireLearner();
@@ -91,6 +92,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
   }
   const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
   const closesAt = exam.end_at ? new Date(exam.end_at).getTime() : null;
+  // eslint-disable-next-line react-hooks/purity -- server-rendered per request; needs the actual current time to gate review access
   const reviewAllowed = Boolean(exam.allow_review_after_close && closesAt && Date.now() > closesAt);
   const startedAt = inProgress?.started_at ?? new Date().toISOString();
   const deadline = new Date(new Date(startedAt).getTime() + Number(exam.duration_minutes ?? 30) * 60 * 1000);
@@ -106,7 +108,8 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
         <p className="mt-4 max-w-3xl leading-7 text-slate-600">{exam.description}</p>
         <p className="mt-4 text-sm font-medium text-slate-500">Duration: {exam.duration_minutes ?? 30} minutes / Submit by {deadline.toLocaleString()}</p>
 
-        {query.message ? <div className="mt-6 rounded-2xl border border-yellow-200 bg-yellow-50/80 p-4 font-semibold text-yellow-800">{query.message}</div> : null}
+        <FlashMessage message={query.error} variant="warning" className="mt-6" />
+        <FlashMessage message={query.message} variant="success" className="mt-6" />
 
         {submitted && !canRetake ? (
           <div className="mt-9 rounded-[1.5rem] border border-teal-100/80 bg-teal-50/80 p-6 text-teal-950">

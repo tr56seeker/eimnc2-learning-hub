@@ -10,8 +10,8 @@ function nullableText(value: FormDataEntryValue | null) {
   return text || null;
 }
 
-function studioPath(lessonId: string, message: string) {
-  return `/teacher/lessons/${lessonId}/studio?message=${encodeURIComponent(message)}`;
+function studioPath(lessonId: string, message: string, variant: "message" | "error" = "message") {
+  return `/teacher/lessons/${lessonId}/studio?${variant}=${encodeURIComponent(message)}`;
 }
 
 function revalidateLessonPaths(lessonId: string) {
@@ -26,7 +26,7 @@ export async function setLessonPublishedAction(lessonId: string, published: bool
   const { error } = await supabase.from("lessons").update({ published }).eq("id", lessonId);
 
   if (error) {
-    redirect(studioPath(lessonId, error.message));
+    redirect(studioPath(lessonId, error.message, "error"));
   }
 
   revalidateLessonPaths(lessonId);
@@ -42,7 +42,7 @@ export async function updateLessonInfoAction(lessonId: string, formData: FormDat
   const estimatedMinutes = Number.isFinite(submittedMinutes) && submittedMinutes > 0 ? Math.round(submittedMinutes) : 45;
 
   if (!title) {
-    redirect(studioPath(lessonId, "Lesson title is required."));
+    redirect(studioPath(lessonId, "Lesson title is required.", "error"));
   }
 
   const { error } = await supabase
@@ -56,7 +56,7 @@ export async function updateLessonInfoAction(lessonId: string, formData: FormDat
     .eq("id", lessonId);
 
   if (error) {
-    redirect(studioPath(lessonId, error.message));
+    redirect(studioPath(lessonId, error.message, "error"));
   }
 
   revalidateLessonPaths(lessonId);
@@ -94,7 +94,7 @@ export async function createLessonBlockAction(lessonId: string, formData: FormDa
   try {
     payload = blockPayload(formData);
   } catch (error) {
-    redirect(`/teacher/lessons/${lessonId}/studio?message=${encodeURIComponent(error instanceof Error ? error.message : "Invalid block")}`);
+    redirect(`/teacher/lessons/${lessonId}/studio?error=${encodeURIComponent(error instanceof Error ? error.message : "Invalid block")}`);
   }
 
   const { error } = await supabase.from("lesson_blocks").insert({
@@ -103,7 +103,7 @@ export async function createLessonBlockAction(lessonId: string, formData: FormDa
   });
 
   if (error) {
-    redirect(`/teacher/lessons/${lessonId}/studio?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/lessons/${lessonId}/studio?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidateLessonPaths(lessonId);
@@ -117,7 +117,7 @@ export async function updateLessonBlockAction(lessonId: string, blockId: string,
   try {
     payload = blockPayload(formData);
   } catch (error) {
-    redirect(`/teacher/lessons/${lessonId}/studio?message=${encodeURIComponent(error instanceof Error ? error.message : "Invalid block")}`);
+    redirect(`/teacher/lessons/${lessonId}/studio?error=${encodeURIComponent(error instanceof Error ? error.message : "Invalid block")}`);
   }
 
   const { error } = await supabase
@@ -127,7 +127,7 @@ export async function updateLessonBlockAction(lessonId: string, blockId: string,
     .eq("lesson_id", lessonId);
 
   if (error) {
-    redirect(`/teacher/lessons/${lessonId}/studio?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/lessons/${lessonId}/studio?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidateLessonPaths(lessonId);
@@ -144,7 +144,7 @@ export async function deleteLessonBlockAction(lessonId: string, blockId: string)
     .eq("lesson_id", lessonId);
 
   if (error) {
-    redirect(`/teacher/lessons/${lessonId}/studio?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/lessons/${lessonId}/studio?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidateLessonPaths(lessonId);

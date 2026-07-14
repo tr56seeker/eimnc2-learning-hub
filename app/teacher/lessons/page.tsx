@@ -1,3 +1,4 @@
+import { FlashMessage } from "@/components/FlashMessage";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
@@ -17,7 +18,7 @@ type LessonListRow = {
   lesson_blocks: { count: number } | { count: number }[] | null;
 };
 
-export default async function TeacherLessonsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
+export default async function TeacherLessonsPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
@@ -36,7 +37,8 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Teacher" title="Lesson Manager" description="Create and publish EIM competency-based lessons." />
 
-      {params.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div> : null}
+      <FlashMessage message={params.error} variant="error" className="mb-7" />
+      <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 xl:grid-cols-[0.72fr_1.28fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">

@@ -27,7 +27,6 @@ export function ExamIntegrityGuard({
   maxViolations: number;
 }) {
   const [mounted, setMounted] = useState(false);
-  const [violationCount, setViolationCount] = useState(0);
   const [activeWarning, setActiveWarning] = useState<string | null>(null);
   const [terminated, setTerminated] = useState(false);
   const logRef = useRef<string[]>([]);
@@ -36,6 +35,7 @@ export function ExamIntegrityGuard({
   const countRef = useRef(0);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard client-mount detection so createPortal only runs after hydration
     setMounted(true);
   }, []);
 
@@ -64,7 +64,6 @@ export function ExamIntegrityGuard({
       countRef.current += 1;
       logRef.current.push(`${VIOLATION_LABELS[type]} (violation #${countRef.current})`);
       friendlySetRef.current.add(type);
-      setViolationCount(countRef.current);
 
       if (countRef.current > maxViolations) {
         terminatedRef.current = true;

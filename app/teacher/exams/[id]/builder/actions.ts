@@ -12,7 +12,7 @@ export async function addExamQuestionAction(examId: string, formData: FormData) 
   const { supabase } = await requireTeacher();
   const questionId = String(formData.get("question_id") ?? "");
 
-  if (!questionId) redirect(`${builderPath(examId)}?message=Select a question first.`);
+  if (!questionId) redirect(`${builderPath(examId)}?error=Select a question first.`);
 
   const { count } = await supabase
     .from("exam_questions")
@@ -25,7 +25,7 @@ export async function addExamQuestionAction(examId: string, formData: FormData) 
     order_index: count ?? 0
   });
 
-  if (error) redirect(`${builderPath(examId)}?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`${builderPath(examId)}?error=${encodeURIComponent(error.message)}`);
   revalidatePath(builderPath(examId));
   redirect(`${builderPath(examId)}?message=Question added to exam.`);
 }
@@ -44,7 +44,7 @@ export async function updateExamQuestionAction(examId: string, examQuestionId: s
     .eq("id", examQuestionId)
     .eq("exam_id", examId);
 
-  if (error) redirect(`${builderPath(examId)}?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`${builderPath(examId)}?error=${encodeURIComponent(error.message)}`);
   revalidatePath(builderPath(examId));
   redirect(`${builderPath(examId)}?message=Exam question updated.`);
 }
@@ -57,7 +57,7 @@ export async function removeExamQuestionAction(examId: string, examQuestionId: s
     .eq("id", examQuestionId)
     .eq("exam_id", examId);
 
-  if (error) redirect(`${builderPath(examId)}?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`${builderPath(examId)}?error=${encodeURIComponent(error.message)}`);
   revalidatePath(builderPath(examId));
   redirect(`${builderPath(examId)}?message=Question removed from exam.`);
 }

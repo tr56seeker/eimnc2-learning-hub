@@ -29,7 +29,7 @@ export function ProfileDangerActions({ learnerId, status }: { learnerId: string;
         onSubmit={(event) => {
           if (
             !window.confirm(
-              "This may remove the learner account and related profile data. This action cannot be undone."
+              "This marks the learner as deleted and hides them from active lists. You can restore access later from the Activate option."
             )
           ) {
             event.preventDefault();

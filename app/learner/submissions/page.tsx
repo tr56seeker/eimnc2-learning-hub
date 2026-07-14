@@ -1,12 +1,13 @@
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { FlashMessage } from "@/components/FlashMessage";
 import { requireLearner } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { firstRelation } from "@/lib/relations";
 import { submitOutputAction } from "./actions";
 
-export default async function LearnerSubmissionsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
+export default async function LearnerSubmissionsPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireLearner();
 
@@ -22,7 +23,8 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Submissions" title="Submit EIM Outputs" description="Submit practical outputs through text, Google Drive link, PDF link, image link, or unlisted video link." />
 
-      {params.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div> : null}
+      <FlashMessage message={params.error} variant="error" className="mb-7" />
+      <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">

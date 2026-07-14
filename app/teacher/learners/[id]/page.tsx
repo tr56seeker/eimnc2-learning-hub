@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EmptyState } from "@/components/EmptyState";
+import { FlashMessage } from "@/components/FlashMessage";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
+import { onlineBadgeClass, statusBadgeClass } from "@/lib/badges";
 import { requireTeacher } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { formatGradeSection, formatLearnerCompleteName, formatLearnerName } from "@/lib/learner-accounts";
-import { calculateAge, getOnlineStatus, type OnlineStatus } from "@/lib/presence";
+import { calculateAge, getOnlineStatus } from "@/lib/presence";
 import { firstRelation } from "@/lib/relations";
 import type { ProfileStatus } from "@/lib/types";
 import { grantExamRetakeAction } from "../actions";
@@ -87,18 +89,6 @@ function sectionLabel(section?: SectionRow | null) {
   return `Grade ${section.grade_level} - ${section.name}`;
 }
 
-function statusBadgeClass(status: ProfileStatus | null) {
-  if (status === "deleted") return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
-  if (status === "inactive") return "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700";
-  return "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700";
-}
-
-function onlineBadgeClass(status: OnlineStatus) {
-  if (status === "online") return "rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700";
-  if (status === "away") return "rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700";
-  return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
-}
-
 function formatBirthdate(value: string | null | undefined) {
   if (!value) return "Not set";
   const [year, month, day] = value.split("-").map(Number);
@@ -119,8 +109,15 @@ function DetailItem({ label, value }: { label: string; value: React.ReactNode })
   );
 }
 
-export default async function TeacherLearnerProfilePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TeacherLearnerProfilePage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ message?: string; error?: string }>;
+}) {
   const { id } = await params;
+  const query = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
   const richLearnerResult = await supabase
@@ -216,6 +213,9 @@ export default async function TeacherLearnerProfilePage({ params }: { params: Pr
       </Link>
 
       <SectionHeader eyebrow="Learner Profile" title={learner.full_name} description="Profile, demographics, account activity, and learning records." />
+
+      <FlashMessage message={query.error} variant="error" className="mb-7" />
+      <FlashMessage message={query.message} variant="success" className="mb-7" />
 
       <div className="grid gap-7">
         <section className="card rounded-[1.75rem] p-6 sm:p-8">

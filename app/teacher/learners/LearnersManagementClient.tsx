@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FlashMessage } from "@/components/FlashMessage";
+import { Modal } from "@/components/ui/Modal";
+import { onlineBadgeClass, statusBadgeClass } from "@/lib/badges";
 import { formatGradeSection, formatLearnerCompleteName } from "@/lib/learner-accounts";
-import { getOnlineStatus, type OnlineStatus } from "@/lib/presence";
+import { getOnlineStatus } from "@/lib/presence";
 import {
   createLearnerAction,
   resetLearnerPasswordAction,
@@ -51,11 +54,7 @@ function AddLearnerForm({
 }) {
   return (
     <form action={action} className="grid gap-5">
-      {message ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-          {message}
-        </div>
-      ) : null}
+      <FlashMessage message={message} variant="error" />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
@@ -226,18 +225,6 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
   );
 }
 
-function statusBadgeClass(status: LearnerListItem["status"]) {
-  if (status === "deleted") return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
-  if (status === "inactive") return "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700";
-  return "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700";
-}
-
-function onlineBadgeClass(status: OnlineStatus) {
-  if (status === "online") return "rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700";
-  if (status === "away") return "rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700";
-  return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
-}
-
 function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
   const [state, action, isPending] = useActionState(resetLearnerPasswordAction.bind(null, learner.id), initialResetState);
   const [copied, setCopied] = useState(false);
@@ -280,11 +267,7 @@ function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
         </div>
       ) : null}
 
-      {state.message && !state.ok ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-          {state.message}
-        </div>
-      ) : null}
+      <FlashMessage message={state.ok ? null : state.message} variant="error" />
 
       <form action={action} className="grid gap-4">
         <label className="grid gap-2 text-sm font-semibold text-slate-700">
@@ -295,35 +278,6 @@ function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
           {isPending ? "Resetting..." : "Reset Password"}
         </button>
       </form>
-    </div>
-  );
-}
-
-function Modal({
-  title,
-  description,
-  children,
-  onClose
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-  onClose: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-8 backdrop-blur-sm">
-      <section className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[1.75rem] border border-white/80 bg-white p-6 shadow-2xl shadow-slate-950/20 sm:p-8">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-950">{title}</h2>
-            {description ? <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p> : null}
-          </div>
-          <button type="button" onClick={onClose} className="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-50">
-            Close
-          </button>
-        </div>
-        {children}
-      </section>
     </div>
   );
 }
@@ -353,6 +307,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
 
   useEffect(() => {
     if (state.ok && state.credentials) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time reaction to a server action result, not a value derivable during render
       setIsAddOpen(false);
       setShowCredentials(true);
       setCopied(false);
@@ -450,7 +405,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
                           onSubmit={(event) => {
                             if (
                               !window.confirm(
-                                "This may remove the learner account and related profile data. This action cannot be undone."
+                                "This marks the learner as deleted and hides them from active lists. You can restore access later from the Activate option."
                               )
                             ) {
                               event.preventDefault();
@@ -483,6 +438,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
           title="Add Learner"
           description="Create the learner login and assign their profile to a section."
           onClose={() => setIsAddOpen(false)}
+          size="lg"
         >
           <AddLearnerForm sections={sections} action={formAction} isPending={isPending} message={state.ok ? "" : state.message} />
         </Modal>
@@ -493,6 +449,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
           title="Learner Credentials"
           description="Share these credentials privately. They are not stored in the learner table."
           onClose={() => setShowCredentials(false)}
+          size="lg"
         >
           <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5">
             <dl className="grid gap-4 text-sm sm:grid-cols-2">
@@ -532,6 +489,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
           title={mode === "edit" ? "Edit Learner" : "Reset Password"}
           description={mode === "edit" ? "Update profile, login ID, section, and status." : "Set a temporary password and require the learner to change it on next login."}
           onClose={() => setSelectedLearner(null)}
+          size="lg"
         >
           {mode === "edit" ? (
             <EditLearnerForm learner={selectedLearner} sections={sections} />

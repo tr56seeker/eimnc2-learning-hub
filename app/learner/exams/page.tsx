@@ -2,11 +2,12 @@ import Link from "next/link";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { FlashMessage } from "@/components/FlashMessage";
 import { requireLearner } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { firstRelation } from "@/lib/relations";
 
-export default async function LearnerExamsPage({ searchParams }: { searchParams: Promise<{ message?: string; violation?: string }> }) {
+export default async function LearnerExamsPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string; violation?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireLearner();
 
@@ -18,16 +19,19 @@ export default async function LearnerExamsPage({ searchParams }: { searchParams:
 
   return (
     <PortalShell profile={profile}>
-      <SectionHeader eyebrow="Exams" title="Available Exams" description="Answer only when ready. For the MVP version, each learner is allowed one submitted attempt per exam." />
+      <SectionHeader eyebrow="Exams" title="Available Exams" description="Answer only when ready. Each learner is allowed one submitted attempt per exam unless your teacher grants a retake." />
 
       {params.violation === "1" ? (
-        <div className="mb-7 rounded-2xl border border-red-200 bg-red-50/90 p-5">
-          <p className="font-semibold text-red-800">Your exam has been terminated due to the following reason:</p>
-          <p className="mt-1.5 text-sm leading-6 text-red-700">{params.message}</p>
+        <div role="alert" className="mb-7 status-danger rounded-2xl border p-5">
+          <p className="font-semibold">Your exam has been terminated due to the following reason:</p>
+          <p className="mt-1.5 text-sm leading-6">{params.message}</p>
         </div>
-      ) : params.message ? (
-        <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div>
-      ) : null}
+      ) : (
+        <>
+          <FlashMessage message={params.error} variant="error" className="mb-7" />
+          <FlashMessage message={params.message} variant="success" className="mb-7" />
+        </>
+      )}
 
       {!exams?.length ? (
         <EmptyState title="No exam available" message="Your teacher has not published exams yet." />

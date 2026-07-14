@@ -14,7 +14,7 @@ export async function createLessonAction(formData: FormData) {
   const published = formData.get("published") === "on";
 
   if (!title) {
-    redirect("/teacher/lessons?message=Lesson%20title%20is%20required.");
+    redirect("/teacher/lessons?error=Lesson%20title%20is%20required.");
   }
 
   const { error } = await supabase.from("lessons").insert({
@@ -27,6 +27,6 @@ export async function createLessonAction(formData: FormData) {
     published
   });
 
-  if (error) redirect(`/teacher/lessons?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/lessons?error=${encodeURIComponent(error.message)}`);
   redirect("/teacher/lessons?message=Lesson saved.");
 }

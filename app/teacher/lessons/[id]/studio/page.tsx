@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
+import { FlashMessage } from "@/components/FlashMessage";
 import { LessonBlockForm } from "@/components/lessons/LessonBlockForm";
 import { PortalShell } from "@/components/PortalShell";
 import { requireTeacher } from "@/lib/auth";
@@ -38,7 +39,7 @@ export default async function LessonStudioPage({
   searchParams
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ message?: string }>;
+  searchParams: Promise<{ message?: string; error?: string }>;
 }) {
   const { id } = await params;
   const query = await searchParams;
@@ -116,7 +117,13 @@ export default async function LessonStudioPage({
         </div>
       </section>
 
-      {query.message ? <div className="my-6 rounded-2xl border border-teal-200 bg-teal-50/85 px-5 py-4 text-sm font-semibold text-teal-800">{query.message}</div> : <div className="h-6" />}
+      {query.error ? (
+        <FlashMessage message={query.error} variant="error" className="my-6" />
+      ) : query.message ? (
+        <FlashMessage message={query.message} variant="success" className="my-6" />
+      ) : (
+        <div className="h-6" />
+      )}
 
       <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr]">
         <aside className="grid content-start gap-6">

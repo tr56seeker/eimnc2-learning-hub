@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { FlashMessage } from "@/components/FlashMessage";
+import { Modal } from "@/components/ui/Modal";
 import { createQuestionAction, deleteQuestionAction, updateQuestionAction } from "./actions";
 import { BulkQuestionUpload } from "./BulkQuestionUpload";
 
@@ -208,60 +210,6 @@ function QuestionForm({
   );
 }
 
-function Modal({ title, description, children, onClose, wide = false, extraWide = false }: {
-  title: string;
-  description?: string;
-  children: ReactNode;
-  onClose: () => void;
-  wide?: boolean;
-  extraWide?: boolean;
-}) {
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [onClose]);
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm"
-      onMouseDown={(event) => {
-        if (event.currentTarget === event.target) onClose();
-      }}
-    >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="question-modal-title"
-        className={`max-h-[92vh] w-full overflow-y-auto rounded-[1.5rem] border border-white/80 bg-white shadow-2xl shadow-slate-950/20 ${extraWide ? "max-w-6xl" : wide ? "max-w-3xl" : "max-w-2xl"}`}
-      >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-100 bg-white/95 px-6 py-5 backdrop-blur sm:px-7">
-          <div>
-            <h2 id="question-modal-title" className="text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl">{title}</h2>
-            {description ? <p className="mt-1.5 text-sm leading-6 text-slate-500">{description}</p> : null}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close dialog"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-200 text-xl leading-none text-slate-500 hover:bg-slate-50 hover:text-slate-950"
-          >
-            ×
-          </button>
-        </div>
-        <div className="p-6 sm:p-7">{children}</div>
-      </section>
-    </div>
-  );
-}
-
 function PreviewItem({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
   return (
     <div className={className}>
@@ -316,10 +264,11 @@ function QuestionPreview({ question }: { question: QuestionBankItem }) {
   );
 }
 
-export function QuestionBankClient({ questions, competencies, message }: {
+export function QuestionBankClient({ questions, competencies, message, error }: {
   questions: QuestionBankItem[];
   competencies: CompetencyOption[];
   message?: string;
+  error?: string;
 }) {
   const [search, setSearch] = useState("");
   const [competencyFilter, setCompetencyFilter] = useState("");
@@ -391,11 +340,8 @@ export function QuestionBankClient({ questions, competencies, message }: {
         </div>
       </header>
 
-      {message ? (
-        <div role="status" className="mb-6 rounded-xl border border-teal-200 bg-teal-50/80 px-4 py-3 text-sm font-semibold text-teal-800">
-          {message}
-        </div>
-      ) : null}
+      <FlashMessage message={error} variant="error" className="mb-6" />
+      <FlashMessage message={message} variant="success" className="mb-6" />
 
       <section className="overflow-visible rounded-2xl border border-slate-200/80 bg-white shadow-sm shadow-slate-200/50">
         <div className="border-b border-slate-200 bg-slate-50/60 p-4 sm:p-5">
@@ -532,7 +478,7 @@ export function QuestionBankClient({ questions, competencies, message }: {
       </section>
 
       {modal?.mode === "add" ? (
-        <Modal title="Add Question" description="Create a reusable question for quizzes and exams." onClose={() => setModal(null)} wide>
+        <Modal title="Add Question" description="Create a reusable question for quizzes and exams." onClose={() => setModal(null)} size="lg">
           <QuestionForm action={createQuestionAction} competencies={competencies} submitLabel="Add Question" />
         </Modal>
       ) : null}
@@ -542,14 +488,14 @@ export function QuestionBankClient({ questions, competencies, message }: {
           title="Bulk Upload Questions"
           description="Upload an Excel or CSV file, review every row, then import the valid questions."
           onClose={() => setModal(null)}
-          extraWide
+          size="xl"
         >
           <BulkQuestionUpload competencies={competencies} existingQuestions={questions} />
         </Modal>
       ) : null}
 
       {modal?.mode === "edit" ? (
-        <Modal title="Edit Question" description="Update this repository item without leaving the question bank." onClose={() => setModal(null)} wide>
+        <Modal title="Edit Question" description="Update this repository item without leaving the question bank." onClose={() => setModal(null)} size="lg">
           <QuestionForm
             key={modal.question.id}
             action={updateQuestionAction.bind(null, modal.question.id)}
@@ -561,7 +507,7 @@ export function QuestionBankClient({ questions, competencies, message }: {
       ) : null}
 
       {modal?.mode === "view" ? (
-        <Modal title="Question Preview" description="Review the full reusable question and answer details." onClose={() => setModal(null)} wide>
+        <Modal title="Question Preview" description="Review the full reusable question and answer details." onClose={() => setModal(null)} size="lg">
           <QuestionPreview question={modal.question} />
         </Modal>
       ) : null}

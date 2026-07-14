@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { EmptyState } from "@/components/EmptyState";
+import { FlashMessage } from "@/components/FlashMessage";
 import { FormInput, FormSelect, FormTextarea, SubmitButton } from "@/components/FormFields";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -82,7 +83,7 @@ function ExamForm({
   );
 }
 
-export default async function TeacherExamsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
+export default async function TeacherExamsPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
@@ -102,7 +103,8 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Teacher" title="Exam Manager" description="Create, schedule, publish, and open the builder for EIM exams." />
 
-      {params.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div> : null}
+      <FlashMessage message={params.error} variant="error" className="mb-7" />
+      <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">

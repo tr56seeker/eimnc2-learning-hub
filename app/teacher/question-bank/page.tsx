@@ -19,7 +19,7 @@ type QuestionRow = {
   competencies: { code: string | null; title: string | null } | { code: string | null; title: string | null }[] | null;
 };
 
-export default async function TeacherQuestionBankPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
+export default async function TeacherQuestionBankPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
@@ -63,6 +63,7 @@ export default async function TeacherQuestionBankPage({ searchParams }: { search
         competencies={competencies}
         questions={questions}
         message={params.message}
+        error={params.error}
       />
     </PortalShell>
   );

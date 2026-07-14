@@ -35,15 +35,15 @@ export async function submitExamAction(examId: string, formData: FormData) {
     .eq("status", "published")
     .single();
 
-  if (!exam) redirect("/learner/exams?message=Exam is not available");
+  if (!exam) redirect("/learner/exams?error=Exam is not available");
 
   const now = Date.now();
   if (exam.start_at && now < new Date(exam.start_at).getTime()) {
-    redirect("/learner/exams?message=Exam is not open yet.");
+    redirect("/learner/exams?error=Exam is not open yet.");
   }
 
   if (exam.end_at && now > new Date(exam.end_at).getTime()) {
-    redirect("/learner/exams?message=Exam is already closed.");
+    redirect("/learner/exams?error=Exam is already closed.");
   }
 
   const { data: inProgressAttempts } = await admin
@@ -66,7 +66,7 @@ export async function submitExamAction(examId: string, formData: FormData) {
       .eq("status", "submitted");
 
     if ((existingAttempts?.length ?? 0) >= 1) {
-      redirect(`/learner/exams/${examId}?message=You already submitted this exam.`);
+      redirect(`/learner/exams/${examId}?error=You already submitted this exam.`);
     }
 
     const { data: createdAttempt, error: createAttemptError } = await admin
@@ -82,7 +82,7 @@ export async function submitExamAction(examId: string, formData: FormData) {
       .single();
 
     if (createAttemptError || !createdAttempt) {
-      redirect(`/learner/exams/${examId}?message=Unable to create exam attempt.`);
+      redirect(`/learner/exams/${examId}?error=Unable to create exam attempt.`);
     }
 
     attempt = createdAttempt;
@@ -90,7 +90,7 @@ export async function submitExamAction(examId: string, formData: FormData) {
     const durationMs = Number(exam.duration_minutes ?? 30) * 60 * 1000;
     const startedAt = new Date(attempt.started_at).getTime();
     if (Number.isFinite(startedAt) && now > startedAt + durationMs + 30_000) {
-      redirect(`/learner/exams/${examId}?message=Time limit reached. Ask your teacher for assistance.`);
+      redirect(`/learner/exams/${examId}?error=Time limit reached. Ask your teacher for assistance.`);
     }
   }
 
@@ -102,7 +102,7 @@ export async function submitExamAction(examId: string, formData: FormData) {
     .returns<QuestionRow[]>();
 
   if (questionsError || !rows?.length) {
-    redirect(`/learner/exams/${examId}?message=No questions found.`);
+    redirect(`/learner/exams/${examId}?error=No questions found.`);
   }
 
   let score = 0;

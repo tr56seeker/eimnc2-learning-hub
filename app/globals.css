@@ -1,12 +1,74 @@
 @import "tailwindcss";
 
 :root {
+  /* Brand */
   --background: #f8fafc;
   --foreground: #0f172a;
   --brand: #0f766e;
   --brand-dark: #134e4a;
+  --brand-light: #ccfbf1;
+  --secondary: #0369a1;
+  --accent: #facc15;
   --gold: #facc15;
+
+  /* Neutral scale (mirrors Tailwind slate, named for non-Tailwind consumers) */
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-400: #94a3b8;
+  --neutral-600: #475569;
+  --neutral-900: #0f172a;
+
+  /* Semantic status colors */
+  --success: #0f766e;
+  --success-bg: #f0fdfa;
+  --success-border: #99f6e4;
+  --success-text: #115e59;
+  --warning: #b45309;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+  --warning-text: #92400e;
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #b91c1c;
+  --info: #0369a1;
+  --info-bg: #f0f9ff;
+  --info-border: #bae6fd;
+  --info-text: #075985;
+
+  /* Typography */
   --font-sans: "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+  /* Radius scale */
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 1.75rem;
+  --radius-full: 9999px;
+
+  /* Shadow scale */
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 16px 42px rgba(15, 23, 42, 0.055);
+  --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.12);
+
+  /* Motion */
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+
+  /* Focus */
+  --focus-ring-color: rgba(14, 165, 233, 0.22);
+  --focus-ring-border: rgba(14, 165, 233, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 * {
@@ -108,16 +170,46 @@ textarea::placeholder {
 }
 
 .focus-ring:focus {
-  outline: 3px solid rgba(14, 165, 233, 0.22);
+  outline: 3px solid var(--focus-ring-color);
   outline-offset: 2px;
-  border-color: rgba(14, 165, 233, 0.45);
+  border-color: var(--focus-ring-border);
+}
+
+.focus-ring:focus-visible {
+  outline: 3px solid var(--focus-ring-color);
+  outline-offset: 2px;
+  border-color: var(--focus-ring-border);
 }
 
 .premium-table {
   overflow: hidden;
-  border-radius: 1.5rem;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(226, 232, 240, 0.72);
   background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--shadow-md);
   backdrop-filter: blur(12px);
+}
+
+.status-success {
+  border-color: var(--success-border);
+  background-color: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-warning {
+  border-color: var(--warning-border);
+  background-color: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.status-danger {
+  border-color: var(--danger-border);
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.status-info {
+  border-color: var(--info-border);
+  background-color: var(--info-bg);
+  color: var(--info-text);
 }

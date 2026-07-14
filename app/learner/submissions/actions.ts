@@ -10,7 +10,7 @@ export async function submitOutputAction(formData: FormData) {
   const fileUrl = String(formData.get("file_url") ?? "").trim();
 
   if (!assignmentId) {
-    redirect("/learner/submissions?message=Please select an assignment.");
+    redirect("/learner/submissions?error=Please select an assignment.");
   }
 
   const { error } = await supabase.from("submissions").insert({
@@ -22,7 +22,7 @@ export async function submitOutputAction(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/learner/submissions?message=${encodeURIComponent(error.message)}`);
+    redirect(`/learner/submissions?error=${encodeURIComponent(error.message)}`);
   }
 
   redirect("/learner/submissions?message=Output submitted successfully.");

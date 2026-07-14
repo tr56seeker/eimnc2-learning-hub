@@ -1,6 +1,7 @@
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { FlashMessage } from "@/components/FlashMessage";
 import { requireLearner } from "@/lib/auth";
 import { percent } from "@/lib/format";
 
@@ -22,7 +23,7 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Grades" title="My Grade Dashboard" description="This dashboard shows encoded scores from exams and checked outputs." />
 
-      {params.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div> : null}
+      <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="card mb-8 rounded-[1.5rem] p-6 sm:p-7">
         <p className="text-sm font-medium text-slate-500">Overall mastery estimate</p>

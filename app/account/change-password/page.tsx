@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { FlashMessage } from "@/components/FlashMessage";
 import { SectionHeader } from "@/components/SectionHeader";
 import { getCurrentUserAndProfile } from "@/lib/auth";
 import { changePasswordAction } from "./actions";
@@ -28,11 +29,7 @@ export default async function ChangePasswordPage({
           description="Use a private password before entering your learner dashboard."
         />
 
-        {params.message ? (
-          <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-            {params.message}
-          </div>
-        ) : null}
+        <FlashMessage message={params.message} variant="error" className="mt-6" />
 
         <form action={changePasswordAction} className="mt-7 grid gap-5">
           <label className="grid gap-2.5 text-sm font-semibold text-slate-700">

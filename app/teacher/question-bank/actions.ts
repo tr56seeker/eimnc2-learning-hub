@@ -71,7 +71,7 @@ export async function createQuestionAction(formData: FormData) {
   const { profile, supabase } = await requireTeacher();
   const { error } = await supabase.from("question_bank").insert(questionPayload(formData, profile.id));
 
-  if (error) redirect(`/teacher/question-bank?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/question-bank?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/question-bank");
   redirect("/teacher/question-bank?message=Question added.");
 }
@@ -80,7 +80,7 @@ export async function updateQuestionAction(questionId: string, formData: FormDat
   const { supabase } = await requireTeacher();
   const { error } = await supabase.from("question_bank").update(questionPayload(formData)).eq("id", questionId);
 
-  if (error) redirect(`/teacher/question-bank?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/question-bank?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/question-bank");
   redirect("/teacher/question-bank?message=Question updated.");
 }
@@ -89,7 +89,7 @@ export async function deleteQuestionAction(questionId: string) {
   const { supabase } = await requireTeacher();
   const { error } = await supabase.from("question_bank").delete().eq("id", questionId);
 
-  if (error) redirect(`/teacher/question-bank?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/question-bank?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/question-bank");
   redirect("/teacher/question-bank?message=Question deleted.");
 }

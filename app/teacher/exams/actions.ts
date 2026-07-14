@@ -44,7 +44,7 @@ export async function createExamAction(formData: FormData) {
   const { profile, supabase } = await requireTeacher();
   const { error } = await supabase.from("exams").insert(examPayload(formData, profile.id));
 
-  if (error) redirect(`/teacher/exams?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/exams?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/exams");
   redirect("/teacher/exams?message=Exam created.");
 }
@@ -53,7 +53,7 @@ export async function updateExamAction(examId: string, formData: FormData) {
   const { supabase } = await requireTeacher();
   const { error } = await supabase.from("exams").update(examPayload(formData)).eq("id", examId);
 
-  if (error) redirect(`/teacher/exams?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/exams?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/exams");
   revalidatePath(`/teacher/exams/${examId}/builder`);
   redirect("/teacher/exams?message=Exam updated.");
@@ -63,7 +63,7 @@ export async function setExamStatusAction(examId: string, status: "draft" | "pub
   const { supabase } = await requireTeacher();
   const { error } = await supabase.from("exams").update({ status }).eq("id", examId);
 
-  if (error) redirect(`/teacher/exams?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/exams?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/exams");
   redirect(`/teacher/exams?message=Exam ${status === "published" ? "published" : "unpublished"}.`);
 }
@@ -72,7 +72,7 @@ export async function deleteExamAction(examId: string) {
   const { supabase } = await requireTeacher();
   const { error } = await supabase.from("exams").delete().eq("id", examId);
 
-  if (error) redirect(`/teacher/exams?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/exams?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/teacher/exams");
   redirect("/teacher/exams?message=Exam deleted.");
 }

@@ -1,3 +1,4 @@
+import { FlashMessage } from "@/components/FlashMessage";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
@@ -83,7 +84,7 @@ function bestEffortNameParts(fullName: string) {
 export default async function TeacherLearnersPage({
   searchParams
 }: {
-  searchParams: Promise<{ q?: string; section_id?: string; status?: string; message?: string }>;
+  searchParams: Promise<{ q?: string; section_id?: string; status?: string; message?: string; error?: string }>;
 }) {
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
@@ -198,11 +199,8 @@ export default async function TeacherLearnersPage({
         description="Enroll, view, and manage EIM learners."
       />
 
-      {params.message ? (
-        <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">
-          {params.message}
-        </div>
-      ) : null}
+      <FlashMessage message={params.error} variant="error" className="mb-7" />
+      <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <form className="card mb-7 grid gap-4 rounded-[1.75rem] p-5 sm:grid-cols-[1fr_220px_180px_auto] sm:items-end" action="/teacher/learners">
         <label className="grid gap-2.5 text-sm font-semibold text-slate-700">

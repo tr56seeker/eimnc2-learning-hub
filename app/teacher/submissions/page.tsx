@@ -1,12 +1,13 @@
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { FlashMessage } from "@/components/FlashMessage";
 import { requireTeacher } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { firstRelation } from "@/lib/relations";
 import { scoreSubmissionAction } from "./actions";
 
-export default async function TeacherSubmissionsPage({ searchParams }: { searchParams: Promise<{ message?: string }> }) {
+export default async function TeacherSubmissionsPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
@@ -19,7 +20,8 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Teacher" title="Check Learner Outputs" description="Review links, encode scores, and provide feedback." />
 
-      {params.message ? <div className="mb-7 rounded-2xl border border-teal-200 bg-teal-50/80 p-4 font-semibold text-teal-800">{params.message}</div> : null}
+      <FlashMessage message={params.error} variant="error" className="mb-7" />
+      <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       {!submissions?.length ? (
         <EmptyState title="No submissions yet" message="Learner outputs will appear here." />
