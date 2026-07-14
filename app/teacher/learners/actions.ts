@@ -12,6 +12,7 @@ import {
   resolveLearnerLoginEmail
 } from "@/lib/learner-accounts";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { canManageLearner } from "@/lib/teacher-assignments";
 
 export type LearnerEnrollmentState = {
   ok: boolean;
@@ -165,19 +166,23 @@ export async function createLearnerAction(
 }
 
 export async function updateLearnerAction(learnerId: string, formData: FormData) {
-  await requireTeacher();
+  const { supabase } = await requireTeacher();
+
+  if (!(await canManageLearner(supabase, learnerId))) {
+    redirect("/teacher/learners?error=You%20are%20not%20assigned%20to%20this%20learner%27s%20section.");
+  }
 
   const payload = learnerPayloadFromForm(formData);
 
   if (!payload.lastName || !payload.firstName) {
-    redirect("/teacher/learners?message=Last%20name%20and%20first%20name%20are%20required");
+    redirect("/teacher/learners?error=Last%20name%20and%20first%20name%20are%20required");
   }
 
   let email: string;
   try {
     email = resolveLearnerLoginEmail(payload.loginId, payload.lrn);
   } catch (error) {
-    redirect(`/teacher/learners?message=${encodeURIComponent(error instanceof Error ? error.message : "Enter a valid login ID.")}`);
+    redirect(`/teacher/learners?error=${encodeURIComponent(error instanceof Error ? error.message : "Enter a valid login ID.")}`);
   }
 
   const admin = createAdminClient();
@@ -198,7 +203,7 @@ export async function updateLearnerAction(learnerId: string, formData: FormData)
   });
 
   if (authError) {
-    redirect(`/teacher/learners?message=${encodeURIComponent(authError.message)}`);
+    redirect(`/teacher/learners?error=${encodeURIComponent(authError.message)}`);
   }
 
   const { error } = await admin
@@ -222,7 +227,7 @@ export async function updateLearnerAction(learnerId: string, formData: FormData)
     .eq("role", "learner");
 
   if (error) {
-    redirect(`/teacher/learners?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/learners?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/teacher/learners");
@@ -232,7 +237,11 @@ export async function updateLearnerAction(learnerId: string, formData: FormData)
 }
 
 export async function toggleLearnerStatusAction(learnerId: string, nextStatus: "active" | "inactive") {
-  await requireTeacher();
+  const { supabase } = await requireTeacher();
+
+  if (!(await canManageLearner(supabase, learnerId))) {
+    redirect("/teacher/learners?error=You%20are%20not%20assigned%20to%20this%20learner%27s%20section.");
+  }
 
   const admin = createAdminClient();
   const { error } = await admin
@@ -242,7 +251,7 @@ export async function toggleLearnerStatusAction(learnerId: string, nextStatus: "
     .eq("role", "learner");
 
   if (error) {
-    redirect(`/teacher/learners?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/learners?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/teacher/learners");
@@ -252,7 +261,11 @@ export async function toggleLearnerStatusAction(learnerId: string, nextStatus: "
 }
 
 export async function softDeleteLearnerAction(learnerId: string) {
-  await requireTeacher();
+  const { supabase } = await requireTeacher();
+
+  if (!(await canManageLearner(supabase, learnerId))) {
+    redirect("/teacher/learners?error=You%20are%20not%20assigned%20to%20this%20learner%27s%20section.");
+  }
 
   const admin = createAdminClient();
   const { error } = await admin
@@ -262,7 +275,7 @@ export async function softDeleteLearnerAction(learnerId: string) {
     .eq("role", "learner");
 
   if (error) {
-    redirect(`/teacher/learners?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/learners?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/teacher/learners");
@@ -272,13 +285,17 @@ export async function softDeleteLearnerAction(learnerId: string) {
 }
 
 export async function grantExamRetakeAction(learnerId: string, formData: FormData) {
-  const { profile } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
+
+  if (!(await canManageLearner(supabase, learnerId))) {
+    redirect(`/teacher/learners/${learnerId}?error=${encodeURIComponent("You are not assigned to this learner's section.")}`);
+  }
 
   const examId = String(formData.get("exam_id") ?? "").trim();
   const note = String(formData.get("note") ?? "").trim() || null;
 
   if (!examId) {
-    redirect(`/teacher/learners/${learnerId}?message=${encodeURIComponent("Missing exam reference for retake grant.")}`);
+    redirect(`/teacher/learners/${learnerId}?error=${encodeURIComponent("Missing exam reference for retake grant.")}`);
   }
 
   const admin = createAdminClient();
@@ -292,7 +309,7 @@ export async function grantExamRetakeAction(learnerId: string, formData: FormDat
     .limit(1);
 
   if ((existingUnused?.length ?? 0) > 0) {
-    redirect(`/teacher/learners/${learnerId}?message=${encodeURIComponent("A retake is already pending for this exam.")}`);
+    redirect(`/teacher/learners/${learnerId}?error=${encodeURIComponent("A retake is already pending for this exam.")}`);
   }
 
   const { error } = await admin.from("exam_retake_grants").insert({
@@ -303,7 +320,7 @@ export async function grantExamRetakeAction(learnerId: string, formData: FormDat
   });
 
   if (error) {
-    redirect(`/teacher/learners/${learnerId}?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/learners/${learnerId}?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath(`/teacher/learners/${learnerId}`);
@@ -315,7 +332,11 @@ export async function resetLearnerPasswordAction(
   _previousState: LearnerPasswordResetState,
   formData: FormData
 ): Promise<LearnerPasswordResetState> {
-  await requireTeacher();
+  const { supabase } = await requireTeacher();
+
+  if (!(await canManageLearner(supabase, learnerId))) {
+    return passwordResetMessage("You are not assigned to this learner's section.");
+  }
 
   const password = String(formData.get("password") ?? DEFAULT_LEARNER_PASSWORD);
   if (password.length < 8) {

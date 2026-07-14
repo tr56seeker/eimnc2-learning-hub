@@ -105,8 +105,13 @@ function renderMarkdownLite(markdown: string) {
 export default async function LessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { profile, supabase } = await getCurrentUserAndProfile();
-  if (profile.role === "learner" && profile.must_change_password) {
-    redirect("/account/change-password");
+  if (profile.role === "learner") {
+    if (profile.status === "inactive" || profile.status === "deleted") {
+      redirect("/account/inactive");
+    }
+    if (profile.must_change_password) {
+      redirect("/account/change-password");
+    }
   }
 
   const isTeacherPreview = profile.role === "teacher" || profile.role === "admin";

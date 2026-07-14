@@ -46,21 +46,21 @@ export async function createSectionAction(formData: FormData) {
   const payload = sectionPayload(formData);
 
   if (!payload.name || !payload.grade_level || !payload.school_year) {
-    redirect("/teacher/sections?message=Section%20name%2C%20grade%20level%2C%20and%20school%20year%20are%20required");
+    redirect("/teacher/sections?error=Section%20name%2C%20grade%20level%2C%20and%20school%20year%20are%20required");
   }
 
   if (![11, 12].includes(payload.grade_level)) {
-    redirect("/teacher/sections?message=Grade%20level%20must%20be%2011%20or%2012");
+    redirect("/teacher/sections?error=Grade%20level%20must%20be%2011%20or%2012");
   }
 
   if (await sectionAlreadyExists(supabase, payload)) {
-    redirect("/teacher/sections?message=This%20section%20already%20exists.");
+    redirect("/teacher/sections?error=This%20section%20already%20exists.");
   }
 
   const { error } = await supabase.from("sections").insert(payload);
 
   if (error) {
-    redirect(`/teacher/sections?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/sections?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidateSectionConsumers();
@@ -72,21 +72,21 @@ export async function updateSectionAction(sectionId: string, formData: FormData)
   const payload = sectionPayload(formData);
 
   if (!payload.name || !payload.grade_level || !payload.school_year) {
-    redirect("/teacher/sections?message=Section%20name%2C%20grade%20level%2C%20and%20school%20year%20are%20required");
+    redirect("/teacher/sections?error=Section%20name%2C%20grade%20level%2C%20and%20school%20year%20are%20required");
   }
 
   if (![11, 12].includes(payload.grade_level)) {
-    redirect("/teacher/sections?message=Grade%20level%20must%20be%2011%20or%2012");
+    redirect("/teacher/sections?error=Grade%20level%20must%20be%2011%20or%2012");
   }
 
   if (await sectionAlreadyExists(supabase, payload, sectionId)) {
-    redirect("/teacher/sections?message=This%20section%20already%20exists.");
+    redirect("/teacher/sections?error=This%20section%20already%20exists.");
   }
 
   const { error } = await supabase.from("sections").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", sectionId);
 
   if (error) {
-    redirect(`/teacher/sections?message=${encodeURIComponent(error.message)}`);
+    redirect(`/teacher/sections?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidateSectionConsumers();
@@ -102,20 +102,38 @@ export async function removeSectionAction(sectionId: string) {
     .eq("section_id", sectionId)
     .or("status.is.null,status.neq.deleted");
 
-  if (countError) redirect(`/teacher/sections?message=${encodeURIComponent(countError.message)}`);
+  if (countError) redirect(`/teacher/sections?error=${encodeURIComponent(countError.message)}`);
 
   if ((count ?? 0) > 0) {
     const { error } = await supabase
       .from("sections")
       .update({ is_active: false, updated_at: new Date().toISOString() })
       .eq("id", sectionId);
-    if (error) redirect(`/teacher/sections?message=${encodeURIComponent(error.message)}`);
+    if (error) redirect(`/teacher/sections?error=${encodeURIComponent(error.message)}`);
     revalidateSectionConsumers();
     redirect("/teacher/sections?message=This%20section%20has%20assigned%20learners.%20It%20was%20deactivated%20instead%20of%20permanently%20deleted.");
   }
 
   const { error } = await supabase.from("sections").delete().eq("id", sectionId);
-  if (error) redirect(`/teacher/sections?message=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`/teacher/sections?error=${encodeURIComponent(error.message)}`);
   revalidateSectionConsumers();
   redirect("/teacher/sections?message=Section%20removed");
+}
+
+export async function setSectionTeachersAction(sectionId: string, formData: FormData) {
+  const { supabase } = await requireTeacher();
+  const teacherIds = formData.getAll("teacher_ids").map(String).filter(Boolean);
+
+  const { error: deleteError } = await supabase.from("teacher_assignments").delete().eq("section_id", sectionId);
+  if (deleteError) redirect(`/teacher/sections?error=${encodeURIComponent(deleteError.message)}`);
+
+  if (teacherIds.length) {
+    const { error: insertError } = await supabase
+      .from("teacher_assignments")
+      .insert(teacherIds.map((teacherId) => ({ teacher_id: teacherId, section_id: sectionId })));
+    if (insertError) redirect(`/teacher/sections?error=${encodeURIComponent(insertError.message)}`);
+  }
+
+  revalidatePath("/teacher/sections");
+  redirect("/teacher/sections?message=Teacher%20assignments%20updated");
 }

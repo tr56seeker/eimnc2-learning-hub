@@ -130,6 +130,10 @@ export async function requireTeacher() {
     redirect("/learner/dashboard");
   }
 
+  if (result.profile.status === "inactive" || result.profile.status === "deleted") {
+    redirect("/account/inactive");
+  }
+
   return result;
 }
 

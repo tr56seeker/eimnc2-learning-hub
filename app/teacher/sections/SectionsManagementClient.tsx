@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { FormInput, FormSelect, SubmitButton } from "@/components/FormFields";
-import { createSectionAction, removeSectionAction, updateSectionAction } from "./actions";
+import { Modal } from "@/components/ui/Modal";
+import { createSectionAction, removeSectionAction, setSectionTeachersAction, updateSectionAction } from "./actions";
+
+export type ManagedTeacher = {
+  id: string;
+  full_name: string;
+};
 
 export type ManagedSection = {
   id: string;
@@ -11,6 +17,7 @@ export type ManagedSection = {
   schoolYear: string;
   isActive: boolean;
   learnerCount: number;
+  assignedTeacherIds: string[];
 };
 
 function SectionForm({ section, onSubmit }: { section?: ManagedSection; onSubmit?: () => void }) {
@@ -36,23 +43,48 @@ function SectionForm({ section, onSubmit }: { section?: ManagedSection; onSubmit
   );
 }
 
-function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+function TeacherAssignmentForm({
+  section,
+  teachers,
+  onSubmit
+}: {
+  section: ManagedSection;
+  teachers: ManagedTeacher[];
+  onSubmit?: () => void;
+}) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-8 backdrop-blur-sm">
-      <section className="w-full max-w-2xl rounded-[1.75rem] border border-white/80 bg-white p-6 shadow-2xl shadow-slate-950/20 sm:p-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-950">{title}</h2>
-          <button type="button" onClick={onClose} className="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:bg-slate-50">Close</button>
+    <form action={setSectionTeachersAction.bind(null, section.id)} onSubmit={onSubmit} className="grid gap-5">
+      <p className="text-sm leading-6 text-slate-500">
+        Only assigned teachers will see this section&apos;s learners, submissions, exam attempts, and gradebook entries.
+      </p>
+      {teachers.length ? (
+        <div className="grid gap-2">
+          {teachers.map((teacher) => (
+            <label key={teacher.id} className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 text-sm font-semibold text-slate-700">
+              <input
+                type="checkbox"
+                name="teacher_ids"
+                value={teacher.id}
+                defaultChecked={section.assignedTeacherIds.includes(teacher.id)}
+                className="h-4 w-4 accent-teal-700"
+              />
+              {teacher.full_name}
+            </label>
+          ))}
         </div>
-        {children}
-      </section>
-    </div>
+      ) : (
+        <p className="text-sm text-slate-500">No teacher/admin accounts found.</p>
+      )}
+      <SubmitButton>Save Assignments</SubmitButton>
+    </form>
   );
 }
 
-export function SectionsManagementClient({ sections }: { sections: ManagedSection[] }) {
+export function SectionsManagementClient({ sections, teachers }: { sections: ManagedSection[]; teachers: ManagedTeacher[] }) {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editing, setEditing] = useState<ManagedSection | null>(null);
+  const [assigning, setAssigning] = useState<ManagedSection | null>(null);
+  const teacherNameById = new Map(teachers.map((teacher) => [teacher.id, teacher.full_name]));
 
   return (
     <>
@@ -75,6 +107,7 @@ export function SectionsManagementClient({ sections }: { sections: ManagedSectio
                 <th className="border-b border-slate-200 px-4 py-3.5">School Year</th>
                 <th className="border-b border-slate-200 px-4 py-3.5">Status</th>
                 <th className="border-b border-slate-200 px-4 py-3.5 text-center">Learner Count</th>
+                <th className="border-b border-slate-200 px-4 py-3.5">Assigned Teachers</th>
                 <th className="border-b border-slate-200 px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
@@ -87,8 +120,14 @@ export function SectionsManagementClient({ sections }: { sections: ManagedSectio
                   <td className="border-b border-slate-200/70 px-4 py-4 tabular-nums">{section.schoolYear}</td>
                   <td className="border-b border-slate-200/70 px-4 py-4"><span className={section.isActive ? "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"}>{section.isActive ? "Active" : "Inactive"}</span></td>
                   <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums">{section.learnerCount}</td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 text-sm text-slate-600">
+                    {section.assignedTeacherIds.length
+                      ? section.assignedTeacherIds.map((id) => teacherNameById.get(id) ?? "Unknown").join(", ")
+                      : <span className="text-amber-700">Unassigned</span>}
+                  </td>
                   <td className="border-b border-slate-200/70 px-5 py-4">
                     <div className="flex justify-end gap-2">
+                      <button type="button" onClick={() => setAssigning(section)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700">Teachers</button>
                       <button type="button" onClick={() => setEditing(section)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700">Edit</button>
                       <form action={removeSectionAction.bind(null, section.id)} onSubmit={(event) => { if (!window.confirm("Remove this section? This may affect learner enrollment and gradebook filters.")) event.preventDefault(); }}>
                         <button className="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50">Remove</button>
@@ -105,6 +144,15 @@ export function SectionsManagementClient({ sections }: { sections: ManagedSectio
 
       {isAddOpen ? <Modal title="Add Section" onClose={() => setIsAddOpen(false)}><SectionForm onSubmit={() => setIsAddOpen(false)} /></Modal> : null}
       {editing ? <Modal title={`Edit Grade ${editing.gradeLevel} - ${editing.name}`} onClose={() => setEditing(null)}><SectionForm section={editing} onSubmit={() => setEditing(null)} /></Modal> : null}
+      {assigning ? (
+        <Modal
+          title={`Assign Teachers — Grade ${assigning.gradeLevel} - ${assigning.name}`}
+          description="Choose which teacher accounts can view and manage this section's learners."
+          onClose={() => setAssigning(null)}
+        >
+          <TeacherAssignmentForm section={assigning} teachers={teachers} onSubmit={() => setAssigning(null)} />
+        </Modal>
+      ) : null}
     </>
   );
 }
