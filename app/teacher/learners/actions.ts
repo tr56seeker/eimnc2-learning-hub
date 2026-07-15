@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth";
+import { logActivity } from "@/lib/audit";
 import {
   buildLearnerFullName,
   formatLearnerName,
@@ -73,7 +74,7 @@ export async function createLearnerAction(
   _previousState: LearnerEnrollmentState,
   formData: FormData
 ): Promise<LearnerEnrollmentState> {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
 
   const payload = learnerPayloadFromForm(formData);
   const password = DEFAULT_LEARNER_PASSWORD;
@@ -150,6 +151,8 @@ export async function createLearnerAction(
     revalidatePath("/teacher/learners");
     revalidatePath("/teacher/dashboard");
 
+    await logActivity(supabase, profile.id, "learner.created", { learner_id: data.user.id, full_name: payload.fullName });
+
     return {
       ok: true,
       message: "Learner enrolled.",
@@ -166,7 +169,7 @@ export async function createLearnerAction(
 }
 
 export async function updateLearnerAction(learnerId: string, formData: FormData) {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
 
   if (!(await canManageLearner(supabase, learnerId))) {
     redirect("/teacher/learners?error=You%20are%20not%20assigned%20to%20this%20learner%27s%20section.");
@@ -233,11 +236,13 @@ export async function updateLearnerAction(learnerId: string, formData: FormData)
   revalidatePath("/teacher/learners");
   revalidatePath(`/teacher/learners/${learnerId}`);
   revalidatePath("/teacher/dashboard");
+  await logActivity(supabase, profile.id, "learner.updated", { learner_id: learnerId });
+
   redirect("/teacher/learners?message=Learner%20updated");
 }
 
 export async function toggleLearnerStatusAction(learnerId: string, nextStatus: "active" | "inactive") {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
 
   if (!(await canManageLearner(supabase, learnerId))) {
     redirect("/teacher/learners?error=You%20are%20not%20assigned%20to%20this%20learner%27s%20section.");
@@ -257,11 +262,13 @@ export async function toggleLearnerStatusAction(learnerId: string, nextStatus: "
   revalidatePath("/teacher/learners");
   revalidatePath(`/teacher/learners/${learnerId}`);
   revalidatePath("/teacher/dashboard");
+  await logActivity(supabase, profile.id, "learner.status_changed", { learner_id: learnerId, status: nextStatus });
+
   redirect(`/teacher/learners?message=${encodeURIComponent(`Learner ${nextStatus === "active" ? "activated" : "deactivated"}`)}`);
 }
 
 export async function softDeleteLearnerAction(learnerId: string) {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
 
   if (!(await canManageLearner(supabase, learnerId))) {
     redirect("/teacher/learners?error=You%20are%20not%20assigned%20to%20this%20learner%27s%20section.");
@@ -281,6 +288,8 @@ export async function softDeleteLearnerAction(learnerId: string) {
   revalidatePath("/teacher/learners");
   revalidatePath(`/teacher/learners/${learnerId}`);
   revalidatePath("/teacher/dashboard");
+  await logActivity(supabase, profile.id, "learner.archived", { learner_id: learnerId });
+
   redirect("/teacher/learners?message=Learner%20soft%20deleted");
 }
 
@@ -332,7 +341,7 @@ export async function resetLearnerPasswordAction(
   _previousState: LearnerPasswordResetState,
   formData: FormData
 ): Promise<LearnerPasswordResetState> {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
 
   if (!(await canManageLearner(supabase, learnerId))) {
     return passwordResetMessage("You are not assigned to this learner's section.");
@@ -382,6 +391,7 @@ export async function resetLearnerPasswordAction(
 
   revalidatePath("/teacher/learners");
   revalidatePath(`/teacher/learners/${learnerId}`);
+  await logActivity(supabase, profile.id, "learner.password_reset", { learner_id: learnerId });
 
   return {
     ok: true,

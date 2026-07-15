@@ -11,13 +11,10 @@ export default async function ChangePasswordPage({
 }) {
   const params = await searchParams;
   const { profile } = await getCurrentUserAndProfile();
-
-  if (profile.role !== "learner") {
-    redirect("/teacher/dashboard");
-  }
+  const homePath = profile.role === "learner" ? "/learner/dashboard" : "/teacher/dashboard";
 
   if (!profile.must_change_password) {
-    redirect("/learner/dashboard");
+    redirect(homePath);
   }
 
   return (

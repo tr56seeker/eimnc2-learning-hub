@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth";
+import { logActivity } from "@/lib/audit";
 
 const reviewStatuses = [
   "needs_review",
@@ -36,5 +37,7 @@ export async function setIncidentReviewAction(attemptId: string, formData: FormD
 
   revalidatePath("/teacher/incidents");
   revalidatePath("/teacher/dashboard");
+  await logActivity(supabase, profile.id, "incident.reviewed", { attempt_id: attemptId, status });
+
   redirect("/teacher/incidents?message=Incident updated.");
 }

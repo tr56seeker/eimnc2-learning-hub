@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth";
+import { logActivity } from "@/lib/audit";
 
 function sectionPayload(formData: FormData) {
   const gradeLevel = Number(formData.get("grade_level") ?? 0);
@@ -42,7 +43,7 @@ function revalidateSectionConsumers() {
 }
 
 export async function createSectionAction(formData: FormData) {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
   const payload = sectionPayload(formData);
 
   if (!payload.name || !payload.grade_level || !payload.school_year) {
@@ -57,18 +58,20 @@ export async function createSectionAction(formData: FormData) {
     redirect("/teacher/sections?error=This%20section%20already%20exists.");
   }
 
-  const { error } = await supabase.from("sections").insert(payload);
+  const { data: created, error } = await supabase.from("sections").insert(payload).select("id").single();
 
   if (error) {
     redirect(`/teacher/sections?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidateSectionConsumers();
+  await logActivity(supabase, profile.id, "section.created", { section_id: created?.id, name: payload.name });
+
   redirect("/teacher/sections?message=Section%20created");
 }
 
 export async function updateSectionAction(sectionId: string, formData: FormData) {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
   const payload = sectionPayload(formData);
 
   if (!payload.name || !payload.grade_level || !payload.school_year) {
@@ -90,11 +93,13 @@ export async function updateSectionAction(sectionId: string, formData: FormData)
   }
 
   revalidateSectionConsumers();
+  await logActivity(supabase, profile.id, "section.updated", { section_id: sectionId, name: payload.name });
+
   redirect("/teacher/sections?message=Section%20updated");
 }
 
 export async function removeSectionAction(sectionId: string) {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
   const { count, error: countError } = await supabase
     .from("profiles")
     .select("id", { count: "exact", head: true })
@@ -111,12 +116,14 @@ export async function removeSectionAction(sectionId: string) {
       .eq("id", sectionId);
     if (error) redirect(`/teacher/sections?error=${encodeURIComponent(error.message)}`);
     revalidateSectionConsumers();
+    await logActivity(supabase, profile.id, "section.archived", { section_id: sectionId });
     redirect("/teacher/sections?message=This%20section%20has%20assigned%20learners.%20It%20was%20deactivated%20instead%20of%20permanently%20deleted.");
   }
 
   const { error } = await supabase.from("sections").delete().eq("id", sectionId);
   if (error) redirect(`/teacher/sections?error=${encodeURIComponent(error.message)}`);
   revalidateSectionConsumers();
+  await logActivity(supabase, profile.id, "section.removed", { section_id: sectionId });
   redirect("/teacher/sections?message=Section%20removed");
 }
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireTeacher } from "@/lib/auth";
+import { logActivity } from "@/lib/audit";
 import type { EditableAssessmentCategory } from "@/lib/gradebook";
 
 type SaveGradebookPayload = {
@@ -73,7 +74,7 @@ export async function addGradebookAssessmentAction(formData: FormData) {
 }
 
 export async function saveGradebookChangesAction(payload: SaveGradebookPayload) {
-  const { supabase } = await requireTeacher();
+  const { profile, supabase } = await requireTeacher();
   const now = new Date().toISOString();
 
   for (const assessment of payload.assessmentUpdates) {
@@ -105,6 +106,10 @@ export async function saveGradebookChangesAction(payload: SaveGradebookPayload) 
     if (error) {
       return { ok: false, message: error.message };
     }
+  }
+
+  if (scoreRows.length) {
+    await logActivity(supabase, profile.id, "gradebook.score_changed", { score_count: scoreRows.length });
   }
 
   revalidatePath("/teacher/gradebook");

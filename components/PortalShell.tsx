@@ -26,17 +26,24 @@ const teacherLinks = [
   ["Submissions", "/teacher/submissions"],
   ["Gradebook", "/teacher/gradebook"],
   ["Incidents", "/teacher/incidents"],
-  ["Achievements", "/teacher/achievements"]
+  ["Achievements", "/teacher/achievements"],
+  ["Reports", "/teacher/reports"]
+];
+
+const adminLinks = [
+  ["Staff Accounts", "/teacher/admin/teachers"],
+  ["Academic Years", "/teacher/admin/academic-years"],
+  ["Audit Log", "/teacher/admin/audit-logs"]
 ];
 
 export function PortalShell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
-  const links = profile.role === "learner" ? learnerLinks : teacherLinks;
+  const links = profile.role === "learner" ? learnerLinks : profile.role === "admin" ? [...teacherLinks, ...adminLinks] : teacherLinks;
   const portalLabel = profile.role === "learner" ? "Learner Portal" : "Teacher Portal";
 
   return (
     <div className="min-h-screen">
       <PresenceHeartbeat />
-      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/88 shadow-sm shadow-slate-200/30 backdrop-blur-xl">
+      <header className="print:hidden sticky top-0 z-30 border-b border-slate-200/70 bg-white/88 shadow-sm shadow-slate-200/30 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
           <div className="min-w-0">
             <Link href="/portal" className="text-lg font-semibold tracking-tight text-slate-950">
@@ -52,7 +59,7 @@ export function PortalShell({ profile, children }: { profile: Profile; children:
           </form>
         </div>
       </header>
-      <main className="mx-auto max-w-7xl px-5 py-10 sm:py-12 lg:px-6">{children}</main>
+      <main className="mx-auto max-w-7xl px-5 py-10 sm:py-12 lg:px-6 print:px-0 print:py-0">{children}</main>
     </div>
   );
 }

@@ -134,6 +134,28 @@ export async function requireTeacher() {
     redirect("/account/inactive");
   }
 
+  if (result.profile.must_change_password) {
+    redirect("/account/change-password");
+  }
+
+  return result;
+}
+
+export async function requireAdmin() {
+  const result = await getCurrentUserAndProfile();
+
+  if (result.profile.role !== "admin") {
+    redirect("/teacher/dashboard");
+  }
+
+  if (result.profile.status === "inactive" || result.profile.status === "deleted") {
+    redirect("/account/inactive");
+  }
+
+  if (result.profile.must_change_password) {
+    redirect("/account/change-password");
+  }
+
   return result;
 }
 

@@ -30,14 +30,16 @@ export async function changePasswordAction(formData: FormData) {
     redirect(`/account/change-password?message=${encodeURIComponent(passwordError.message)}`);
   }
 
-  const { error: profileError } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .update({ must_change_password: false })
-    .eq("id", user.id);
+    .eq("id", user.id)
+    .select("role")
+    .single();
 
   if (profileError) {
     redirect(`/account/change-password?message=${encodeURIComponent(profileError.message)}`);
   }
 
-  redirect("/learner/dashboard");
+  redirect(profile?.role === "learner" ? "/learner/dashboard" : "/teacher/dashboard");
 }
