@@ -21,7 +21,8 @@ const teacherLinks = [
   ["Exams", "/teacher/exams"],
   ["Question Bank", "/teacher/question-bank"],
   ["Submissions", "/teacher/submissions"],
-  ["Gradebook", "/teacher/gradebook"]
+  ["Gradebook", "/teacher/gradebook"],
+  ["Incidents", "/teacher/incidents"]
 ];
 
 export function PortalShell({ profile, children }: { profile: Profile; children: React.ReactNode }) {

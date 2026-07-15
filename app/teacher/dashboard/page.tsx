@@ -55,6 +55,9 @@ export default async function TeacherDashboardPage() {
               );
             })}
           </div>
+          <Link href="/teacher/incidents" className="mt-4 inline-block text-sm font-semibold text-red-700 hover:text-red-800">
+            Review all flagged incidents
+          </Link>
         </section>
       ) : null}
 

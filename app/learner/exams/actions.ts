@@ -24,13 +24,17 @@ function normalizeAnswer(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+export type ExamViolationType = "tab_switch" | "copy_attempt" | "paste_attempt" | "right_click" | "fullscreen_exit";
+
 // Called in real time by ExamIntegrityGuard as each violation happens, so
 // the violation count is a server-persisted tally instead of a single
 // client-supplied field trusted at submit time (a learner could otherwise
 // just submit a plain form post with violation_count=0 and bypass the
 // guard entirely). Ownership of the attempt is verified explicitly since
-// this uses the service-role client, which bypasses RLS.
-export async function recordExamViolationAction(attemptId: string, maxViolations: number) {
+// this uses the service-role client, which bypasses RLS. Each event is also
+// logged with a timestamp so a teacher can review a real incident timeline
+// instead of only a final aggregated count.
+export async function recordExamViolationAction(attemptId: string, violationType: ExamViolationType, maxViolations: number) {
   const { profile } = await requireLearner();
   const admin = createAdminClient();
 
@@ -49,15 +53,18 @@ export async function recordExamViolationAction(attemptId: string, maxViolations
   const nextCount = (attempt.violation_count ?? 0) + 1;
   const terminated = nextCount > maxViolations;
 
-  await admin
-    .from("exam_attempts")
-    .update({
-      violation_count: nextCount,
-      ...(terminated
-        ? { termination_reason: `Auto-submitted after exceeding ${maxViolations} allowed violations during the exam.` }
-        : {})
-    })
-    .eq("id", attemptId);
+  await Promise.all([
+    admin
+      .from("exam_attempts")
+      .update({
+        violation_count: nextCount,
+        ...(terminated
+          ? { termination_reason: `Auto-submitted after exceeding ${maxViolations} allowed violations during the exam.` }
+          : {})
+      })
+      .eq("id", attemptId),
+    admin.from("exam_integrity_events").insert({ attempt_id: attemptId, event_type: violationType })
+  ]);
 
   return { violationCount: nextCount, terminated };
 }

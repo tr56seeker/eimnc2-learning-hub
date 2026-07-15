@@ -2,22 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { recordExamViolationAction } from "@/app/learner/exams/actions";
+import { recordExamViolationAction, type ExamViolationType } from "@/app/learner/exams/actions";
 
-type ViolationType = "tab_switch" | "copy_attempt" | "paste_attempt" | "right_click";
+type ViolationType = ExamViolationType;
 
 const VIOLATION_LABELS: Record<ViolationType, string> = {
   tab_switch: "switching away from the exam tab",
   copy_attempt: "copying exam content",
   paste_attempt: "pasting content into an answer",
-  right_click: "right-click / context menu"
+  right_click: "right-click / context menu",
+  fullscreen_exit: "exiting fullscreen mode"
 };
 
 const FRIENDLY_LABELS: Record<ViolationType, string> = {
   tab_switch: "Switching tabs or apps during the exam",
   copy_attempt: "Attempting to copy exam content",
   paste_attempt: "Attempting to paste content into an answer",
-  right_click: "Using right-click / context menu"
+  right_click: "Using right-click / context menu",
+  fullscreen_exit: "Exiting fullscreen mode"
 };
 
 export function ExamIntegrityGuard({
@@ -67,7 +69,7 @@ export function ExamIntegrityGuard({
       // The server persists the count against this attempt in real time and
       // is the sole source of truth for whether the threshold was
       // exceeded — the client only reflects what the server reports back.
-      const result = await recordExamViolationAction(attemptId, maxViolations);
+      const result = await recordExamViolationAction(attemptId, type, maxViolations);
 
       if (terminatedRef.current) return;
 
@@ -115,11 +117,24 @@ export function ExamIntegrityGuard({
       void recordViolation("right_click");
     }
 
+    // Only flags exiting fullscreen if the learner (or a school-configured
+    // proctoring flow) had actually entered it — this guard never requests
+    // fullscreen itself, so it's a no-op for exams taken in a normal window.
+    let wasFullscreen = Boolean(document.fullscreenElement);
+    function onFullscreenChange() {
+      const isFullscreen = Boolean(document.fullscreenElement);
+      if (wasFullscreen && !isFullscreen) {
+        void recordViolation("fullscreen_exit");
+      }
+      wasFullscreen = isFullscreen;
+    }
+
     document.addEventListener("visibilitychange", onVisibilityChange);
     document.addEventListener("copy", onCopy);
     document.addEventListener("cut", onCut);
     document.addEventListener("paste", onPaste);
     document.addEventListener("contextmenu", onContextMenu);
+    document.addEventListener("fullscreenchange", onFullscreenChange);
 
     return () => {
       document.removeEventListener("visibilitychange", onVisibilityChange);
@@ -127,6 +142,7 @@ export function ExamIntegrityGuard({
       document.removeEventListener("cut", onCut);
       document.removeEventListener("paste", onPaste);
       document.removeEventListener("contextmenu", onContextMenu);
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
     };
   }, [attemptId, formId, maxViolations]);
 
