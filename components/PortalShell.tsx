@@ -9,7 +9,9 @@ const learnerLinks = [
   ["Lessons", "/learner/lessons"],
   ["Exams", "/learner/exams"],
   ["Submissions", "/learner/submissions"],
-  ["Grades", "/learner/grades"]
+  ["Projects", "/learner/projects"],
+  ["Grades", "/learner/grades"],
+  ["Achievements", "/learner/achievements"]
 ];
 
 const teacherLinks = [
@@ -18,11 +20,13 @@ const teacherLinks = [
   ["Sections", "/teacher/sections"],
   ["Lessons", "/teacher/lessons"],
   ["Activities", "/teacher/activities"],
+  ["Projects", "/teacher/projects"],
   ["Exams", "/teacher/exams"],
   ["Question Bank", "/teacher/question-bank"],
   ["Submissions", "/teacher/submissions"],
   ["Gradebook", "/teacher/gradebook"],
-  ["Incidents", "/teacher/incidents"]
+  ["Incidents", "/teacher/incidents"],
+  ["Achievements", "/teacher/achievements"]
 ];
 
 export function PortalShell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
