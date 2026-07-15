@@ -101,6 +101,9 @@ create table public.exam_questions (
 
 
 -- Learner-safe exam question view. It intentionally does not expose correct_answer or explanation.
+-- This view has no RLS of its own (views can't have row-level security policies) —
+-- its own `where e.status = 'published'` clause is what restricts access, not a
+-- policy. Don't mistake it for an RLS-protected object when auditing security.
 create or replace view public.exam_question_public as
 select
   eq.exam_id,

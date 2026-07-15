@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { LessonBlockRenderer } from "@/components/lessons/LessonBlockRenderer";
 import { LessonCompletionControl, LessonReadingAids } from "@/components/lessons/LessonProgressTracker";
 import { PortalShell } from "@/components/PortalShell";
-import { getCurrentUserAndProfile } from "@/lib/auth";
+import { getCurrentUserAndProfile, requireActiveAccount } from "@/lib/auth";
 import { type LessonBlock, type LessonBlockType } from "@/lib/lesson-blocks";
 import { publishDueLessons } from "@/lib/lesson-scheduling";
 import { firstRelation } from "@/lib/relations";
@@ -114,12 +114,7 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const { profile, supabase } = await getCurrentUserAndProfile();
   if (profile.role === "learner") {
-    if (profile.status === "inactive" || profile.status === "deleted") {
-      redirect("/account/inactive");
-    }
-    if (profile.must_change_password) {
-      redirect("/account/change-password");
-    }
+    requireActiveAccount(profile);
   }
 
   const isTeacherPreview = profile.role === "teacher" || profile.role === "admin";

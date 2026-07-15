@@ -123,6 +123,19 @@ export async function getCurrentUserAndProfile() {
   return { user, profile, supabase };
 }
 
+// Shared by every require*() below, and by any page that needs a custom role
+// check (e.g. a lesson reader open to both learners and teacher-preview)
+// but must still enforce the same account-status/must-change-password gate.
+export function requireActiveAccount(profile: Profile) {
+  if (profile.status === "inactive" || profile.status === "deleted") {
+    redirect("/account/inactive");
+  }
+
+  if (profile.must_change_password) {
+    redirect("/account/change-password");
+  }
+}
+
 export async function requireTeacher() {
   const result = await getCurrentUserAndProfile();
 
@@ -130,13 +143,7 @@ export async function requireTeacher() {
     redirect("/learner/dashboard");
   }
 
-  if (result.profile.status === "inactive" || result.profile.status === "deleted") {
-    redirect("/account/inactive");
-  }
-
-  if (result.profile.must_change_password) {
-    redirect("/account/change-password");
-  }
+  requireActiveAccount(result.profile);
 
   return result;
 }
@@ -148,13 +155,7 @@ export async function requireAdmin() {
     redirect("/teacher/dashboard");
   }
 
-  if (result.profile.status === "inactive" || result.profile.status === "deleted") {
-    redirect("/account/inactive");
-  }
-
-  if (result.profile.must_change_password) {
-    redirect("/account/change-password");
-  }
+  requireActiveAccount(result.profile);
 
   return result;
 }
@@ -166,13 +167,7 @@ export async function requireLearner() {
     redirect("/teacher/dashboard");
   }
 
-  if (result.profile.status === "inactive" || result.profile.status === "deleted") {
-    redirect("/account/inactive");
-  }
-
-  if (result.profile.must_change_password) {
-    redirect("/account/change-password");
-  }
+  requireActiveAccount(result.profile);
 
   return result;
 }

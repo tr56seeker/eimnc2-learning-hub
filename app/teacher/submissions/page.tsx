@@ -17,6 +17,7 @@ type SubmissionRow = {
   score: number | null;
   feedback: string | null;
   submitted_at: string | null;
+  submitted_filename: string | null;
   learner_id: string;
   profiles: { full_name: string } | { full_name: string }[] | null;
   assignments: AssignmentInfo | AssignmentInfo[] | null;
@@ -26,10 +27,17 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
+  // Version grouping below needs every submission for a given
+  // assignment+learner in the same fetch, so this can't paginate by row like
+  // the audit-log page does. SUBMISSIONS_FETCH_LIMIT is a safety cap against
+  // unbounded growth, not a real pager — see docs/DEPLOYMENT.md's Phase 10 notes.
+  const SUBMISSIONS_FETCH_LIMIT = 2000;
+
   const { data: submissions } = await supabase
     .from("submissions")
-    .select("id, content_text, file_url, status, score, feedback, submitted_at, learner_id, profiles(full_name), assignments(id, title, max_score, due_at)")
+    .select("id, content_text, file_url, status, score, feedback, submitted_at, submitted_filename, learner_id, profiles(full_name), assignments(id, title, max_score, due_at)")
     .order("submitted_at", { ascending: false })
+    .limit(SUBMISSIONS_FETCH_LIMIT)
     .returns<SubmissionRow[]>();
 
   // Group repeated submissions for the same assignment+learner into one
@@ -77,7 +85,8 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
                     <h2 className="mt-2 text-xl font-semibold text-slate-950">{assignment?.title}</h2>
                     <p className="mt-2 text-sm font-medium text-slate-500">Learner: {learner?.full_name}</p>
                     <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(latest.submitted_at)}</p>
-                    {latest.file_url ? <a className="mt-4 inline-block font-semibold text-teal-700 hover:underline" href={latest.file_url} target="_blank" rel="noreferrer">Open submitted link</a> : null}
+                    {latest.submitted_filename ? <p className="mt-3 text-xs font-semibold text-slate-500">Expected file name: {latest.submitted_filename} — confirm the learner&apos;s actual file matches.</p> : null}
+                    {latest.file_url ? <a className="mt-2 inline-block font-semibold text-teal-700 hover:underline" href={latest.file_url} target="_blank" rel="noreferrer">Open submitted link</a> : null}
                     {latest.content_text ? <p className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">{latest.content_text}</p> : null}
 
                     {olderVersions.length ? (

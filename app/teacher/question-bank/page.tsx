@@ -29,6 +29,7 @@ export default async function TeacherQuestionBankPage({ searchParams }: { search
       .from("question_bank")
       .select("id, competency_id, question_text, question_type, choices, correct_answer, points, difficulty, explanation, is_active, competencies(code, title)")
       .order("created_at", { ascending: false })
+      .limit(1000)
       .returns<QuestionRow[]>()
   ]);
 

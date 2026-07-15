@@ -15,6 +15,7 @@ type AssignmentRow = {
   submission_type: string;
   rubric: { criteria: RubricCriterion[] } | null;
   is_active: boolean | null;
+  expected_filename_pattern: string | null;
   lessons: { title: string } | { title: string }[] | null;
   submissions: { count: number } | { count: number }[] | null;
 };
@@ -35,7 +36,7 @@ export default async function TeacherActivitiesPage({
   const [assignmentsResult, lessonsResult] = await Promise.all([
     supabase
       .from("assignments")
-      .select("id, title, instructions, lesson_id, due_at, max_score, submission_type, rubric, is_active, lessons(title), submissions(count)")
+      .select("id, title, instructions, lesson_id, due_at, max_score, submission_type, rubric, is_active, expected_filename_pattern, lessons(title), submissions(count)")
       .order("due_at", { ascending: true })
       .returns<AssignmentRow[]>(),
     supabase.from("lessons").select("id, title").order("title").returns<LessonOption[]>()
@@ -54,7 +55,8 @@ export default async function TeacherActivitiesPage({
       submissionType: row.submission_type,
       rubric: row.rubric?.criteria ?? null,
       isActive: row.is_active !== false,
-      submissionCount: firstRelation(row.submissions)?.count ?? 0
+      submissionCount: firstRelation(row.submissions)?.count ?? 0,
+      expectedFilenamePattern: row.expected_filename_pattern
     }));
 
   const lessons = lessonsResult.data ?? [];

@@ -89,17 +89,39 @@ export default async function TeacherLearnersPage({
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
+  const query = normalizedFilter(params.q).toLowerCase();
+  const sectionFilter = normalizedFilter(params.section_id);
+  const statusFilter = normalizedStatusFilter(params.status);
+
+  // section/status are exact-match, real columns, so they're pushed down to
+  // SQL to keep the fetched row count bounded. Free-text search still runs in
+  // JS below since it spans derived fields (login ID, formatted section name)
+  // that don't exist as literal columns. LEARNER_FETCH_LIMIT is a safety cap,
+  // not a full pager — see docs/DEPLOYMENT.md's Phase 10 notes.
+  const LEARNER_FETCH_LIMIT = 1000;
+
+  // A null status is treated as "active" throughout this page
+  // (normalizeLearnerStatus), so the "active" filter must match null too —
+  // it can't be a plain .eq("status", "active").
+  const statusFilterClause = statusFilter === "active" ? "status.eq.active,status.is.null" : null;
+
+  let richLearnersQuery = supabase
+    .from("profiles")
+    .select("id, full_name, first_name, last_name, middle_name, middle_initial, suffix, sex, birthdate, last_seen_at, email, lrn, grade_level, section_id, status, must_change_password")
+    .eq("role", "learner");
+  if (sectionFilter) richLearnersQuery = richLearnersQuery.eq("section_id", sectionFilter);
+  if (statusFilterClause) richLearnersQuery = richLearnersQuery.or(statusFilterClause);
+  else if (statusFilter !== "all") richLearnersQuery = richLearnersQuery.eq("status", statusFilter);
+
   const [sectionsResult, richLearnersResult] = await Promise.all([
     supabase.from("sections").select("id, name, grade_level, school_year, is_active").order("grade_level").order("name").returns<SectionRow[]>(),
-    supabase
-      .from("profiles")
-      .select("id, full_name, first_name, last_name, middle_name, middle_initial, suffix, sex, birthdate, last_seen_at, email, lrn, grade_level, section_id, status, must_change_password")
-      .eq("role", "learner")
+    richLearnersQuery
       .order("last_name", { nullsFirst: false })
       .order("first_name", { nullsFirst: false })
       .order("middle_name", { nullsFirst: false })
       .order("suffix", { nullsFirst: false })
       .order("full_name")
+      .limit(LEARNER_FETCH_LIMIT)
       .returns<LearnerRow[]>()
   ]);
 
@@ -107,13 +129,13 @@ export default async function TeacherLearnersPage({
   // name/password-management columns yet. A missing optional column makes
   // PostgREST reject the entire select, so retry with the compatible profile
   // shape instead of turning that query error into an empty learner list.
+  let fallbackQuery = supabase.from("profiles").select("id, full_name, lrn, section_id, status").eq("role", "learner");
+  if (sectionFilter) fallbackQuery = fallbackQuery.eq("section_id", sectionFilter);
+  if (statusFilterClause) fallbackQuery = fallbackQuery.or(statusFilterClause);
+  else if (statusFilter !== "all") fallbackQuery = fallbackQuery.eq("status", statusFilter);
+
   const learnersResult = richLearnersResult.error
-    ? await supabase
-        .from("profiles")
-        .select("id, full_name, lrn, section_id, status")
-        .eq("role", "learner")
-        .order("full_name")
-        .returns<LearnerRow[]>()
+    ? await fallbackQuery.order("full_name").limit(LEARNER_FETCH_LIMIT).returns<LearnerRow[]>()
     : richLearnersResult;
 
   const sections: SectionOption[] = (sectionsResult.data ?? []).map((section) => ({
@@ -125,9 +147,6 @@ export default async function TeacherLearnersPage({
   }));
   const sectionById = new Map((sectionsResult.data ?? []).map((section) => [section.id, section]));
 
-  const query = normalizedFilter(params.q).toLowerCase();
-  const sectionFilter = normalizedFilter(params.section_id);
-  const statusFilter = normalizedStatusFilter(params.status);
   const rawLearners = learnersResult.data ?? [];
 
   if (process.env.NODE_ENV !== "production") {

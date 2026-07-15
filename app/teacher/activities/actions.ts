@@ -37,6 +37,7 @@ function activityPayload(formData: FormData, createdBy?: string) {
     ? submissionTypeValue
     : "link_or_text";
   const rubric = parseRubric(String(formData.get("rubric") ?? ""));
+  const expectedFilenamePattern = nullableText(formData.get("expected_filename_pattern"));
 
   return {
     title,
@@ -46,6 +47,7 @@ function activityPayload(formData: FormData, createdBy?: string) {
     max_score: Number.isFinite(maxScore) && maxScore > 0 ? maxScore : 100,
     submission_type: submissionType,
     rubric,
+    expected_filename_pattern: expectedFilenamePattern,
     ...(createdBy ? { created_by: createdBy } : {})
   };
 }

@@ -4,6 +4,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { FlashMessage } from "@/components/FlashMessage";
 import { requireLearner } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
+import { resolveFilenamePattern } from "@/lib/filename-pattern";
 import { firstRelation } from "@/lib/relations";
 import { submitOutputAction } from "./actions";
 
@@ -13,6 +14,7 @@ type AssignmentRow = {
   instructions: string | null;
   due_at: string | null;
   max_score: number | null;
+  expected_filename_pattern: string | null;
   lessons: { title: string } | { title: string }[] | null;
 };
 
@@ -23,6 +25,7 @@ type SubmissionRow = {
   score: number | null;
   feedback: string | null;
   submitted_at: string | null;
+  submitted_filename: string | null;
   assignments: { title: string; max_score: number | null } | { title: string; max_score: number | null }[] | null;
 };
 
@@ -42,23 +45,27 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
   const params = await searchParams;
   const { profile, supabase } = await requireLearner();
 
-  const [assignmentsResult, submissionsResult] = await Promise.all([
+  const [assignmentsResult, submissionsResult, sectionResult] = await Promise.all([
     supabase
       .from("assignments")
-      .select("id, title, instructions, due_at, max_score, lessons(title)")
+      .select("id, title, instructions, due_at, max_score, expected_filename_pattern, lessons(title)")
       .eq("is_active", true)
       .order("due_at", { ascending: true })
       .returns<AssignmentRow[]>(),
     supabase
       .from("submissions")
-      .select("id, assignment_id, status, score, feedback, submitted_at, assignments(title, max_score)")
+      .select("id, assignment_id, status, score, feedback, submitted_at, submitted_filename, assignments(title, max_score)")
       .eq("learner_id", profile.id)
       .order("submitted_at", { ascending: false })
-      .returns<SubmissionRow[]>()
+      .returns<SubmissionRow[]>(),
+    profile.section_id
+      ? supabase.from("sections").select("name").eq("id", profile.section_id).maybeSingle()
+      : Promise.resolve({ data: null })
   ]);
 
   const assignments = assignmentsResult.data ?? [];
   const submissions = submissionsResult.data ?? [];
+  const sectionName = sectionResult.data?.name ?? null;
   // eslint-disable-next-line react-hooks/purity -- server-rendered per request; needs the actual current time to flag overdue assignments
   const now = Date.now();
 
@@ -86,12 +93,27 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
                 const latest = submissionsByAssignment.get(assignment.id)?.[0];
                 const isLate = Boolean(latest?.submitted_at && assignment.due_at && new Date(latest.submitted_at).getTime() > new Date(assignment.due_at).getTime());
                 const isMissing = !latest && Boolean(assignment.due_at && new Date(assignment.due_at).getTime() < now);
+                const nextVersion = (submissionsByAssignment.get(assignment.id)?.length ?? 0) + 1;
+                const expectedFilename = assignment.expected_filename_pattern
+                  ? resolveFilenamePattern(assignment.expected_filename_pattern, {
+                      lrn: profile.lrn,
+                      firstName: profile.first_name,
+                      lastName: profile.last_name,
+                      fullName: profile.full_name,
+                      section: sectionName,
+                      activityTitle: assignment.title,
+                      version: nextVersion
+                    })
+                  : null;
 
                 return (
                   <div key={assignment.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/70 bg-white/75 p-4">
                     <div>
                       <p className="font-semibold text-slate-950">{assignment.title}</p>
                       <p className="mt-1 text-xs text-slate-500">{assignment.due_at ? `Due ${formatDateTime(assignment.due_at)}` : "No due date"}</p>
+                      {expectedFilename ? (
+                        <p className="mt-1 text-xs font-semibold text-teal-700">Name your file: {expectedFilename}</p>
+                      ) : null}
                     </div>
                     <span className={isMissing ? "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700" : latest ? statusClass(latest.status) : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"}>
                       {isMissing ? "Missing" : latest ? statusLabel(latest.status, isLate) : "Not yet submitted"}
@@ -142,6 +164,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
                     <span className={statusClass(submission.status)}>{statusLabel(submission.status, false)}</span>
                   </div>
                   <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(submission.submitted_at)}</p>
+                  {submission.submitted_filename ? <p className="mt-1 text-xs font-semibold text-slate-500">File name used: {submission.submitted_filename}</p> : null}
                   {submission.score !== null ? <p className="text-sm font-semibold text-teal-700">Score: {submission.score}/{assignment?.max_score}</p> : null}
                   {submission.feedback ? <p className="mt-2 text-sm text-slate-600">Feedback: {submission.feedback}</p> : null}
                   {submission.status === "returned" ? (

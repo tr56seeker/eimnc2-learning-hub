@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FormInput, FormSelect, FormTextarea, SubmitButton } from "@/components/FormFields";
 import { Modal } from "@/components/ui/Modal";
+import { FILENAME_PATTERN_TOKENS } from "@/lib/filename-pattern";
 import { createActivityAction, setActivityActiveAction, updateActivityAction } from "./actions";
 
 export type RubricCriterion = { name: string; points: number };
@@ -19,6 +20,7 @@ export type ManagedActivity = {
   rubric: RubricCriterion[] | null;
   isActive: boolean;
   submissionCount: number;
+  expectedFilenamePattern: string | null;
 };
 
 export type LessonOption = { id: string; title: string };
@@ -72,6 +74,15 @@ function ActivityForm({ activity, lessons, onSubmit }: { activity?: ManagedActiv
         defaultValue={rubricToText(activity?.rubric ?? null)}
         placeholder={"Safety compliance | 10\nCorrect wiring | 20\nNeatness | 10"}
       />
+      <FormInput
+        label="Expected File Name Pattern (optional)"
+        name="expected_filename_pattern"
+        defaultValue={activity?.expectedFilenamePattern ?? ""}
+        placeholder="{LRN}_{LASTNAME}_{ACTIVITY}"
+      />
+      <p className="-mt-3 text-xs leading-5 text-slate-500">
+        Learners will be shown the exact file name to use before they submit. Tokens: {FILENAME_PATTERN_TOKENS.map((t) => t.token).join(", ")}
+      </p>
       <SubmitButton>{activity ? "Save Changes" : "Create Activity"}</SubmitButton>
     </form>
   );

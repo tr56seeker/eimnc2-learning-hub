@@ -137,6 +137,7 @@ export function LessonBlockForm({ action, block, defaultOrder, submitLabel }: Le
         <label className={labelClass}>
           Alt text
           <input name="alt_text" defaultValue={block?.alt_text ?? ""} className={inputClass} placeholder="Describe the image for accessibility" />
+          <span className="text-xs font-normal text-slate-500">Describe what the image shows — a screen reader reads this instead of the picture. Leave blank only for purely decorative images.</span>
         </label>
       ) : null}
 
