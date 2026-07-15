@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortalShell } from "@/components/PortalShell";
+import { ExamAutosave } from "@/components/ExamAutosave";
 import { ExamTimer } from "@/components/ExamTimer";
 import { ExamIntegrityGuard } from "@/components/ExamIntegrityGuard";
 import { FlashMessage } from "@/components/FlashMessage";
@@ -99,6 +100,11 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
   const questionRows = shuffleItems(rows ?? [], Boolean(exam.randomize_questions));
   const action = submitExamAction.bind(null, id);
 
+  const { data: drafts } = inProgress
+    ? await supabase.from("exam_attempt_drafts").select("question_id, answer_text").eq("attempt_id", inProgress.id)
+    : { data: null };
+  const draftByQuestion = new Map((drafts ?? []).map((draft) => [draft.question_id, draft.answer_text ?? ""]));
+
   return (
     <PortalShell profile={profile}>
       <section className="card rounded-[1.75rem] p-7 sm:p-9">
@@ -127,11 +133,13 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
             ) : null}
             <ExamTimer deadlineIso={deadline.toISOString()} formId="exam-attempt-form" />
             <ExamIntegrityGuard attemptId={inProgress?.id ?? ""} formId="exam-attempt-form" maxViolations={exam.max_violations ?? 3} />
+            <ExamAutosave attemptId={inProgress?.id ?? ""} formId="exam-attempt-form" />
             <form id="exam-attempt-form" action={action} className="mt-2 grid gap-6">
             {questionRows.map((row, index) => {
               const question = row;
               const points = row.points_override ?? question.points ?? 1;
               const choices = shuffleItems((question.choices ?? []).map(normalizedChoice), Boolean(exam.randomize_choices));
+              const draftAnswer = draftByQuestion.get(question.question_id) ?? "";
 
               return (
                 <fieldset key={question.question_id} className="rounded-[1.5rem] border border-slate-200/70 bg-white/82 p-6 shadow-sm shadow-slate-200/40">
@@ -142,15 +150,15 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
                     <div className="mt-5 grid gap-3">
                       {choices.map((choice) => (
                         <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200/80 bg-white/75 p-4 text-sm leading-6 shadow-sm shadow-slate-200/40 hover:border-teal-200 hover:bg-teal-50/80">
-                          <input type="radio" name={`q_${question.question_id}`} value={choice.value} required />
+                          <input type="radio" name={`q_${question.question_id}`} value={choice.value} defaultChecked={draftAnswer === choice.value} required />
                           <span className="font-medium text-slate-700">{choice.label}</span>
                         </label>
                       ))}
                     </div>
                   ) : question.question_type === "essay" ? (
-                    <textarea name={`q_${question.question_id}`} rows={5} required className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Write your answer here." />
+                    <textarea name={`q_${question.question_id}`} rows={5} required defaultValue={draftAnswer} className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Write your answer here." />
                   ) : (
-                    <input name={`q_${question.question_id}`} required className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Type your answer" />
+                    <input name={`q_${question.question_id}`} required defaultValue={draftAnswer} className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Type your answer" />
                   )}
                 </fieldset>
               );

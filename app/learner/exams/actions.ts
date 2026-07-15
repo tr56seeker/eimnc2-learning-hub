@@ -62,6 +62,27 @@ export async function recordExamViolationAction(attemptId: string, maxViolations
   return { violationCount: nextCount, terminated };
 }
 
+// Called by ExamAutosave as the learner types/selects, well before final
+// submission, so a crashed browser or dropped connection doesn't erase
+// their answers. Uses the RLS-scoped client (not the admin client) since
+// exam_attempt_drafts' own RLS policy already verifies the attempt belongs
+// to the calling learner and is still in progress.
+export async function saveExamDraftAnswerAction(attemptId: string, questionId: string, answerText: string) {
+  const { supabase } = await requireLearner();
+
+  const { error } = await supabase.from("exam_attempt_drafts").upsert(
+    {
+      attempt_id: attemptId,
+      question_id: questionId,
+      answer_text: answerText,
+      updated_at: new Date().toISOString()
+    },
+    { onConflict: "attempt_id,question_id" }
+  );
+
+  return { ok: !error };
+}
+
 export async function submitExamAction(examId: string, formData: FormData) {
   const { profile } = await requireLearner();
   const admin = createAdminClient();
@@ -227,6 +248,10 @@ export async function submitExamAction(examId: string, formData: FormData) {
     .eq("exam_id", examId)
     .eq("learner_id", profile.id)
     .eq("used", false);
+
+  // The attempt is now scored and submitted; the autosaved drafts that got
+  // it there are no longer needed.
+  await admin.from("exam_attempt_drafts").delete().eq("attempt_id", attempt.id);
 
   const showResult = exam.show_result_after_submit ?? exam.show_score_after_submit ?? true;
   if (terminationReason) {
