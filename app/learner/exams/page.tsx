@@ -42,12 +42,12 @@ export default async function LearnerExamsPage({ searchParams }: { searchParams:
 
             return (
               <Link key={exam.id} href={`/learner/exams/${exam.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">
                   {competency?.code ?? "EIM"}
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{exam.title}</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{exam.description}</p>
-                <div className="mt-6 grid gap-2.5 text-sm leading-6 text-slate-500">
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{exam.title}</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{exam.description}</p>
+                <div className="mt-6 grid gap-2.5 text-sm leading-6 text-slate-500 dark:text-slate-400">
                   <p><strong>Duration:</strong> {exam.duration_minutes ?? 30} minutes</p>
                   <p><strong>Opens:</strong> {formatDateTime(exam.start_at)}</p>
                   <p><strong>Closes:</strong> {formatDateTime(exam.end_at)}</p>

@@ -179,7 +179,7 @@ export function GradebookExportButton({
       type="button"
       onClick={handleExport}
       disabled={isExporting}
-      className="rounded-2xl border border-teal-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-teal-700 shadow-sm hover:bg-teal-50 disabled:opacity-60"
+      className="rounded-2xl border border-teal-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-teal-700 shadow-sm hover:bg-teal-50 disabled:opacity-60 dark:border-teal-800 dark:bg-slate-900/80 dark:text-teal-400 dark:hover:bg-teal-950/40"
     >
       {isExporting ? "Preparing file..." : "Export to Excel"}
     </button>

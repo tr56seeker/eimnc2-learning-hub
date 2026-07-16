@@ -108,17 +108,17 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
   return (
     <PortalShell profile={profile}>
       <section className="card rounded-[1.75rem] p-7 sm:p-9">
-        <Link href="/learner/exams" className="text-sm font-semibold text-teal-700 hover:text-teal-800">Back to exams</Link>
-        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Online Assessment</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">{exam.title}</h1>
-        <p className="mt-4 max-w-3xl leading-7 text-slate-600">{exam.description}</p>
-        <p className="mt-4 text-sm font-medium text-slate-500">Duration: {exam.duration_minutes ?? 30} minutes / Submit by {deadline.toLocaleString()}</p>
+        <Link href="/learner/exams" className="text-sm font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">Back to exams</Link>
+        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-400">Online Assessment</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-100 sm:text-5xl">{exam.title}</h1>
+        <p className="mt-4 max-w-3xl leading-7 text-slate-600 dark:text-slate-400">{exam.description}</p>
+        <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">Duration: {exam.duration_minutes ?? 30} minutes / Submit by {deadline.toLocaleString()}</p>
 
         <FlashMessage message={query.error} variant="warning" className="mt-6" />
         <FlashMessage message={query.message} variant="success" className="mt-6" />
 
         {submitted && !canRetake ? (
-          <div className="mt-9 rounded-[1.5rem] border border-teal-100/80 bg-teal-50/80 p-6 text-teal-950">
+          <div className="mt-9 rounded-[1.5rem] border border-teal-100/80 dark:border-teal-900/50 bg-teal-50/80 dark:bg-teal-950/40 p-6 text-teal-950 dark:text-teal-200">
             <h2 className="text-xl font-semibold">Already submitted</h2>
             {showResult || reviewAllowed ? <p className="mt-2 font-medium">Score: {submitted.score}/{submitted.max_score}</p> : <p className="mt-2 font-medium">Your result will be released by your teacher.</p>}
             <p className="mt-3 text-sm">Need another attempt? Ask your teacher — they can approve a retake for you.</p>
@@ -126,7 +126,7 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
         ) : (
           <>
             {submitted && canRetake ? (
-              <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-sm font-medium text-amber-900">
+              <div className="mb-6 rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-amber-50/80 dark:bg-amber-950/40 p-4 text-sm font-medium text-amber-900 dark:text-amber-300">
                 Retake approved by your teacher. Your previous score was {submitted.score}/{submitted.max_score}.
                 {retakeGrant?.note ? <span className="block mt-1 italic">Note: {retakeGrant.note}</span> : null}
               </div>
@@ -142,23 +142,23 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
               const draftAnswer = draftByQuestion.get(question.question_id) ?? "";
 
               return (
-                <fieldset key={question.question_id} className="rounded-[1.5rem] border border-slate-200/70 bg-white/82 p-6 shadow-sm shadow-slate-200/40">
-                  <legend className="px-2 text-sm font-semibold text-slate-500">Question {index + 1} / {points} pt</legend>
-                  <p className="mt-2 text-lg font-semibold leading-7 text-slate-950">{question.question_text}</p>
+                <fieldset key={question.question_id} className="rounded-[1.5rem] border border-slate-200/70 dark:border-slate-700/70 bg-white/82 dark:bg-slate-900/82 p-6 shadow-sm shadow-slate-200/40 dark:shadow-black/20">
+                  <legend className="px-2 text-sm font-semibold text-slate-500 dark:text-slate-400">Question {index + 1} / {points} pt</legend>
+                  <p className="mt-2 text-lg font-semibold leading-7 text-slate-950 dark:text-slate-100">{question.question_text}</p>
 
                   {question.question_type === "multiple_choice" || question.question_type === "true_false" ? (
                     <div className="mt-5 grid gap-3">
                       {choices.map((choice) => (
-                        <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200/80 bg-white/75 p-4 text-sm leading-6 shadow-sm shadow-slate-200/40 hover:border-teal-200 hover:bg-teal-50/80">
+                        <label key={choice.value} className="flex gap-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/75 dark:bg-slate-900/75 p-4 text-sm leading-6 shadow-sm shadow-slate-200/40 dark:shadow-black/20 hover:border-teal-200 dark:hover:border-teal-800 hover:bg-teal-50/80 dark:hover:bg-teal-950/40">
                           <input type="radio" name={`q_${question.question_id}`} value={choice.value} defaultChecked={draftAnswer === choice.value} required />
-                          <span className="font-medium text-slate-700">{choice.label}</span>
+                          <span className="font-medium text-slate-700 dark:text-slate-300">{choice.label}</span>
                         </label>
                       ))}
                     </div>
                   ) : question.question_type === "essay" ? (
-                    <textarea name={`q_${question.question_id}`} rows={5} required defaultValue={draftAnswer} className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Write your answer here." />
+                    <textarea name={`q_${question.question_id}`} rows={5} required defaultValue={draftAnswer} className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 shadow-sm" placeholder="Write your answer here." />
                   ) : (
-                    <input name={`q_${question.question_id}`} required defaultValue={draftAnswer} className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm" placeholder="Type your answer" />
+                    <input name={`q_${question.question_id}`} required defaultValue={draftAnswer} className="focus-ring mt-4 w-full rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 shadow-sm" placeholder="Type your answer" />
                   )}
                 </fieldset>
               );

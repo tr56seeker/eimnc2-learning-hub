@@ -175,6 +175,36 @@ export function activityCompletionPercent(data: ProgressBaseData, learnerId: str
   return Math.round((submitted / data.activeAssignments.length) * 100);
 }
 
+export type LearnerRiskLevel = "Normal" | "Needs Review" | "High Attention";
+
+export type LearnerRisk = {
+  completionPct: number;
+  missing: number;
+  examPct: number | null;
+  openIncidents: number;
+  reasons: string[];
+  riskLevel: LearnerRiskLevel;
+};
+
+// Shared by the intervention report and the teacher dashboard's "needs
+// attention" summary, so both surfaces classify the same learner the same way.
+export function classifyLearnerRisk(data: ProgressBaseData, learnerId: string): LearnerRisk {
+  const completionPct = Math.round((lessonCompletionPercent(data, learnerId) + activityCompletionPercent(data, learnerId)) / 2);
+  const missing = missingAssignmentCount(data, learnerId);
+  const examPct = examScorePercent(data, learnerId);
+  const openIncidents = data.openIncidentCountByLearner.get(learnerId) ?? 0;
+
+  const reasons: string[] = [];
+  if (completionPct < 50) reasons.push("Low overall completion (<50%)");
+  if (missing >= 3) reasons.push(`${missing} missing outputs`);
+  if (examPct !== null && examPct < 60) reasons.push("Low assessment performance (<60%)");
+  if (openIncidents > 0) reasons.push(`${openIncidents} open integrity incident${openIncidents === 1 ? "" : "s"}`);
+
+  const riskLevel: LearnerRiskLevel = reasons.length >= 2 ? "High Attention" : reasons.length === 1 ? "Needs Review" : "Normal";
+
+  return { completionPct, missing, examPct, openIncidents, reasons, riskLevel };
+}
+
 // Item analysis --------------------------------------------------------
 
 export type ExamOption = { id: string; title: string; status: string };

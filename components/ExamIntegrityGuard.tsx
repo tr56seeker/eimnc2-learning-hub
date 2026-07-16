@@ -150,10 +150,10 @@ export function ExamIntegrityGuard({
 
   const modal = (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-slate-950/50 p-4">
-      <div className="max-w-md rounded-[1.5rem] border border-red-200 bg-white p-6 text-center shadow-xl">
+      <div className="max-w-md rounded-[1.5rem] border border-red-200 bg-white p-6 text-center shadow-xl dark:border-red-900/50 dark:bg-slate-900">
         <p className="text-4xl">⚠️</p>
-        <h2 className="mt-3 text-lg font-semibold text-slate-950">Academic Integrity Warning</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{activeWarning}</p>
+        <h2 className="mt-3 text-lg font-semibold text-slate-950 dark:text-slate-100">Academic Integrity Warning</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{activeWarning}</p>
         {!terminated ? (
           <button
             type="button"

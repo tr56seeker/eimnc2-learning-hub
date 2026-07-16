@@ -35,8 +35,8 @@ function latestAttemptPerLearnerExam(attempts: AttemptRow[]) {
 
 function masteryLevel(percentValue: number) {
   if (percentValue >= 80) return { label: "Mastered", color: "text-emerald-700 border-emerald-200 bg-emerald-50", bar: "bg-emerald-500" };
-  if (percentValue >= 60) return { label: "Developing", color: "text-amber-700 border-amber-200 bg-amber-50", bar: "bg-amber-500" };
-  return { label: "Needs Remediation", color: "text-red-700 border-red-200 bg-red-50", bar: "bg-red-500" };
+  if (percentValue >= 60) return { label: "Developing", color: "text-amber-700 border-amber-200 bg-amber-50 dark:text-amber-300 dark:border-amber-800/50 dark:bg-amber-950/40", bar: "bg-amber-500" };
+  return { label: "Needs Remediation", color: "text-red-700 border-red-200 bg-red-50 dark:text-red-300 dark:border-red-900/50 dark:bg-red-950/30", bar: "bg-red-500" };
 }
 
 export default async function MasteryReportPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
@@ -107,7 +107,7 @@ export default async function MasteryReportPage({ searchParams }: { searchParams
 
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <MasteryViewSwitcher current={view} />
-        <Link href="/teacher/gradebook" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">
+        <Link href="/teacher/gradebook" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800">
           Open Term Gradebook
         </Link>
       </div>
@@ -122,8 +122,8 @@ export default async function MasteryReportPage({ searchParams }: { searchParams
               <div key={row.key} className="card rounded-[1.5rem] p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="font-semibold text-slate-950">{row.label}</p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                    <p className="font-semibold text-slate-950 dark:text-slate-100">{row.label}</p>
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
                       {row.learnerCount} learner{row.learnerCount === 1 ? "" : "s"} &middot; {row.totalScore}/{row.totalMax} pts
                     </p>
                   </div>
@@ -131,10 +131,10 @@ export default async function MasteryReportPage({ searchParams }: { searchParams
                     {mastery.label}
                   </span>
                 </div>
-                <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div className={`h-full rounded-full ${mastery.bar}`} style={{ width: `${row.percentValue}%` }} />
                 </div>
-                <p className="mt-2 text-sm font-medium text-slate-500">{row.percentValue}% average score</p>
+                <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">{row.percentValue}% average score</p>
               </div>
             );
           })}

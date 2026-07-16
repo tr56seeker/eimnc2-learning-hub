@@ -25,9 +25,9 @@ export default async function ReportsHubPage() {
       <div className="grid gap-5 md:grid-cols-2">
         {reportLinks.map(([title, text, href]) => (
           <Link key={href} href={href} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
-            <h2 className="text-lg font-semibold tracking-tight text-slate-950">{title}</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">{text}</p>
-            <p className="mt-6 text-sm font-semibold text-teal-700">Open report</p>
+            <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">{title}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{text}</p>
+            <p className="mt-6 text-sm font-semibold text-teal-700 dark:text-teal-400">Open report</p>
           </Link>
         ))}
       </div>
@@ -36,7 +36,7 @@ export default async function ReportsHubPage() {
         <div className="mt-10">
           <Link
             href="/teacher/admin/audit-logs"
-            className="inline-block rounded-2xl border border-slate-200 bg-white/70 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-white"
+            className="inline-block rounded-2xl border border-slate-200 bg-white/70 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-white dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             Open Audit Log →
           </Link>

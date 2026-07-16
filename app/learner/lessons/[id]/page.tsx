@@ -90,9 +90,9 @@ function ModuleSection({
   return (
     <section id={id} className="mt-12 scroll-mt-24">
       <div className="mb-5 border-l-4 border-teal-500 pl-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{eyebrow}</p>
-        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">{eyebrow}</p>
+        <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100 sm:text-3xl">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{description}</p>
       </div>
       <div className="grid gap-6">{children}</div>
     </section>
@@ -196,28 +196,28 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
   return (
     <PortalShell profile={profile}>
       <article className="mx-auto max-w-6xl">
-        <header className="rounded-3xl border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(240,253,250,0.88)_48%,rgba(239,246,255,0.86))] p-7 shadow-xl shadow-slate-200/50 sm:p-10">
-          <Link href={isTeacherPreview ? `/teacher/lessons/${id}/studio` : "/learner/lessons"} className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+        <header className="rounded-3xl border border-white/80 dark:border-slate-800/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(240,253,250,0.88)_48%,rgba(239,246,255,0.86))] dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(15,45,42,0.88)_48%,rgba(15,30,45,0.86))] p-7 shadow-xl shadow-slate-200/50 dark:shadow-black/30 sm:p-10">
+          <Link href={isTeacherPreview ? `/teacher/lessons/${id}/studio` : "/learner/lessons"} className="text-sm font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
             {isTeacherPreview ? "Back to Studio" : "Back to lessons"}
           </Link>
           <div className="mt-8 flex flex-wrap gap-3">
-            <span className="rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-teal-700">
+            <span className="rounded-full border border-teal-200 dark:border-teal-800/50 bg-teal-50 dark:bg-teal-950/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">
               {competency?.code ?? "EIM"}
             </span>
             {isTeacherPreview ? (
-              <span className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold text-slate-600">
+              <span className="rounded-full border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
                 Teacher Preview / {lesson.published ? "Published" : "Draft"}
               </span>
             ) : null}
             {progress?.completed ? (
-              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700">
+              <span className="rounded-full border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/40 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                 Completed ✓
               </span>
             ) : null}
           </div>
-          <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 sm:text-6xl">{lesson.title}</h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600">{lesson.summary}</p>
-          <p className="mt-6 text-sm font-medium text-slate-500">{lesson.estimated_minutes ?? 45} minute lesson</p>
+          <h1 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 dark:text-slate-100 sm:text-6xl">{lesson.title}</h1>
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-400">{lesson.summary}</p>
+          <p className="mt-6 text-sm font-medium text-slate-500 dark:text-slate-400">{lesson.estimated_minutes ?? 45} minute lesson</p>
         </header>
 
         {!isTeacherPreview ? (
@@ -253,7 +253,7 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
         ) : (
           <ModuleSection id={slugify("Explore the Lesson")} eyebrow="Core Lesson" title="Explore the Lesson" description="Read the lesson notes and examples below.">
             <section className="card rounded-[1.75rem] p-7 sm:p-9">
-              <div className="prose-eim max-w-4xl text-slate-700">{renderMarkdownLite(lesson.content_md ?? "No content yet.")}</div>
+              <div className="prose-eim max-w-4xl text-slate-700 dark:text-slate-300">{renderMarkdownLite(lesson.content_md ?? "No content yet.")}</div>
             </section>
           </ModuleSection>
         )}
@@ -261,13 +261,13 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
         {assignments.length ? (
           <ModuleSection id={slugify("Performance Task")} eyebrow="Application" title="Performance Task" description="Demonstrate the skill using the instructions and submission method below.">
             {assignments.map((assignment) => (
-              <div key={assignment.id} className="rounded-[1.75rem] border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:p-7">
+              <div key={assignment.id} className="rounded-[1.75rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 p-6 shadow-sm sm:p-7">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h3 className="text-xl font-semibold text-slate-950">{assignment.title}</h3>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold capitalize text-slate-600">{assignment.submission_type.replaceAll("_", " ")}</span>
+                  <h3 className="text-xl font-semibold text-slate-950 dark:text-slate-100">{assignment.title}</h3>
+                  <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold capitalize text-slate-600 dark:text-slate-400">{assignment.submission_type.replaceAll("_", " ")}</span>
                 </div>
-                {assignment.instructions ? <p className="mt-4 whitespace-pre-line text-sm leading-7 text-slate-700">{assignment.instructions}</p> : null}
-                {assignment.due_at ? <p className="mt-5 text-xs font-semibold text-slate-500">Due {new Date(assignment.due_at).toLocaleDateString("en-PH", { dateStyle: "medium" })}</p> : null}
+                {assignment.instructions ? <p className="mt-4 whitespace-pre-line text-sm leading-7 text-slate-700 dark:text-slate-300">{assignment.instructions}</p> : null}
+                {assignment.due_at ? <p className="mt-5 text-xs font-semibold text-slate-500 dark:text-slate-400">Due {new Date(assignment.due_at).toLocaleDateString("en-PH", { dateStyle: "medium" })}</p> : null}
               </div>
             ))}
           </ModuleSection>
@@ -283,13 +283,13 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
           <ModuleSection id={slugify("Resources")} eyebrow="Further Learning" title="Resources" description="Use these supporting links for review, practice, and further reading.">
             {resourceBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
             {resources.length ? (
-              <div className="rounded-[1.75rem] border border-teal-100/80 bg-teal-50/80 p-6">
+              <div className="rounded-[1.75rem] border border-teal-100/80 dark:border-teal-900/50 bg-teal-50/80 dark:bg-teal-950/40 p-6">
                 <div className="grid gap-3">
                   {resources.map((resource) => (
-                    <div key={resource.id} className="rounded-2xl bg-white/75 p-4 shadow-sm shadow-teal-100/50">
-                      <p className="font-semibold text-slate-950">{resource.title}</p>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{resource.resource_type}</p>
-                      <a href={resource.url} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-2xl border border-teal-200 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50">
+                    <div key={resource.id} className="rounded-2xl bg-white/75 dark:bg-slate-900/75 p-4 shadow-sm shadow-teal-100/50 dark:shadow-black/20">
+                      <p className="font-semibold text-slate-950 dark:text-slate-100">{resource.title}</p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">{resource.resource_type}</p>
+                      <a href={resource.url} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-2xl border border-teal-200 dark:border-teal-800/50 px-4 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/40">
                         Open in New Tab
                       </a>
                     </div>

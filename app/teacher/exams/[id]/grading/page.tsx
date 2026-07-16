@@ -82,7 +82,7 @@ export default async function ExamEssayGradingPage({
 
   return (
     <PortalShell profile={profile}>
-      <Link href={`/teacher/exams/${id}/analysis`} className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+      <Link href={`/teacher/exams/${id}/analysis`} className="text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-400">
         Back to item analysis
       </Link>
 
@@ -101,20 +101,20 @@ export default async function ExamEssayGradingPage({
         <div className="grid gap-6">
           {[...groups.entries()].map(([attemptId, group]) => (
             <div key={attemptId} className="card rounded-[1.75rem] p-6 sm:p-7">
-              <h2 className="text-lg font-semibold text-slate-950">{group.learnerName}</h2>
+              <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">{group.learnerName}</h2>
               <div className="mt-5 grid gap-5">
                 {group.answers.map((answer) => {
                   const question = firstRelation(answer.question_bank);
                   const maxPoints = pointsOverrideByQuestion.get(answer.question_id) ?? question?.points ?? 1;
 
                   return (
-                    <div key={answer.id} className="rounded-2xl border border-slate-200/80 bg-white/90 p-5">
-                      <p className="font-semibold text-slate-900">{question?.question_text ?? "Essay question"}</p>
-                      <p className="mt-3 whitespace-pre-line rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                    <div key={answer.id} className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 dark:border-slate-700/80 dark:bg-slate-900/90">
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">{question?.question_text ?? "Essay question"}</p>
+                      <p className="mt-3 whitespace-pre-line rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                         {answer.answer_text || "No answer submitted."}
                       </p>
                       <form action={gradeEssayAnswerAction.bind(null, id, answer.id)} className="mt-4 flex flex-wrap items-end gap-3">
-                        <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
+                        <label className="grid gap-1.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                           Score (out of {maxPoints})
                           <input
                             name="score"
@@ -123,7 +123,7 @@ export default async function ExamEssayGradingPage({
                             max={maxPoints}
                             step="0.5"
                             defaultValue={answer.score_awarded ?? 0}
-                            className="focus-ring min-h-11 w-32 rounded-xl border border-slate-200/80 bg-white px-3 py-2 font-normal text-slate-900 shadow-sm"
+                            className="focus-ring min-h-11 w-32 rounded-xl border border-slate-200/80 bg-white px-3 py-2 font-normal text-slate-900 shadow-sm dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-100"
                           />
                         </label>
                         <button className="min-h-11 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700">

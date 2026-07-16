@@ -40,16 +40,16 @@ export default async function LearnerLessonsPage() {
             return (
               <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">
                     {competency?.code ?? "EIM"}
                   </p>
                   {completed ? (
-                    <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Completed</span>
+                    <span className="rounded-full border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">Completed</span>
                   ) : null}
                 </div>
-                <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">{lesson.title}</h2>
-                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{lesson.summary}</p>
-                <p className="mt-6 text-sm font-medium text-slate-500">{lesson.estimated_minutes ?? 30} minutes</p>
+                <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{lesson.title}</h2>
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{lesson.summary}</p>
+                <p className="mt-6 text-sm font-medium text-slate-500 dark:text-slate-400">{lesson.estimated_minutes ?? 30} minutes</p>
               </Link>
             );
           })}

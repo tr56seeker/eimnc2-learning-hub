@@ -103,8 +103,8 @@ function scoreLabel(score: number | null | undefined, maxScore: number | null | 
 function DetailItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</dt>
-      <dd className="mt-1 font-semibold text-slate-950">{value || "Not set"}</dd>
+      <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">{label}</dt>
+      <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{value || "Not set"}</dd>
     </div>
   );
 }
@@ -208,7 +208,7 @@ export default async function TeacherLearnerProfilePage({
 
   return (
     <PortalShell profile={profile}>
-      <Link href="/teacher/learners" className="mb-6 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm hover:border-teal-200 hover:text-teal-700">
+      <Link href="/teacher/learners" className="mb-6 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-teal-800 dark:hover:text-teal-400">
         Back to learners
       </Link>
 
@@ -221,9 +221,9 @@ export default async function TeacherLearnerProfilePage({
         <section className="card rounded-[1.75rem] p-6 sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-700">{formalName}</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{completeName}</h2>
-              <p className="mt-2 text-slate-500">{sectionLabel(section)}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">{formalName}</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{completeName}</h2>
+              <p className="mt-2 text-slate-500 dark:text-slate-400">{sectionLabel(section)}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <span className={onlineBadgeClass(onlineStatus)}>{onlineStatus.charAt(0).toUpperCase() + onlineStatus.slice(1)}</span>
@@ -252,24 +252,24 @@ export default async function TeacherLearnerProfilePage({
 
         <section className="grid gap-7 lg:grid-cols-2">
           <div className="card rounded-[1.75rem] p-6">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-950">Recent Exam Attempts</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Recent Exam Attempts</h2>
             {attempts.length ? (
               <div className="mt-5 grid gap-3">
                 {attempts.map((attempt) => {
                   const exam = firstRelation(attempt.exams);
                   return (
-                    <div key={attempt.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4">
-                      <p className="font-semibold text-slate-950">{exam?.title ?? "Exam"}</p>
-                      <p className="mt-1 text-sm text-slate-500">{attempt.status} / {scoreLabel(attempt.score, attempt.max_score)}</p>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{formatDateTime(attempt.submitted_at ?? attempt.started_at)}</p>
+                    <div key={attempt.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                      <p className="font-semibold text-slate-950 dark:text-slate-100">{exam?.title ?? "Exam"}</p>
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{attempt.status} / {scoreLabel(attempt.score, attempt.max_score)}</p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">{formatDateTime(attempt.submitted_at ?? attempt.started_at)}</p>
                       {attempt.termination_reason ? (
-                        <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium leading-5 text-red-700">
+                        <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium leading-5 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
                           ⚠️ Ended early ({attempt.violation_count ?? 0} violations): {attempt.termination_reason}
                         </p>
                       ) : null}
                       {attempt.status === "submitted" ? (
                         pendingRetakeExamIds.has(attempt.exam_id) ? (
-                          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800">
+                          <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-300">
                             Retake approved — waiting for learner to attempt again.
                           </p>
                         ) : (
@@ -278,7 +278,7 @@ export default async function TeacherLearnerProfilePage({
                             <input
                               name="note"
                               placeholder="Optional note (e.g. remediation reason)"
-                              className="focus-ring min-w-[220px] flex-1 rounded-xl border border-slate-200/80 bg-white/90 px-3 py-2 text-xs"
+                              className="focus-ring min-w-[220px] flex-1 rounded-xl border border-slate-200/80 bg-white/90 px-3 py-2 text-xs dark:border-slate-700/80 dark:bg-slate-900/90"
                             />
                             <button className="rounded-xl bg-teal-700 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-800">
                               Grant Retake
@@ -296,16 +296,16 @@ export default async function TeacherLearnerProfilePage({
           </div>
 
           <div className="card rounded-[1.75rem] p-6">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-950">Recent Submissions</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Recent Submissions</h2>
             {submissions.length ? (
               <div className="mt-5 grid gap-3">
                 {submissions.map((submission) => {
                   const assignment = firstRelation(submission.assignments);
                   return (
-                    <div key={submission.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4">
-                      <p className="font-semibold text-slate-950">{assignment?.title ?? "Submission"}</p>
-                      <p className="mt-1 text-sm text-slate-500">{submission.status} / {scoreLabel(submission.score, assignment?.max_score)}</p>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{formatDateTime(submission.submitted_at)}</p>
+                    <div key={submission.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                      <p className="font-semibold text-slate-950 dark:text-slate-100">{assignment?.title ?? "Submission"}</p>
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{submission.status} / {scoreLabel(submission.score, assignment?.max_score)}</p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">{formatDateTime(submission.submitted_at)}</p>
                     </div>
                   );
                 })}
@@ -317,21 +317,21 @@ export default async function TeacherLearnerProfilePage({
         </section>
 
         <section className="card rounded-[1.75rem] p-6">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-950">Grade Summary</h2>
+          <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Grade Summary</h2>
           {grades.length || gradebookScores.length ? (
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {grades.map((grade) => (
-                <div key={grade.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4">
-                  <p className="font-semibold text-slate-950">{grade.title}</p>
-                  <p className="mt-1 text-sm text-slate-500">{grade.component} / {scoreLabel(grade.score, grade.max_score)}</p>
+                <div key={grade.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                  <p className="font-semibold text-slate-950 dark:text-slate-100">{grade.title}</p>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{grade.component} / {scoreLabel(grade.score, grade.max_score)}</p>
                 </div>
               ))}
               {gradebookScores.map((row) => {
                 const assessment = firstRelation(row.gradebook_assessments);
                 return (
-                  <div key={row.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4">
-                    <p className="font-semibold text-slate-950">{assessment ? `${assessment.term} - ${assessment.label}` : "Gradebook score"}</p>
-                    <p className="mt-1 text-sm text-slate-500">{assessment?.category ?? "gradebook"} / {scoreLabel(row.score, assessment?.highest_possible)}</p>
+                  <div key={row.id} className="rounded-2xl border border-slate-100 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                    <p className="font-semibold text-slate-950 dark:text-slate-100">{assessment ? `${assessment.term} - ${assessment.label}` : "Gradebook score"}</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{assessment?.category ?? "gradebook"} / {scoreLabel(row.score, assessment?.highest_possible)}</p>
                   </div>
                 );
               })}
@@ -341,9 +341,9 @@ export default async function TeacherLearnerProfilePage({
           )}
         </section>
 
-        <section className="card rounded-[1.75rem] border-red-100 p-6">
-          <h2 className="text-xl font-semibold tracking-tight text-slate-950">Danger Zone</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+        <section className="card rounded-[1.75rem] border-red-100 p-6 dark:border-red-900/50">
+          <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Danger Zone</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
             Deactivation blocks learner access through profile status. Delete uses a soft delete and preserves learner records by setting status to deleted.
           </p>
           <div className="mt-5">

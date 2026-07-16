@@ -215,12 +215,12 @@ function AddAssessmentButtons({ term, sectionId }: { term: string; sectionId: st
           <input type="hidden" name="term" value={term} />
           <input type="hidden" name="section_id" value={sectionId} />
           <input type="hidden" name="category" value={category} />
-          <button className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-200 hover:text-teal-700">
+          <button className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-800 dark:hover:text-teal-400">
             {label}
           </button>
         </form>
       ))}
-      <p className="text-sm text-slate-500">TE is always kept as the Term Examination column.</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400">TE is always kept as the Term Examination column.</p>
     </section>
   );
 }
@@ -228,12 +228,13 @@ function AddAssessmentButtons({ term, sectionId }: { term: string; sectionId: st
 export default async function TeacherGradebookPage({
   searchParams
 }: {
-  searchParams: Promise<{ section_id?: string; term?: string; view?: string }>;
+  searchParams: Promise<{ section_id?: string; term?: string; view?: string; sort?: string }>;
 }) {
   const params = await searchParams;
   const selectedSectionId = String(params.section_id ?? "");
   const selectedTerm = isGradebookTerm(String(params.term ?? "")) ? String(params.term) as GradebookTerm : "First Term";
   const selectedView = params.view === "summary" ? "summary" : "detail";
+  const selectedSort = params.sort === "last_name" ? "last_name" : "first_name";
   const { profile, supabase } = await requireTeacher();
   const sectionIdForGradebook = selectedSectionId || null;
 
@@ -248,11 +249,22 @@ export default async function TeacherGradebookPage({
     learnersQuery = learnersQuery.eq("section_id", selectedSectionId);
   }
 
+  learnersQuery =
+    selectedSort === "last_name"
+      ? learnersQuery.order("last_name", { nullsFirst: false }).order("first_name", { nullsFirst: false })
+      : learnersQuery.order("first_name", { nullsFirst: false }).order("last_name", { nullsFirst: false });
+
   const selectedAssessmentQuery = supabase
     .from("gradebook_assessments")
     .select("id, term, category, label, highest_possible, display_order, is_active")
     .eq("term", selectedTerm)
     .eq("is_active", true);
+
+  const hiddenAssessmentQuery = supabase
+    .from("gradebook_assessments")
+    .select("id, term, category, label, highest_possible, display_order, is_active")
+    .eq("term", selectedTerm)
+    .eq("is_active", false);
 
   const allTermAssessmentQuery = supabase
     .from("gradebook_assessments")
@@ -260,12 +272,15 @@ export default async function TeacherGradebookPage({
     .in("term", [...termOptions])
     .eq("is_active", true);
 
-  const [sectionsResult, learnersResult, selectedAssessmentsResult, allTermAssessmentsResult] = await Promise.all([
+  const [sectionsResult, learnersResult, selectedAssessmentsResult, hiddenAssessmentsResult, allTermAssessmentsResult] = await Promise.all([
     supabase.from("sections").select("id, name, grade_level, school_year, is_active").order("grade_level").order("name").returns<SectionRow[]>(),
-    learnersQuery.order("full_name").returns<LearnerRow[]>(),
+    learnersQuery.returns<LearnerRow[]>(),
     sectionIdForGradebook
       ? selectedAssessmentQuery.eq("section_id", sectionIdForGradebook).order("category").order("display_order").returns<AssessmentRow[]>()
       : selectedAssessmentQuery.is("section_id", null).order("category").order("display_order").returns<AssessmentRow[]>(),
+    sectionIdForGradebook
+      ? hiddenAssessmentQuery.eq("section_id", sectionIdForGradebook).order("category").order("display_order").returns<AssessmentRow[]>()
+      : hiddenAssessmentQuery.is("section_id", null).order("category").order("display_order").returns<AssessmentRow[]>(),
     sectionIdForGradebook
       ? allTermAssessmentQuery.eq("section_id", sectionIdForGradebook).order("term").order("category").order("display_order").returns<AssessmentRow[]>()
       : allTermAssessmentQuery.is("section_id", null).order("term").order("category").order("display_order").returns<AssessmentRow[]>()
@@ -282,6 +297,7 @@ export default async function TeacherGradebookPage({
       schoolYear: section.school_year
     }));
   const selectedAssessments = (selectedAssessmentsResult.data ?? []).map(toClientAssessment);
+  const hiddenAssessments = (hiddenAssessmentsResult.data ?? []).map(toClientAssessment);
   const allTermAssessments = (allTermAssessmentsResult.data ?? []).map(toClientAssessment);
   const assessmentIds = new Set([...selectedAssessments, ...allTermAssessments].map((assessment) => assessment.id));
 
@@ -402,7 +418,7 @@ export default async function TeacherGradebookPage({
   return (
     <PortalShell profile={profile}>
       <div className="grid gap-7">
-        <GradebookToolbar sections={sections} selectedSectionId={selectedSectionId} selectedTerm={selectedTerm} selectedView={selectedView} />
+        <GradebookToolbar sections={sections} selectedSectionId={selectedSectionId} selectedTerm={selectedTerm} selectedView={selectedView} selectedSort={selectedSort} />
 
         <div className="flex flex-wrap justify-end gap-3">
           <GradebookExportButton
@@ -416,7 +432,7 @@ export default async function TeacherGradebookPage({
           {depedPayload ? (
             <DepedClassRecordExportButton payload={depedPayload} />
           ) : (
-            <p className="self-center text-xs font-medium text-slate-400">Select a section to export the official DepEd Class Record.</p>
+            <p className="self-center text-xs font-medium text-slate-400 dark:text-slate-500">Select a section to export the official DepEd Class Record.</p>
           )}
         </div>
 
@@ -427,7 +443,7 @@ export default async function TeacherGradebookPage({
         ) : selectedView === "summary" ? (
           <TermSummaryTable rows={summaryRows} />
         ) : (
-          <TermGradebookMatrix learners={editableLearners} assessments={selectedAssessments} scores={selectedScores} />
+          <TermGradebookMatrix learners={editableLearners} assessments={selectedAssessments} hiddenAssessments={hiddenAssessments} scores={selectedScores} />
         )}
       </div>
     </PortalShell>

@@ -89,7 +89,7 @@ export default async function LearnerProgressReportPage({
       />
 
       <div className="print:hidden mb-7 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline">
+        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">
           ← Back to Reports
         </Link>
         <div className="flex flex-wrap items-center gap-3">
@@ -97,7 +97,7 @@ export default async function LearnerProgressReportPage({
             <select
               name="section_id"
               defaultValue={sectionId ?? ""}
-              className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-2 text-sm"
+              className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
             >
               <option value="">All sections</option>
               {data.sections.map((section) => (
@@ -106,7 +106,7 @@ export default async function LearnerProgressReportPage({
                 </option>
               ))}
             </select>
-            <select name="only" defaultValue={only ?? ""} className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-2 text-sm">
+            <select name="only" defaultValue={only ?? ""} className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900">
               <option value="">All learners</option>
               <option value="missing">Missing outputs only</option>
               <option value="late">Late submissions only</option>
@@ -123,8 +123,8 @@ export default async function LearnerProgressReportPage({
         <EmptyState title="No learners match this filter" message="Try a different section or filter." />
       ) : (
         <div className="premium-table overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
               <tr>
                 <th className="px-5 py-3 text-left">Learner</th>
                 <th className="px-5 py-3 text-left">Section</th>
@@ -136,25 +136,25 @@ export default async function LearnerProgressReportPage({
                 <th className="px-5 py-3 text-left">Last Activity</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {rows.map((row) => (
                 <tr key={row.id}>
-                  <td className="px-5 py-4 font-semibold text-slate-900">
-                    <Link href={`/teacher/learners/${row.id}`} className="hover:text-teal-700 hover:underline">
+                  <td className="px-5 py-4 font-semibold text-slate-900 dark:text-slate-100">
+                    <Link href={`/teacher/learners/${row.id}`} className="hover:text-teal-700 hover:underline dark:hover:text-teal-400">
                       {row.fullName}
                     </Link>
                   </td>
-                  <td className="px-5 py-4 text-slate-600">{row.sectionName}</td>
-                  <td className="px-5 py-4 text-slate-600">{row.lessonPct}%</td>
-                  <td className="px-5 py-4 text-slate-600">{row.activityPct}%</td>
-                  <td className="px-5 py-4 text-slate-600">
-                    {row.missing > 0 ? <span className="font-semibold text-red-700">{row.missing}</span> : "0"}
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.sectionName}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.lessonPct}%</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.activityPct}%</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">
+                    {row.missing > 0 ? <span className="font-semibold text-red-700 dark:text-red-300">{row.missing}</span> : "0"}
                   </td>
-                  <td className="px-5 py-4 text-slate-600">
-                    {row.late > 0 ? <span className="font-semibold text-amber-700">{row.late}</span> : "0"}
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">
+                    {row.late > 0 ? <span className="font-semibold text-amber-700 dark:text-amber-300">{row.late}</span> : "0"}
                   </td>
-                  <td className="px-5 py-4 text-slate-600">{row.examPct !== null ? `${row.examPct}%` : "No data"}</td>
-                  <td className="px-5 py-4 text-slate-500">{row.lastActivity ? formatDateTime(row.lastActivity) : "No activity yet"}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.examPct !== null ? `${row.examPct}%` : "No data"}</td>
+                  <td className="px-5 py-4 text-slate-500 dark:text-slate-400">{row.lastActivity ? formatDateTime(row.lastActivity) : "No activity yet"}</td>
                 </tr>
               ))}
             </tbody>

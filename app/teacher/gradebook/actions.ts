@@ -131,3 +131,19 @@ export async function hideGradebookAssessmentAction(assessmentId: string) {
   revalidatePath("/teacher/gradebook");
   return { ok: true, message: "Column hidden" };
 }
+
+export async function unhideGradebookAssessmentAction(assessmentId: string) {
+  const { supabase } = await requireTeacher();
+
+  const { error } = await supabase
+    .from("gradebook_assessments")
+    .update({ is_active: true, updated_at: new Date().toISOString() })
+    .eq("id", assessmentId);
+
+  if (error) {
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath("/teacher/gradebook");
+  return { ok: true, message: "Column restored" };
+}

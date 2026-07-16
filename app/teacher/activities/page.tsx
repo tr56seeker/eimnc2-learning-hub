@@ -69,15 +69,15 @@ export default async function TeacherActivitiesPage({
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <form action="/teacher/activities" className="card mb-6 flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-end sm:justify-between">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Status
-          <select name="status" defaultValue={statusFilter} className="focus-ring min-h-11 min-w-48 rounded-xl border border-slate-200 bg-white px-4 py-2 font-normal">
+          <select name="status" defaultValue={statusFilter} className="focus-ring min-h-11 min-w-48 rounded-xl border border-slate-200 bg-white px-4 py-2 font-normal dark:border-slate-700 dark:bg-slate-900">
             <option value="active">Active</option>
             <option value="archived">Archived</option>
             <option value="all">All activities</option>
           </select>
         </label>
-        <button className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-teal-200 hover:text-teal-700">Apply Filter</button>
+        <button className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-teal-800 dark:hover:text-teal-400">Apply Filter</button>
       </form>
 
       <ActivitiesManagementClient activities={activities} lessons={lessons} />

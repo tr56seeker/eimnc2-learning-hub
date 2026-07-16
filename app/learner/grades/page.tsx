@@ -26,9 +26,9 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="card mb-8 rounded-[1.5rem] p-6 sm:p-7">
-        <p className="text-sm font-medium text-slate-500">Overall mastery estimate</p>
-        <p className="mt-3 text-5xl font-semibold tracking-tight text-slate-950">{percent(totalScore, totalMax)}%</p>
-        <p className="mt-3 text-sm text-slate-500">Raw total: {totalScore}/{totalMax}</p>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Overall mastery estimate</p>
+        <p className="mt-3 text-5xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{percent(totalScore, totalMax)}%</p>
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">Raw total: {totalScore}/{totalMax}</p>
       </div>
 
       {!rows.length ? (
@@ -36,7 +36,7 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
       ) : (
         <div className="premium-table overflow-x-auto">
           <table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="bg-slate-50/80 text-xs tracking-wider text-slate-500">
+            <thead className="bg-slate-50/80 dark:bg-slate-800/80 text-xs tracking-wider text-slate-500 dark:text-slate-400">
               <tr>
                 <th className="p-4">Activity</th>
                 <th className="p-4">Component</th>
@@ -46,11 +46,11 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
             </thead>
             <tbody>
               {rows.map((grade) => (
-                <tr key={grade.id} className="border-t border-slate-100">
-                  <td className="p-4 font-semibold text-slate-900">{grade.title}</td>
-                  <td className="p-4 capitalize text-slate-600">{grade.component.replaceAll("_", " ")}</td>
+                <tr key={grade.id} className="border-t border-slate-100 dark:border-slate-800">
+                  <td className="p-4 font-semibold text-slate-900 dark:text-slate-100">{grade.title}</td>
+                  <td className="p-4 capitalize text-slate-600 dark:text-slate-400">{grade.component.replaceAll("_", " ")}</td>
                   <td className="p-4 font-medium">{grade.score}/{grade.max_score}</td>
-                  <td className="p-4 font-semibold text-teal-700">{percent(Number(grade.score), Number(grade.max_score))}%</td>
+                  <td className="p-4 font-semibold text-teal-700 dark:text-teal-400">{percent(Number(grade.score), Number(grade.max_score))}%</td>
                 </tr>
               ))}
             </tbody>

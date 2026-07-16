@@ -29,27 +29,27 @@ export default async function ChangePasswordPage({
         <FlashMessage message={params.message} variant="error" className="mt-6" />
 
         <form action={changePasswordAction} className="mt-7 grid gap-5">
-          <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+          <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
             New password
             <input
               name="password"
               type="password"
               required
               minLength={8}
-              className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40"
+              className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20"
             />
           </label>
-          <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+          <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
             Confirm password
             <input
               name="confirm_password"
               type="password"
               required
               minLength={8}
-              className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40"
+              className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20"
             />
           </label>
-          <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+          <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 dark:shadow-black/20">
             Update Password
           </button>
         </form>

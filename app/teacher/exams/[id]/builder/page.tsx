@@ -88,10 +88,10 @@ export default async function ExamBuilderPage({
       <SectionHeader eyebrow="Exam Builder" title={exam.title} description="Add, remove, reorder, and score questions for this exam." />
 
       <div className="mb-7 flex flex-wrap gap-3">
-        <Link href="/teacher/exams" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white">Back to Exams</Link>
-        <Link href="/teacher/question-bank" className="rounded-2xl border border-teal-200 bg-white/70 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50">Question Bank</Link>
-        <Link href={`/teacher/exams/${id}/analysis`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">Item Analysis</Link>
-        <Link href={`/teacher/exams/${id}/grading`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50">Grade Essays</Link>
+        <Link href="/teacher/exams" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800">Back to Exams</Link>
+        <Link href="/teacher/question-bank" className="rounded-2xl border border-teal-200 bg-white/70 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50 dark:border-teal-800 dark:bg-slate-900/70 dark:text-teal-400 dark:hover:bg-teal-950/40">Question Bank</Link>
+        <Link href={`/teacher/exams/${id}/analysis`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 dark:border-amber-800/50 dark:bg-slate-900/70 dark:text-amber-300 dark:hover:bg-amber-950/40">Item Analysis</Link>
+        <Link href={`/teacher/exams/${id}/grading`} className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 dark:border-amber-800/50 dark:bg-slate-900/70 dark:text-amber-300 dark:hover:bg-amber-950/40">Grade Essays</Link>
       </div>
 
       <FlashMessage message={query.error} variant="error" className="mb-7" />
@@ -99,10 +99,10 @@ export default async function ExamBuilderPage({
 
       <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
         <aside className="card rounded-[1.75rem] p-7 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{competency?.code ?? "EIM"} / {exam.status}</p>
-          <h2 className="mt-2 text-xl font-semibold text-slate-950">Exam Setup</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">{exam.description}</p>
-          <div className="mt-6 grid gap-2.5 text-sm text-slate-600">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">{competency?.code ?? "EIM"} / {exam.status}</p>
+          <h2 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">Exam Setup</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{exam.description}</p>
+          <div className="mt-6 grid gap-2.5 text-sm text-slate-600 dark:text-slate-400">
             <p>Duration: {exam.duration_minutes ?? 30} minutes</p>
             <p>Questions: {assigned.length}</p>
             <p>Total points: {totalPoints}</p>
@@ -137,20 +137,20 @@ export default async function ExamBuilderPage({
               <div key={row.id} className="card rounded-[1.75rem] p-6 sm:p-7">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">Question {index + 1} / {question.question_type} / {questionCompetency?.code ?? "EIM"}</p>
-                    <h3 className="mt-2 text-lg font-semibold leading-7 text-slate-950">{question.question_text}</h3>
-                    <p className="mt-3 text-sm text-slate-500">{points} pt{points === 1 ? "" : "s"} / {question.difficulty ?? "average"}</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">Question {index + 1} / {question.question_type} / {questionCompetency?.code ?? "EIM"}</p>
+                    <h3 className="mt-2 text-lg font-semibold leading-7 text-slate-950 dark:text-slate-100">{question.question_text}</h3>
+                    <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">{points} pt{points === 1 ? "" : "s"} / {question.difficulty ?? "average"}</p>
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-col gap-4 border-t border-slate-100 pt-6 md:flex-row md:items-end">
+                <div className="mt-6 flex flex-col gap-4 border-t border-slate-100 pt-6 dark:border-slate-800 md:flex-row md:items-end">
                   <form action={updateExamQuestionAction.bind(null, id, row.id)} className="grid flex-1 gap-4 md:grid-cols-3">
                     <FormInput label="Order" name="order_index" type="number" defaultValue={row.order_index} />
                     <FormInput label="Points override" name="points_override" type="number" defaultValue={row.points_override ?? ""} placeholder={String(question.points ?? 1)} />
                     <SubmitButton className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 md:self-end">Update</SubmitButton>
                   </form>
                   <form action={removeExamQuestionAction.bind(null, id, row.id)}>
-                    <ConfirmSubmitButton message="Remove this question from the exam?" className="rounded-2xl border border-red-200 px-5 py-3 font-semibold text-red-700 hover:bg-red-50">
+                    <ConfirmSubmitButton message="Remove this question from the exam?" className="rounded-2xl border border-red-200 px-5 py-3 font-semibold text-red-700 hover:bg-red-50 dark:border-red-900/50 dark:text-red-300 dark:hover:bg-red-950/30">
                       Remove
                     </ConfirmSubmitButton>
                   </form>

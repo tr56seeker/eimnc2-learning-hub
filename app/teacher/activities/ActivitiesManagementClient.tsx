@@ -80,7 +80,7 @@ function ActivityForm({ activity, lessons, onSubmit }: { activity?: ManagedActiv
         defaultValue={activity?.expectedFilenamePattern ?? ""}
         placeholder="{LRN}_{LASTNAME}_{ACTIVITY}"
       />
-      <p className="-mt-3 text-xs leading-5 text-slate-500">
+      <p className="-mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
         Learners will be shown the exact file name to use before they submit. Tokens: {FILENAME_PATTERN_TOKENS.map((t) => t.token).join(", ")}
       </p>
       <SubmitButton>{activity ? "Save Changes" : "Create Activity"}</SubmitButton>
@@ -94,11 +94,11 @@ export function ActivitiesManagementClient({ activities, lessons }: { activities
 
   return (
     <>
-      <section className="overflow-hidden border border-slate-200/80 bg-white shadow-sm shadow-slate-200/40">
-        <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <section className="overflow-hidden border border-slate-200/80 bg-white shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-black/20">
+        <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-slate-700 dark:bg-slate-800/60">
           <div>
-            <h2 className="text-xl font-semibold tracking-tight text-slate-950">Activities</h2>
-            <p className="mt-1 text-sm text-slate-500">{activities.length} activit{activities.length === 1 ? "y" : "ies"} shown</p>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Activities</h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{activities.length} activit{activities.length === 1 ? "y" : "ies"} shown</p>
           </div>
           <button type="button" onClick={() => setIsAddOpen(true)} className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700">
             Add Activity
@@ -107,37 +107,37 @@ export function ActivitiesManagementClient({ activities, lessons }: { activities
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[900px] border-collapse text-left text-sm">
-            <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+            <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
               <tr>
-                <th className="border-b border-slate-200 px-5 py-3.5">Title</th>
-                <th className="border-b border-slate-200 px-4 py-3.5">Lesson</th>
-                <th className="border-b border-slate-200 px-4 py-3.5">Due</th>
-                <th className="border-b border-slate-200 px-4 py-3.5">Type</th>
-                <th className="border-b border-slate-200 px-4 py-3.5 text-center">Max Score</th>
-                <th className="border-b border-slate-200 px-4 py-3.5 text-center">Submissions</th>
-                <th className="border-b border-slate-200 px-4 py-3.5">Status</th>
-                <th className="border-b border-slate-200 px-5 py-3.5 text-right">Actions</th>
+                <th className="border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">Title</th>
+                <th className="border-b border-slate-200 px-4 py-3.5 dark:border-slate-700">Lesson</th>
+                <th className="border-b border-slate-200 px-4 py-3.5 dark:border-slate-700">Due</th>
+                <th className="border-b border-slate-200 px-4 py-3.5 dark:border-slate-700">Type</th>
+                <th className="border-b border-slate-200 px-4 py-3.5 text-center dark:border-slate-700">Max Score</th>
+                <th className="border-b border-slate-200 px-4 py-3.5 text-center dark:border-slate-700">Submissions</th>
+                <th className="border-b border-slate-200 px-4 py-3.5 dark:border-slate-700">Status</th>
+                <th className="border-b border-slate-200 px-5 py-3.5 text-right dark:border-slate-700">Actions</th>
               </tr>
             </thead>
             <tbody>
               {activities.map((activity) => (
-                <tr key={activity.id} className="text-slate-700 hover:bg-slate-50/60">
-                  <td className="border-b border-slate-200/70 px-5 py-4 font-semibold text-slate-950">{activity.title}</td>
-                  <td className="border-b border-slate-200/70 px-4 py-4">{activity.lessonTitle ?? "Not linked"}</td>
-                  <td className="border-b border-slate-200/70 px-4 py-4 tabular-nums">{activity.dueAt ? new Date(activity.dueAt).toLocaleDateString("en-PH", { dateStyle: "medium" }) : "No due date"}</td>
-                  <td className="border-b border-slate-200/70 px-4 py-4">{submissionTypeLabels[activity.submissionType] ?? activity.submissionType}</td>
-                  <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums">{activity.maxScore}</td>
-                  <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums">{activity.submissionCount}</td>
-                  <td className="border-b border-slate-200/70 px-4 py-4">
-                    <span className={activity.isActive ? "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"}>
+                <tr key={activity.id} className="text-slate-700 hover:bg-slate-50/60 dark:text-slate-300 dark:hover:bg-slate-800/40">
+                  <td className="border-b border-slate-200/70 px-5 py-4 font-semibold text-slate-950 dark:border-slate-700/70 dark:text-slate-100">{activity.title}</td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 dark:border-slate-700/70">{activity.lessonTitle ?? "Not linked"}</td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 tabular-nums dark:border-slate-700/70">{activity.dueAt ? new Date(activity.dueAt).toLocaleDateString("en-PH", { dateStyle: "medium" }) : "No due date"}</td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 dark:border-slate-700/70">{submissionTypeLabels[activity.submissionType] ?? activity.submissionType}</td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums dark:border-slate-700/70">{activity.maxScore}</td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums dark:border-slate-700/70">{activity.submissionCount}</td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 dark:border-slate-700/70">
+                    <span className={activity.isActive ? "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-950/40 dark:text-teal-400" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400"}>
                       {activity.isActive ? "Active" : "Archived"}
                     </span>
                   </td>
-                  <td className="border-b border-slate-200/70 px-5 py-4">
+                  <td className="border-b border-slate-200/70 px-5 py-4 dark:border-slate-700/70">
                     <div className="flex justify-end gap-2">
-                      <button type="button" onClick={() => setEditing(activity)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700">Edit</button>
+                      <button type="button" onClick={() => setEditing(activity)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-teal-400">Edit</button>
                       <form action={setActivityActiveAction.bind(null, activity.id, !activity.isActive)}>
-                        <button className={activity.isActive ? "rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50" : "rounded-lg px-3 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-50"}>
+                        <button className={activity.isActive ? "rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30" : "rounded-lg px-3 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-teal-950/40"}>
                           {activity.isActive ? "Archive" : "Restore"}
                         </button>
                       </form>
@@ -148,7 +148,7 @@ export function ActivitiesManagementClient({ activities, lessons }: { activities
             </tbody>
           </table>
         </div>
-        {!activities.length ? <div className="m-6 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-10 text-center text-slate-500">No activities match this filter.</div> : null}
+        {!activities.length ? <div className="m-6 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-10 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">No activities match this filter.</div> : null}
       </section>
 
       {isAddOpen ? (

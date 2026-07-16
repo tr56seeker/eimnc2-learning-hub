@@ -34,8 +34,8 @@ const initialResetState: LearnerPasswordResetState = {
   message: ""
 };
 
-const fieldClass = "focus-ring min-h-11 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40";
-const menuItemClass = "block w-full px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-teal-700";
+const fieldClass = "focus-ring min-h-11 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20";
+const menuItemClass = "block w-full px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-teal-400";
 
 function sectionLabel(section: SectionOption) {
   return `Grade ${section.grade_level} - ${section.name}`;
@@ -57,26 +57,26 @@ function AddLearnerForm({
       <FlashMessage message={message} variant="error" />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Last Name
           <input name="last_name" required className={fieldClass} placeholder="Dela Cruz" />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           First Name
           <input name="first_name" required className={fieldClass} placeholder="Juan" />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Middle Name
           <input name="middle_name" className={fieldClass} placeholder="Tamayo" />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Suffix
           <input name="suffix" className={fieldClass} placeholder="Jr., Sr., III" />
         </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Sex
           <select name="sex" defaultValue="" className={fieldClass}>
             <option value="">Not specified</option>
@@ -84,25 +84,25 @@ function AddLearnerForm({
             <option value="Female">Female</option>
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Birthday / Date of Birth
           <input name="birthdate" type="date" className={fieldClass} />
         </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           LRN
           <input name="lrn" className={fieldClass} placeholder="123456789012" />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Login ID or Email
           <input name="login_id" className={fieldClass} placeholder="Leave blank to use LRN" />
         </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Grade Level
           <select name="grade_level" className={fieldClass} defaultValue="">
             <option value="">Select grade</option>
@@ -110,7 +110,7 @@ function AddLearnerForm({
             <option value="12">Grade 12</option>
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Section
           <select name="section_id" className={fieldClass} defaultValue="">
             <option value="">No section</option>
@@ -121,7 +121,7 @@ function AddLearnerForm({
             ))}
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Status
           <select name="status" className={fieldClass} defaultValue="active">
             <option value="active">Active</option>
@@ -130,7 +130,7 @@ function AddLearnerForm({
         </label>
       </div>
 
-      <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-sm text-teal-800">
+      <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-sm text-teal-800 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300">
         Initial password: <span className="font-semibold">eimnc2password</span>. The learner will be required to change it after signing in.
       </div>
 
@@ -145,26 +145,26 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
   return (
     <form action={updateLearnerAction.bind(null, learner.id)} className="grid gap-5">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Last Name
           <input name="last_name" required defaultValue={learner.lastName ?? ""} className={fieldClass} />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           First Name
           <input name="first_name" required defaultValue={learner.firstName ?? ""} className={fieldClass} />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Middle Name
           <input name="middle_name" defaultValue={learner.middleName ?? learner.middleInitial ?? ""} className={fieldClass} />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Suffix
           <input name="suffix" defaultValue={learner.suffix ?? ""} className={fieldClass} placeholder="Jr., Sr., III" />
         </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Sex
           <select name="sex" defaultValue={learner.sex ?? ""} className={fieldClass}>
             <option value="">Not specified</option>
@@ -172,25 +172,25 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
             <option value="Female">Female</option>
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Birthday / Date of Birth
           <input name="birthdate" type="date" defaultValue={learner.birthdate ?? ""} className={fieldClass} />
         </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           LRN
           <input name="lrn" defaultValue={learner.lrn ?? ""} className={fieldClass} />
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Login ID or Email
           <input name="login_id" defaultValue={learner.loginId ?? ""} className={fieldClass} />
         </label>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Grade Level
           <select name="grade_level" defaultValue={learner.gradeLevel ?? ""} className={fieldClass}>
             <option value="">No grade</option>
@@ -198,7 +198,7 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
             <option value="12">Grade 12</option>
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Section
           <select name="section_id" defaultValue={learner.sectionId ?? ""} className={fieldClass}>
             <option value="">No section</option>
@@ -209,7 +209,7 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
             ))}
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Status
           <select name="status" defaultValue={learner.status ?? "active"} className={fieldClass}>
             <option value="active">Active</option>
@@ -239,19 +239,19 @@ function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
   return (
     <div className="grid gap-5">
       {state.credentials ? (
-        <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5">
+        <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-teal-900/50 dark:bg-teal-950/40">
           <dl className="grid gap-4 text-sm sm:grid-cols-2">
             <div>
-              <dt className="font-semibold text-slate-500">Learner Name</dt>
-              <dd className="mt-1 font-semibold text-slate-950">{state.credentials.learnerName}</dd>
+              <dt className="font-semibold text-slate-500 dark:text-slate-400">Learner Name</dt>
+              <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{state.credentials.learnerName}</dd>
             </div>
             <div>
-              <dt className="font-semibold text-slate-500">Login ID</dt>
-              <dd className="mt-1 font-semibold text-slate-950">{state.credentials.loginId}</dd>
+              <dt className="font-semibold text-slate-500 dark:text-slate-400">Login ID</dt>
+              <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{state.credentials.loginId}</dd>
             </div>
             <div className="sm:col-span-2">
-              <dt className="font-semibold text-slate-500">Temporary Password</dt>
-              <dd className="mt-1 font-semibold text-slate-950">{state.credentials.temporaryPassword}</dd>
+              <dt className="font-semibold text-slate-500 dark:text-slate-400">Temporary Password</dt>
+              <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{state.credentials.temporaryPassword}</dd>
             </div>
           </dl>
           <button
@@ -270,7 +270,7 @@ function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
       <FlashMessage message={state.ok ? null : state.message} variant="error" />
 
       <form action={action} className="grid gap-4">
-        <label className="grid gap-2 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
           New Temporary Password
           <input name="password" type="text" required minLength={8} defaultValue="eimnc2password" className={fieldClass} placeholder="At least 8 characters" />
         </label>
@@ -326,11 +326,11 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
 
   return (
     <>
-      <section className="overflow-hidden border border-slate-200/80 bg-white shadow-sm shadow-slate-200/40">
-        <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <section className="overflow-hidden border border-slate-200/80 bg-white shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-black/20">
+        <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-slate-700 dark:bg-slate-800/60">
           <div>
-            <h2 className="text-xl font-semibold tracking-tight text-slate-950">Enrolled learners</h2>
-            <p className="mt-1 text-sm text-slate-500">{learners.length} learner{learners.length === 1 ? "" : "s"} shown</p>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Enrolled learners</h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{learners.length} learner{learners.length === 1 ? "" : "s"} shown</p>
           </div>
           <button
             type="button"
@@ -344,14 +344,14 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
         <div className={`overflow-x-auto ${openMenuId ? "pb-28" : ""}`}>
           <table className="min-w-[940px] w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
-                <th className="w-[34%] border-b border-slate-200 px-5 py-3.5">Learner&apos;s Complete Name</th>
-                <th className="whitespace-nowrap border-b border-slate-200 px-4 py-3">LRN</th>
-                <th className="border-b border-slate-200 px-4 py-3">Grade &amp; Section</th>
-                <th className="border-b border-slate-200 px-4 py-3">Sex</th>
-                <th className="border-b border-slate-200 px-4 py-3">Online Status</th>
-                <th className="border-b border-slate-200 px-4 py-3">Status</th>
-                <th className="border-b border-slate-200 px-4 py-3 text-right">Actions</th>
+              <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
+                <th className="w-[34%] border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">Learner&apos;s Complete Name</th>
+                <th className="whitespace-nowrap border-b border-slate-200 px-4 py-3 dark:border-slate-700">LRN</th>
+                <th className="border-b border-slate-200 px-4 py-3 dark:border-slate-700">Grade &amp; Section</th>
+                <th className="border-b border-slate-200 px-4 py-3 dark:border-slate-700">Sex</th>
+                <th className="border-b border-slate-200 px-4 py-3 dark:border-slate-700">Online Status</th>
+                <th className="border-b border-slate-200 px-4 py-3 dark:border-slate-700">Status</th>
+                <th className="border-b border-slate-200 px-4 py-3 text-right dark:border-slate-700">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -365,41 +365,41 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
                 });
 
                 return (
-                  <tr key={learner.id} className="align-middle text-slate-700 hover:bg-slate-50/60">
-                    <td className="border-b border-slate-200/70 px-5 py-3.5">
-                      <Link href={`/teacher/learners/${learner.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline hover:underline-offset-4">
+                  <tr key={learner.id} className="align-middle text-slate-700 hover:bg-slate-50/60 dark:text-slate-300 dark:hover:bg-slate-800/40">
+                    <td className="border-b border-slate-200/70 px-5 py-3.5 dark:border-slate-700/70">
+                      <Link href={`/teacher/learners/${learner.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline hover:underline-offset-4 dark:text-slate-100 dark:hover:text-teal-400">
                         {completeName}
                       </Link>
                     </td>
-                    <td className="whitespace-nowrap border-b border-slate-100 px-4 py-4 tabular-nums">{learner.lrn ?? ""}</td>
-                    <td className="border-b border-slate-100 px-4 py-4 font-medium">{gradeSection}</td>
-                    <td className="border-b border-slate-100 px-4 py-4">{learner.sex ?? "Not specified"}</td>
-                    <td className="border-b border-slate-100 px-4 py-4"><span className={onlineBadgeClass(onlineStatus)}>{onlineStatus.charAt(0).toUpperCase() + onlineStatus.slice(1)}</span></td>
-                    <td className="border-b border-slate-100 px-4 py-4">
+                    <td className="whitespace-nowrap border-b border-slate-100 px-4 py-4 tabular-nums dark:border-slate-800">{learner.lrn ?? ""}</td>
+                    <td className="border-b border-slate-100 px-4 py-4 font-medium dark:border-slate-800">{gradeSection}</td>
+                    <td className="border-b border-slate-100 px-4 py-4 dark:border-slate-800">{learner.sex ?? "Not specified"}</td>
+                    <td className="border-b border-slate-100 px-4 py-4 dark:border-slate-800"><span className={onlineBadgeClass(onlineStatus)}>{onlineStatus.charAt(0).toUpperCase() + onlineStatus.slice(1)}</span></td>
+                    <td className="border-b border-slate-100 px-4 py-4 dark:border-slate-800">
                       <span className={statusBadgeClass(learner.status)}>
                         {learner.status ?? "active"}
                       </span>
                     </td>
-                    <td className="border-b border-slate-200/70 px-4 py-3 text-right">
+                    <td className="border-b border-slate-200/70 px-4 py-3 text-right dark:border-slate-700/70">
                       <div className="relative inline-block" data-actions-menu>
                         <button
                           type="button"
                           aria-label={`Actions for ${completeName}`}
                           aria-expanded={openMenuId === learner.id}
                           onClick={() => setOpenMenuId((current) => current === learner.id ? null : learner.id)}
-                          className="grid h-9 w-9 place-items-center rounded-lg text-xl font-semibold leading-none text-slate-500 hover:bg-slate-100 hover:text-slate-950"
+                          className="grid h-9 w-9 place-items-center rounded-lg text-xl font-semibold leading-none text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                         >
                           ⋯
                         </button>
                         {openMenuId === learner.id ? (
-                          <div className="absolute right-0 top-10 z-30 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl shadow-slate-950/10">
+                          <div className="absolute right-0 top-10 z-30 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl shadow-slate-950/10 dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/40">
                             <Link href={`/teacher/learners/${learner.id}`} onClick={() => setOpenMenuId(null)} className={menuItemClass}>View Profile</Link>
                             <button type="button" onClick={() => { setOpenMenuId(null); setSelectedLearner(learner); setMode("edit"); }} className={menuItemClass}>Edit</button>
                             <button type="button" onClick={() => { setOpenMenuId(null); setSelectedLearner(learner); setMode("reset"); }} className={menuItemClass}>Reset Password</button>
                             <form action={toggleLearnerStatusAction.bind(null, learner.id, nextStatus)} onSubmit={() => setOpenMenuId(null)}>
                               <button className={menuItemClass}>{nextStatus === "active" ? "Activate" : "Deactivate"}</button>
                             </form>
-                            <div className="my-1 border-t border-slate-100" />
+                            <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
                         <form
                           action={softDeleteLearnerAction.bind(null, learner.id)}
                           onSubmit={(event) => {
@@ -413,7 +413,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
                             setOpenMenuId(null);
                           }}
                         >
-                              <button className="block w-full px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50">Delete</button>
+                              <button className="block w-full px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">Delete</button>
                         </form>
                           </div>
                         ) : null}
@@ -427,7 +427,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
         </div>
 
         {!learners.length ? (
-          <div className="m-6 rounded-xl border border-dashed border-slate-300/80 bg-slate-50/60 p-10 text-center text-slate-500">
+          <div className="m-6 rounded-xl border border-dashed border-slate-300/80 bg-slate-50/60 p-10 text-center text-slate-500 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-400">
             No learners match the current filters.
           </div>
         ) : null}
@@ -451,23 +451,23 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
           onClose={() => setShowCredentials(false)}
           size="lg"
         >
-          <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5">
+          <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-teal-900/50 dark:bg-teal-950/40">
             <dl className="grid gap-4 text-sm sm:grid-cols-2">
               <div>
-                <dt className="font-semibold text-slate-500">Learner Name</dt>
-                <dd className="mt-1 font-semibold text-slate-950">{state.credentials.learnerName}</dd>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">Learner Name</dt>
+                <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{state.credentials.learnerName}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-slate-500">Section</dt>
-                <dd className="mt-1 font-semibold text-slate-950">{state.credentials.sectionName}</dd>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">Section</dt>
+                <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{state.credentials.sectionName}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-slate-500">Login ID</dt>
-                <dd className="mt-1 font-semibold text-slate-950">{state.credentials.loginId}</dd>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">Login ID</dt>
+                <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{state.credentials.loginId}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-slate-500">Temporary Password</dt>
-                <dd className="mt-1 font-semibold text-slate-950">{state.credentials.temporaryPassword}</dd>
+                <dt className="font-semibold text-slate-500 dark:text-slate-400">Temporary Password</dt>
+                <dd className="mt-1 font-semibold text-slate-950 dark:text-slate-100">{state.credentials.temporaryPassword}</dd>
               </div>
             </dl>
           </div>

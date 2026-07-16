@@ -66,10 +66,10 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusClasses: Record<string, string> = {
-  on_track: "bg-teal-50 text-teal-700",
-  delayed: "bg-amber-50 text-amber-800",
-  needs_intervention: "bg-red-50 text-red-700",
-  completed: "bg-slate-100 text-slate-700"
+  on_track: "bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400",
+  delayed: "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300",
+  needs_intervention: "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300",
+  completed: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
 };
 
 export default async function TeacherProjectDetailPage({
@@ -116,12 +116,12 @@ export default async function TeacherProjectDetailPage({
 
   return (
     <PortalShell profile={profile}>
-      <Link href="/teacher/projects" className="text-sm font-semibold text-teal-700 hover:text-teal-800">Back to Projects</Link>
+      <Link href="/teacher/projects" className="text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-400">Back to Projects</Link>
 
       <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
         <SectionHeader eyebrow={competency?.code ?? "EIM"} title={project.title} description={project.overview ?? undefined} />
         <form action={setProjectActiveAction.bind(null, project.id, project.is_active === false)}>
-          <button className={project.is_active === false ? "rounded-xl border border-teal-200 bg-white px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50" : "rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"}>
+          <button className={project.is_active === false ? "rounded-xl border border-teal-200 bg-white px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-50 dark:border-teal-800 dark:bg-slate-900 dark:text-teal-400 dark:hover:bg-teal-950/40" : "rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-900/50 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-950/30"}>
             {project.is_active === false ? "Restore Project" : "Archive Project"}
           </button>
         </form>
@@ -134,7 +134,7 @@ export default async function TeacherProjectDetailPage({
         <aside className="grid content-start gap-6">
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
             <details>
-              <summary className="cursor-pointer list-none text-sm font-semibold text-teal-700">Edit Project Info</summary>
+              <summary className="cursor-pointer list-none text-sm font-semibold text-teal-700 dark:text-teal-400">Edit Project Info</summary>
               <form action={updateProjectAction.bind(null, project.id)} className="mt-4 grid gap-4">
                 <FormInput label="Title" name="title" required defaultValue={project.title} />
                 <FormTextarea label="Overview" name="overview" defaultValue={project.overview ?? ""} />
@@ -157,30 +157,30 @@ export default async function TeacherProjectDetailPage({
           </section>
 
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
-            <h2 className="text-lg font-semibold text-slate-950">Milestones</h2>
+            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Milestones</h2>
             <div className="mt-4 grid gap-3">
               {(milestones ?? []).map((milestone) => (
-                <div key={milestone.id} className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                <div key={milestone.id} className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-800/70">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold text-slate-900">{milestone.title}</p>
-                      {milestone.due_at ? <p className="mt-1 text-xs text-slate-500">Due {formatDateTime(milestone.due_at)}</p> : null}
-                      {milestone.description ? <p className="mt-1 text-xs text-slate-500">{milestone.description}</p> : null}
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">{milestone.title}</p>
+                      {milestone.due_at ? <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Due {formatDateTime(milestone.due_at)}</p> : null}
+                      {milestone.description ? <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{milestone.description}</p> : null}
                     </div>
                     <form action={deleteMilestoneAction.bind(null, project.id, milestone.id)}>
-                      <ConfirmSubmitButton message="Remove this milestone?" className="rounded-lg px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50">
+                      <ConfirmSubmitButton message="Remove this milestone?" className="rounded-lg px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">
                         Remove
                       </ConfirmSubmitButton>
                     </form>
                   </div>
                 </div>
               ))}
-              {!milestones?.length ? <p className="text-sm text-slate-500">No milestones yet.</p> : null}
+              {!milestones?.length ? <p className="text-sm text-slate-500 dark:text-slate-400">No milestones yet.</p> : null}
             </div>
 
-            <details className="mt-5 rounded-xl border border-slate-200 bg-white">
-              <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-teal-700">Add Milestone</summary>
-              <form action={addMilestoneAction.bind(null, project.id)} className="grid gap-4 border-t border-slate-100 p-4">
+            <details className="mt-5 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+              <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-teal-700 dark:text-teal-400">Add Milestone</summary>
+              <form action={addMilestoneAction.bind(null, project.id)} className="grid gap-4 border-t border-slate-100 p-4 dark:border-slate-800">
                 <FormInput label="Title" name="title" required />
                 <FormTextarea label="Description" name="description" />
                 <FormInput label="Due Date" name="due_at" type="datetime-local" />
@@ -191,7 +191,7 @@ export default async function TeacherProjectDetailPage({
           </section>
 
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
-            <h2 className="text-lg font-semibold text-slate-950">Assign Learner</h2>
+            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Assign Learner</h2>
             {availableLearners.length ? (
               <form action={assignLearnerAction.bind(null, project.id)} className="mt-4 grid gap-4">
                 <FormSelect label="Learner" name="learner_id" required defaultValue="">
@@ -203,14 +203,14 @@ export default async function TeacherProjectDetailPage({
                 <button className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700">Assign</button>
               </form>
             ) : (
-              <p className="mt-3 text-sm text-slate-500">All your learners are already assigned, or none are available.</p>
+              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">All your learners are already assigned, or none are available.</p>
             )}
           </section>
         </aside>
 
         <section className="grid content-start gap-5">
           {!assignments?.length ? (
-            <div className="card rounded-[1.75rem] p-8 text-center text-slate-500">No learners assigned to this project yet.</div>
+            <div className="card rounded-[1.75rem] p-8 text-center text-slate-500 dark:text-slate-400">No learners assigned to this project yet.</div>
           ) : (
             assignments.map((assignment) => {
               const learner = firstRelation(assignment.profiles);
@@ -220,43 +220,43 @@ export default async function TeacherProjectDetailPage({
                   <summary className="cursor-pointer list-none">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <h3 className="text-lg font-semibold text-slate-950">{learner?.full_name ?? "Learner"}</h3>
-                        <p className="mt-1 text-sm text-slate-500">{assignment.progress_percentage}% complete{assignment.final_score !== null ? ` · Final score: ${assignment.final_score}` : ""}</p>
+                        <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">{learner?.full_name ?? "Learner"}</h3>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{assignment.progress_percentage}% complete{assignment.final_score !== null ? ` · Final score: ${assignment.final_score}` : ""}</p>
                       </div>
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[assignment.status] ?? "bg-slate-100 text-slate-700"}`}>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[assignment.status] ?? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}>
                         {statusLabels[assignment.status] ?? assignment.status}
                       </span>
                     </div>
                   </summary>
 
-                  <div className="mt-6 grid gap-6 border-t border-slate-100 pt-6">
+                  <div className="mt-6 grid gap-6 border-t border-slate-100 pt-6 dark:border-slate-800">
                     <div className="grid gap-4">
                       {(milestones ?? []).map((milestone) => {
                         const submission = latestSubmissionByKey.get(`${milestone.id}:${assignment.learner_id}`);
 
                         return (
-                          <div key={milestone.id} className="rounded-2xl border border-slate-200/80 bg-white/90 p-5">
-                            <p className="font-semibold text-slate-900">{milestone.title}</p>
+                          <div key={milestone.id} className="rounded-2xl border border-slate-200/80 bg-white/90 p-5 dark:border-slate-700/80 dark:bg-slate-900/90">
+                            <p className="font-semibold text-slate-900 dark:text-slate-100">{milestone.title}</p>
                             {!submission ? (
-                              <p className="mt-2 text-sm text-slate-500">Not submitted yet.</p>
+                              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Not submitted yet.</p>
                             ) : (
                               <>
-                                <p className="mt-1 text-xs text-slate-500">Submitted {formatDateTime(submission.submitted_at)} &middot; {submission.status}</p>
-                                {submission.file_url ? <a href={submission.file_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-semibold text-teal-700 hover:underline">Open evidence link</a> : null}
-                                {submission.content_text ? <p className="mt-2 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">{submission.content_text}</p> : null}
+                                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Submitted {formatDateTime(submission.submitted_at)} &middot; {submission.status}</p>
+                                {submission.file_url ? <a href={submission.file_url} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">Open evidence link</a> : null}
+                                {submission.content_text ? <p className="mt-2 rounded-xl bg-slate-50 p-3 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">{submission.content_text}</p> : null}
                                 <form action={scoreMilestoneSubmissionAction.bind(null, project.id)} className="mt-3 grid gap-3 sm:grid-cols-[100px_1fr_auto] sm:items-end">
                                   <input type="hidden" name="submission_id" value={submission.id} />
-                                  <label className="grid gap-1.5 text-xs font-semibold text-slate-600">
+                                  <label className="grid gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
                                     Score
-                                    <input name="score" type="number" min={0} defaultValue={submission.score ?? 0} className="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-normal" />
+                                    <input name="score" type="number" min={0} defaultValue={submission.score ?? 0} className="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-normal dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
                                   </label>
-                                  <label className="grid gap-1.5 text-xs font-semibold text-slate-600">
+                                  <label className="grid gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
                                     Feedback
-                                    <input name="feedback" defaultValue={submission.feedback ?? ""} className="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-normal" />
+                                    <input name="feedback" defaultValue={submission.feedback ?? ""} className="focus-ring min-h-10 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-normal dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
                                   </label>
                                   <div className="flex gap-2">
                                     <button type="submit" className="min-h-10 rounded-lg bg-slate-950 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700">Save</button>
-                                    <button type="submit" formAction={returnMilestoneSubmissionAction.bind(null, project.id)} className="min-h-10 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100">
+                                    <button type="submit" formAction={returnMilestoneSubmissionAction.bind(null, project.id)} className="min-h-10 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-300">
                                       Return
                                     </button>
                                   </div>
@@ -268,7 +268,7 @@ export default async function TeacherProjectDetailPage({
                       })}
                     </div>
 
-                    <form action={updateAssignmentAction.bind(null, project.id, assignment.id)} className="grid gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-5">
+                    <form action={updateAssignmentAction.bind(null, project.id, assignment.id)} className="grid gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/60 p-5 dark:border-slate-700/80 dark:bg-slate-800/60">
                       <div className="grid gap-4 sm:grid-cols-3">
                         <FormSelect label="Status" name="status" defaultValue={assignment.status}>
                           {Object.entries(statusLabels).map(([value, label]) => (
@@ -282,7 +282,7 @@ export default async function TeacherProjectDetailPage({
                       <button className="w-fit rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700">Save Progress</button>
                     </form>
                     <form action={removeAssignmentAction.bind(null, project.id, assignment.id)}>
-                      <ConfirmSubmitButton message="Remove this learner from the project?" className="rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50">
+                      <ConfirmSubmitButton message="Remove this learner from the project?" className="rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50 dark:border-red-900/50 dark:bg-slate-900 dark:text-red-300 dark:hover:bg-red-950/30">
                         Remove Learner
                       </ConfirmSubmitButton>
                     </form>

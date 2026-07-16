@@ -77,7 +77,7 @@ export default async function ClassProgressReportPage() {
       />
 
       <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline">
+        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">
           ← Back to Reports
         </Link>
         <ReportToolbar filename="class-progress-report.csv" columns={columns} rows={csvRows} />
@@ -87,8 +87,8 @@ export default async function ClassProgressReportPage() {
         <EmptyState title="No sections yet" message="Create a section to see class progress here." />
       ) : (
         <div className="premium-table overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
               <tr>
                 <th className="px-5 py-3 text-left">Section</th>
                 <th className="px-5 py-3 text-left">Learners</th>
@@ -98,18 +98,18 @@ export default async function ClassProgressReportPage() {
                 <th className="px-5 py-3 text-left">Avg. Assessment Score</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {rows.map((row) => (
                 <tr key={row.id} className={row.isActive ? "" : "opacity-60"}>
-                  <td className="px-5 py-4 font-semibold text-slate-900">
+                  <td className="px-5 py-4 font-semibold text-slate-900 dark:text-slate-100">
                     {row.name}
-                    {!row.isActive ? <span className="ml-2 text-xs font-medium text-slate-400">(inactive)</span> : null}
+                    {!row.isActive ? <span className="ml-2 text-xs font-medium text-slate-400 dark:text-slate-500">(inactive)</span> : null}
                   </td>
-                  <td className="px-5 py-4 text-slate-600">{row.learnerCount}</td>
-                  <td className="px-5 py-4 text-slate-600">{row.avgLessonPct}%</td>
-                  <td className="px-5 py-4 text-slate-600">{row.avgActivityPct}%</td>
-                  <td className="px-5 py-4 text-slate-600">{row.missingTotal}</td>
-                  <td className="px-5 py-4 text-slate-600">{row.avgExamPct !== null ? `${row.avgExamPct}%` : "No data"}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.learnerCount}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.avgLessonPct}%</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.avgActivityPct}%</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.missingTotal}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.avgExamPct !== null ? `${row.avgExamPct}%` : "No data"}</td>
                 </tr>
               ))}
             </tbody>

@@ -54,18 +54,18 @@ export function EmbeddedResourceViewer({ title, url, caption, blockType }: Embed
       className={
         isFullscreen
           ? "flex h-screen w-screen flex-col overflow-hidden bg-slate-950 p-3 sm:p-5"
-          : "mt-5 w-full overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-slate-50 p-3 shadow-sm"
+          : "mt-5 w-full overflow-hidden rounded-[1.75rem] border border-slate-200/80 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800 p-3 shadow-sm"
       }
     >
       {caption ? (
-        <p className={isFullscreen ? "mb-3 text-sm leading-6 text-slate-200" : "mb-3 px-2 text-sm leading-6 text-slate-500"}>{caption}</p>
+        <p className={isFullscreen ? "mb-3 text-sm leading-6 text-slate-200" : "mb-3 px-2 text-sm leading-6 text-slate-500 dark:text-slate-400"}>{caption}</p>
       ) : null}
 
       <div
         className={
           isFullscreen
-            ? "min-h-0 flex-1 overflow-hidden rounded-2xl bg-white"
-            : "aspect-video w-full overflow-hidden rounded-2xl bg-slate-100 lg:min-h-[520px]"
+            ? "min-h-0 flex-1 overflow-hidden rounded-2xl bg-white dark:bg-slate-900"
+            : "aspect-video w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800 lg:min-h-[520px]"
         }
       >
         {embedUrl ? (
@@ -79,7 +79,7 @@ export function EmbeddedResourceViewer({ title, url, caption, blockType }: Embed
             referrerPolicy="no-referrer-when-downgrade"
           />
         ) : (
-          <div className="grid h-full min-h-64 place-items-center px-6 text-center text-sm text-slate-500">
+          <div className="grid h-full min-h-64 place-items-center px-6 text-center text-sm text-slate-500 dark:text-slate-400">
             This embedded resource does not have a valid URL.
           </div>
         )}
@@ -102,7 +102,7 @@ export function EmbeddedResourceViewer({ title, url, caption, blockType }: Embed
             className={
               isFullscreen
                 ? "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-slate-400 hover:bg-white/10"
-                : "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-teal-200 hover:text-teal-700"
+                : "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-sm transition hover:border-teal-200 dark:hover:border-teal-800 hover:text-teal-700 dark:hover:text-teal-400"
             }
           >
             Open in New Tab
@@ -111,17 +111,17 @@ export function EmbeddedResourceViewer({ title, url, caption, blockType }: Embed
       </div>
 
       {showPowerPointHelp ? (
-        <p className={isFullscreen ? "px-1 pt-3 text-xs leading-5 text-slate-300" : "px-1 pt-3 text-xs leading-5 text-slate-500"}>
+        <p className={isFullscreen ? "px-1 pt-3 text-xs leading-5 text-slate-300" : "px-1 pt-3 text-xs leading-5 text-slate-500 dark:text-slate-400"}>
           If the presentation does not respond inside the frame, use the fullscreen button or open it in a new tab.
         </p>
       ) : (
-        <p className={isFullscreen ? "px-1 pt-3 text-xs leading-5 text-slate-300" : "px-1 pt-3 text-xs leading-5 text-slate-500"}>
+        <p className={isFullscreen ? "px-1 pt-3 text-xs leading-5 text-slate-300" : "px-1 pt-3 text-xs leading-5 text-slate-500 dark:text-slate-400"}>
           If this resource is blocked by its provider, open it in a new tab.
         </p>
       )}
 
       {fullscreenMessage ? (
-        <p role="status" className={isFullscreen ? "px-1 pt-2 text-xs leading-5 text-amber-200" : "px-1 pt-2 text-xs leading-5 text-amber-700"}>
+        <p role="status" className={isFullscreen ? "px-1 pt-2 text-xs leading-5 text-amber-200" : "px-1 pt-2 text-xs leading-5 text-amber-700 dark:text-amber-300"}>
           {fullscreenMessage}
         </p>
       ) : null}

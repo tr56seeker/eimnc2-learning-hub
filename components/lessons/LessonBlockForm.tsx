@@ -10,9 +10,9 @@ type LessonBlockFormProps = {
   submitLabel: string;
 };
 
-const inputClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40";
-const textareaClass = "focus-ring rounded-2xl border border-slate-200/80 bg-white/90 p-4 font-normal text-slate-900 shadow-sm shadow-slate-200/40";
-const labelClass = "grid gap-2.5 text-sm font-semibold text-slate-700";
+const inputClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 px-4 py-3 font-normal text-slate-900 dark:text-slate-100 shadow-sm shadow-slate-200/40 dark:shadow-black/20";
+const textareaClass = "focus-ring rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 p-4 font-normal text-slate-900 dark:text-slate-100 shadow-sm shadow-slate-200/40 dark:shadow-black/20";
+const labelClass = "grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300";
 
 const blockTypeGroups: Array<{ label: string; types: LessonBlockType[] }> = [
   { label: "Lesson structure", types: ["heading", "paragraph", "objectives", "safety", "image"] },
@@ -72,13 +72,13 @@ export function LessonBlockForm({ action, block, defaultOrder, submitLabel }: Le
               </optgroup>
             ))}
           </select>
-          <span className="font-normal leading-5 text-slate-500">{lessonBlockDescriptions[blockType]}</span>
+          <span className="font-normal leading-5 text-slate-500 dark:text-slate-400">{lessonBlockDescriptions[blockType]}</span>
         </label>
         <label className={labelClass}>
           Order
           <input name="display_order" type="number" defaultValue={block?.display_order ?? defaultOrder ?? 0} className={inputClass} />
         </label>
-        <label className="flex items-center gap-3 self-end rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-sm font-medium text-slate-700">
+        <label className="flex items-center gap-3 self-end rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white/70 dark:bg-slate-900/70 p-4 text-sm font-medium text-slate-700 dark:text-slate-300">
           <input name="is_active" type="checkbox" defaultChecked={block?.is_active ?? true} /> Active
         </label>
       </div>
@@ -115,7 +115,7 @@ export function LessonBlockForm({ action, block, defaultOrder, submitLabel }: Le
                 className={textareaClass}
                 placeholder={'https://... or <iframe src="https://..." ...></iframe>'}
               />
-              <span className="font-normal leading-6 text-slate-500">
+              <span className="font-normal leading-6 text-slate-500 dark:text-slate-400">
                 {blockType === "embed"
                   ? "Paste the embed URL or full iframe code. If iframe code is pasted, the system will automatically use the src link."
                   : "Paste a provider embed URL or full iframe code. Only the safe src URL will be saved."}

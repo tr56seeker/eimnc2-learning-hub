@@ -26,10 +26,10 @@ type AnswerRow = {
 };
 
 function difficultyLabel(percentCorrect: number | null) {
-  if (percentCorrect === null) return { label: "No data", color: "text-slate-400", bar: "bg-slate-200" };
+  if (percentCorrect === null) return { label: "No data", color: "text-slate-400 dark:text-slate-500", bar: "bg-slate-200" };
   if (percentCorrect >= 80) return { label: "Easy", color: "text-emerald-700", bar: "bg-emerald-500" };
-  if (percentCorrect >= 50) return { label: "Average", color: "text-amber-700", bar: "bg-amber-500" };
-  return { label: "Difficult", color: "text-red-700", bar: "bg-red-500" };
+  if (percentCorrect >= 50) return { label: "Average", color: "text-amber-700 dark:text-amber-300", bar: "bg-amber-500" };
+  return { label: "Difficult", color: "text-red-700 dark:text-red-300", bar: "bg-red-500" };
 }
 
 export default async function ExamItemAnalysisPage({ params }: { params: Promise<{ id: string }> }) {
@@ -96,10 +96,10 @@ export default async function ExamItemAnalysisPage({ params }: { params: Promise
   return (
     <PortalShell profile={profile}>
       <div className="flex flex-wrap gap-3">
-        <Link href={`/teacher/exams/${id}/builder`} className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+        <Link href={`/teacher/exams/${id}/builder`} className="text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-400">
           Back to exam builder
         </Link>
-        <Link href={`/teacher/exams/${id}/grading`} className="text-sm font-semibold text-amber-700 hover:text-amber-800">
+        <Link href={`/teacher/exams/${id}/grading`} className="text-sm font-semibold text-amber-700 hover:text-amber-800 dark:text-amber-300">
           Grade Essays
         </Link>
       </div>
@@ -123,23 +123,23 @@ export default async function ExamItemAnalysisPage({ params }: { params: Promise
             return (
               <div key={row.questionId} className="card rounded-[1.5rem] p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <p className="max-w-2xl font-semibold text-slate-950">Q{index + 1}. {row.text}</p>
+                  <p className="max-w-2xl font-semibold text-slate-950 dark:text-slate-100">Q{index + 1}. {row.text}</p>
                   <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${difficulty.color} border-current/20`}>
                     {difficulty.label}
                   </span>
                 </div>
 
                 {isEssayOrIdentification ? (
-                  <p className="mt-4 text-sm font-medium text-slate-500">Essay question — not auto-scored, excluded from correctness stats.</p>
+                  <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">Essay question — not auto-scored, excluded from correctness stats.</p>
                 ) : (
                   <>
-                    <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                       <div
                         className={`h-full rounded-full ${difficulty.bar}`}
                         style={{ width: `${row.percentCorrect ?? 0}%` }}
                       />
                     </div>
-                    <p className="mt-2 text-sm font-medium text-slate-500">
+                    <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">
                       {row.percentCorrect ?? 0}% correct &middot; {row.correct}/{row.answered} learners got this right
                     </p>
                   </>

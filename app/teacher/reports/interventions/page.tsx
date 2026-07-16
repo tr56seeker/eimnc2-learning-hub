@@ -5,18 +5,12 @@ import { ReportPrintHeader } from "@/components/reports/ReportPrintHeader";
 import { ReportToolbar } from "@/components/reports/ReportToolbar";
 import { SectionHeader } from "@/components/SectionHeader";
 import { requireTeacher } from "@/lib/auth";
-import {
-  activityCompletionPercent,
-  examScorePercent,
-  lessonCompletionPercent,
-  loadProgressBaseData,
-  missingAssignmentCount
-} from "@/lib/reports";
+import { classifyLearnerRisk, loadProgressBaseData } from "@/lib/reports";
 import type { CsvColumn, CsvRow } from "@/lib/csv";
 
 const RISK_STYLES = {
-  "High Attention": "bg-red-50 text-red-700 border-red-200",
-  "Needs Review": "bg-amber-50 text-amber-700 border-amber-200"
+  "High Attention": "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-900/50",
+  "Needs Review": "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50"
 } as const;
 
 export default async function InterventionReportPage() {
@@ -29,29 +23,12 @@ export default async function InterventionReportPage() {
 
   const rows = data.learners
     .map((learner) => {
-      const completionPct = Math.round((lessonCompletionPercent(data, learner.id) + activityCompletionPercent(data, learner.id)) / 2);
-      const missing = missingAssignmentCount(data, learner.id);
-      const examPct = examScorePercent(data, learner.id);
-      const openIncidents = data.openIncidentCountByLearner.get(learner.id) ?? 0;
-
-      const reasons: string[] = [];
-      if (completionPct < 50) reasons.push("Low overall completion (<50%)");
-      if (missing >= 3) reasons.push(`${missing} missing outputs`);
-      if (examPct !== null && examPct < 60) reasons.push("Low assessment performance (<60%)");
-      if (openIncidents > 0) reasons.push(`${openIncidents} open integrity incident${openIncidents === 1 ? "" : "s"}`);
-
-      const riskLevel = reasons.length >= 2 ? "High Attention" : reasons.length === 1 ? "Needs Review" : "Normal";
-
+      const risk = classifyLearnerRisk(data, learner.id);
       return {
         id: learner.id,
         fullName: learner.full_name,
         sectionName: learner.section_id ? sectionNameById.get(learner.section_id) ?? "Unknown section" : "No section",
-        completionPct,
-        missing,
-        examPct,
-        openIncidents,
-        reasons,
-        riskLevel
+        ...risk
       };
     })
     .filter((row) => row.riskLevel !== "Normal")
@@ -85,7 +62,7 @@ export default async function InterventionReportPage() {
       />
 
       <div className="print:hidden mb-7 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline">
+        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">
           ← Back to Reports
         </Link>
         {rows.length ? <ReportToolbar filename="intervention-report.csv" columns={columns} rows={csvRows} /> : null}
@@ -99,19 +76,19 @@ export default async function InterventionReportPage() {
             <div key={row.id} className="card rounded-[1.5rem] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <Link href={`/teacher/learners/${row.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline">
+                  <Link href={`/teacher/learners/${row.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline dark:text-slate-100 dark:hover:text-teal-400">
                     {row.fullName}
                   </Link>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">{row.sectionName}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">{row.sectionName}</p>
                 </div>
                 <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${RISK_STYLES[row.riskLevel as keyof typeof RISK_STYLES]}`}>
                   {row.riskLevel}
                 </span>
               </div>
-              <ul className="mt-4 grid gap-1.5 text-sm text-slate-600">
+              <ul className="mt-4 grid gap-1.5 text-sm text-slate-600 dark:text-slate-400">
                 {row.reasons.map((reason) => (
                   <li key={reason} className="flex items-start gap-2">
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400 dark:bg-slate-500" />
                     {reason}
                   </li>
                 ))}

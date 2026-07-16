@@ -273,10 +273,10 @@ async function downloadTemplate(competencies: CompetencyOption[]) {
 
 function StatusBadge({ status }: { status: "valid" | "error" | "duplicate" }) {
   const styles = status === "valid"
-    ? "bg-emerald-50 text-emerald-700"
+    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
     : status === "duplicate"
-      ? "bg-amber-50 text-amber-700"
-      : "bg-red-50 text-red-700";
+      ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+      : "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300";
   const label = status === "valid" ? "Valid" : status === "duplicate" ? "Duplicate" : "Has Error";
   return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${styles}`}>{label}</span>;
 }
@@ -347,10 +347,10 @@ export function BulkQuestionUpload({ competencies, existingQuestions }: {
 
   return (
     <div className="grid gap-6">
-      <div className="grid gap-4 rounded-2xl border border-teal-100 bg-teal-50/60 p-5 sm:grid-cols-[1fr_auto] sm:items-center">
+      <div className="grid gap-4 rounded-2xl border border-teal-100 bg-teal-50/60 p-5 sm:grid-cols-[1fr_auto] sm:items-center dark:border-teal-900/50 dark:bg-teal-950/40">
         <div>
-          <h3 className="font-semibold text-teal-950">Start with the Excel template</h3>
-          <p className="mt-1 text-sm leading-6 text-teal-800">Keep the header names unchanged. Uploading only creates a preview; nothing is saved until you confirm the import.</p>
+          <h3 className="font-semibold text-teal-950 dark:text-teal-300">Start with the Excel template</h3>
+          <p className="mt-1 text-sm leading-6 text-teal-800 dark:text-teal-400">Keep the header names unchanged. Uploading only creates a preview; nothing is saved until you confirm the import.</p>
         </div>
         <button
           type="button"
@@ -366,24 +366,24 @@ export function BulkQuestionUpload({ competencies, existingQuestions }: {
               setIsDownloading(false);
             }
           }}
-          className="min-h-11 rounded-xl border border-teal-200 bg-white px-4 py-2.5 text-sm font-semibold text-teal-800 shadow-sm hover:bg-teal-50 disabled:opacity-60"
+          className="min-h-11 rounded-xl border border-teal-200 bg-white px-4 py-2.5 text-sm font-semibold text-teal-800 shadow-sm hover:bg-teal-50 disabled:opacity-60 dark:border-teal-800/50 dark:bg-slate-900 dark:text-teal-300 dark:hover:bg-teal-950/40"
         >
           {isDownloading ? "Preparing..." : "Download Excel Template"}
         </button>
       </div>
 
-      <label className="grid cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/70 px-6 py-8 text-center hover:border-teal-300 hover:bg-teal-50/40">
+      <label className="grid cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/70 px-6 py-8 text-center hover:border-teal-300 hover:bg-teal-50/40 dark:border-slate-700 dark:bg-slate-800/60 dark:hover:border-teal-700 dark:hover:bg-teal-950/30">
         <input type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={handleFile} className="sr-only" />
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7 text-slate-400"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 15v4h14v-4" /></svg>
-        <span className="mt-3 text-sm font-semibold text-slate-800">{isParsing ? "Reading file..." : fileName || "Choose an Excel or CSV file"}</span>
-        <span className="mt-1 text-xs text-slate-500">.xlsx preferred · .csv supported · maximum 1,000 rows / 10 MB</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7 text-slate-400 dark:text-slate-500"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 15v4h14v-4" /></svg>
+        <span className="mt-3 text-sm font-semibold text-slate-800 dark:text-slate-200">{isParsing ? "Reading file..." : fileName || "Choose an Excel or CSV file"}</span>
+        <span className="mt-1 text-xs text-slate-500 dark:text-slate-400">.xlsx preferred · .csv supported · maximum 1,000 rows / 10 MB</span>
       </label>
 
-      {fileError ? <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{fileError}</div> : null}
+      {fileError ? <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">{fileError}</div> : null}
 
       {summary ? (
-        <div className={`rounded-2xl border p-5 ${summary.ok ? "border-emerald-200 bg-emerald-50/70" : "border-red-200 bg-red-50/70"}`}>
-          <p className={`font-semibold ${summary.ok ? "text-emerald-800" : "text-red-800"}`}>{summary.message}</p>
+        <div className={`rounded-2xl border p-5 ${summary.ok ? "border-emerald-200 bg-emerald-50/70 dark:border-emerald-800/50 dark:bg-emerald-950/40" : "border-red-200 bg-red-50/70 dark:border-red-900/50 dark:bg-red-950/30"}`}>
+          <p className={`font-semibold ${summary.ok ? "text-emerald-800 dark:text-emerald-300" : "text-red-800 dark:text-red-300"}`}>{summary.message}</p>
           <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
               ["Total rows", summary.total],
@@ -391,9 +391,9 @@ export function BulkQuestionUpload({ competencies, existingQuestions }: {
               ["Skipped", summary.skipped],
               ["Errors", summary.errors]
             ].map(([label, value]) => (
-              <div key={String(label)} className="rounded-xl bg-white/80 px-3 py-2.5">
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</dt>
-                <dd className="mt-1 text-lg font-semibold tabular-nums text-slate-950">{value}</dd>
+              <div key={String(label)} className="rounded-xl bg-white/80 px-3 py-2.5 dark:bg-slate-900/80">
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</dt>
+                <dd className="mt-1 text-lg font-semibold tabular-nums text-slate-950 dark:text-slate-100">{value}</dd>
               </div>
             ))}
           </dl>
@@ -404,38 +404,38 @@ export function BulkQuestionUpload({ competencies, existingQuestions }: {
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-slate-950">Import preview</h3>
-              <p className="mt-1 text-xs text-slate-500">{counts.valid} valid · {counts.duplicate} duplicate · {counts.error} with errors</p>
+              <h3 className="font-semibold text-slate-950 dark:text-slate-100">Import preview</h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{counts.valid} valid · {counts.duplicate} duplicate · {counts.error} with errors</p>
             </div>
             {counts.duplicate ? (
-              <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
                 <input type="checkbox" checked={includeDuplicates} onChange={(event) => setIncludeDuplicates(event.target.checked)} className="h-4 w-4 accent-teal-700" />
                 Import duplicates too
               </label>
             ) : null}
           </div>
 
-          <div className="max-h-[42vh] overflow-auto rounded-xl border border-slate-200">
+          <div className="max-h-[42vh] overflow-auto rounded-xl border border-slate-200 dark:border-slate-700">
             <table className="w-full min-w-[880px] border-collapse text-left text-xs">
-              <thead className="sticky top-0 z-[1] bg-slate-50 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500">
+              <thead className="sticky top-0 z-[1] bg-slate-50 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
                 <tr>
-                  <th className="border-b border-slate-200 px-3 py-3">Row</th>
-                  <th className="w-[34%] border-b border-slate-200 px-3 py-3">Question</th>
-                  <th className="border-b border-slate-200 px-3 py-3">Competency</th>
-                  <th className="border-b border-slate-200 px-3 py-3">Type</th>
-                  <th className="border-b border-slate-200 px-3 py-3">Status</th>
-                  <th className="w-[30%] border-b border-slate-200 px-3 py-3">Validation</th>
+                  <th className="border-b border-slate-200 px-3 py-3 dark:border-slate-700">Row</th>
+                  <th className="w-[34%] border-b border-slate-200 px-3 py-3 dark:border-slate-700">Question</th>
+                  <th className="border-b border-slate-200 px-3 py-3 dark:border-slate-700">Competency</th>
+                  <th className="border-b border-slate-200 px-3 py-3 dark:border-slate-700">Type</th>
+                  <th className="border-b border-slate-200 px-3 py-3 dark:border-slate-700">Status</th>
+                  <th className="w-[30%] border-b border-slate-200 px-3 py-3 dark:border-slate-700">Validation</th>
                 </tr>
               </thead>
               <tbody>
                 {validatedRows.map((result) => (
-                  <tr key={result.sourceRow} className="align-top hover:bg-slate-50/70">
-                    <td className="border-b border-slate-100 px-3 py-3 font-semibold tabular-nums text-slate-500">{result.sourceRow}</td>
-                    <td className="border-b border-slate-100 px-3 py-3 font-medium leading-5 text-slate-800">{result.row.question_text || "—"}</td>
-                    <td className="border-b border-slate-100 px-3 py-3 font-semibold text-slate-600">{result.row.competency_code || "—"}</td>
-                    <td className="border-b border-slate-100 px-3 py-3 text-slate-600">{result.row.question_type || "—"}</td>
-                    <td className="border-b border-slate-100 px-3 py-3"><StatusBadge status={result.status} /></td>
-                    <td className={`border-b border-slate-100 px-3 py-3 leading-5 ${result.status === "error" ? "text-red-700" : result.status === "duplicate" ? "text-amber-700" : "text-slate-500"}`}>
+                  <tr key={result.sourceRow} className="align-top hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td className="border-b border-slate-100 px-3 py-3 font-semibold tabular-nums text-slate-500 dark:border-slate-800 dark:text-slate-400">{result.sourceRow}</td>
+                    <td className="border-b border-slate-100 px-3 py-3 font-medium leading-5 text-slate-800 dark:border-slate-800 dark:text-slate-200">{result.row.question_text || "—"}</td>
+                    <td className="border-b border-slate-100 px-3 py-3 font-semibold text-slate-600 dark:border-slate-800 dark:text-slate-400">{result.row.competency_code || "—"}</td>
+                    <td className="border-b border-slate-100 px-3 py-3 text-slate-600 dark:border-slate-800 dark:text-slate-400">{result.row.question_type || "—"}</td>
+                    <td className="border-b border-slate-100 px-3 py-3 dark:border-slate-800"><StatusBadge status={result.status} /></td>
+                    <td className={`border-b border-slate-100 px-3 py-3 leading-5 dark:border-slate-800 ${result.status === "error" ? "text-red-700 dark:text-red-300" : result.status === "duplicate" ? "text-amber-700 dark:text-amber-300" : "text-slate-500 dark:text-slate-400"}`}>
                       {result.messages.length ? result.messages.join(" ") : "Ready to import."}
                     </td>
                   </tr>
@@ -444,8 +444,8 @@ export function BulkQuestionUpload({ competencies, existingQuestions }: {
             </table>
           </div>
 
-          <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs leading-5 text-slate-500">Invalid rows are always skipped. Duplicate rows are skipped unless explicitly included.</p>
+          <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+            <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">Invalid rows are always skipped. Duplicate rows are skipped unless explicitly included.</p>
             <button
               type="button"
               disabled={!importableCount || isImporting}

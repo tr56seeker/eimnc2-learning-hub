@@ -38,10 +38,10 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusClasses: Record<string, string> = {
-  on_track: "bg-teal-50 text-teal-700",
-  delayed: "bg-amber-50 text-amber-800",
-  needs_intervention: "bg-red-50 text-red-700",
-  completed: "bg-slate-100 text-slate-700"
+  on_track: "bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400",
+  delayed: "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300",
+  needs_intervention: "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400",
+  completed: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
 };
 
 const submissionStatusLabels: Record<string, string> = {
@@ -106,25 +106,25 @@ export default async function LearnerProjectsPage({ searchParams }: { searchPara
               <section key={assignment.id} className="card rounded-[1.75rem] p-6 sm:p-7">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-xl font-semibold text-slate-950">{project?.title ?? "Project"}</h2>
-                    {project?.overview ? <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">{project.overview}</p> : null}
-                    {project?.due_at ? <p className="mt-2 text-xs font-semibold text-slate-500">Due {formatDateTime(project.due_at)}</p> : null}
+                    <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">{project?.title ?? "Project"}</h2>
+                    {project?.overview ? <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">{project.overview}</p> : null}
+                    {project?.due_at ? <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">Due {formatDateTime(project.due_at)}</p> : null}
                   </div>
-                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[assignment.status] ?? "bg-slate-100 text-slate-700"}`}>
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[assignment.status] ?? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}>
                     {statusLabels[assignment.status] ?? assignment.status}
                   </span>
                 </div>
 
-                <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div className="h-full rounded-full bg-teal-500" style={{ width: `${assignment.progress_percentage}%` }} />
                 </div>
-                <p className="mt-1.5 text-xs font-semibold text-slate-500">{assignment.progress_percentage}% complete</p>
+                <p className="mt-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">{assignment.progress_percentage}% complete</p>
 
                 {assignment.final_score !== null ? (
-                  <p className="mt-3 text-sm font-semibold text-teal-700">Final score: {assignment.final_score}</p>
+                  <p className="mt-3 text-sm font-semibold text-teal-700 dark:text-teal-400">Final score: {assignment.final_score}</p>
                 ) : null}
                 {assignment.teacher_comments ? (
-                  <p className="mt-3 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">Teacher comments: {assignment.teacher_comments}</p>
+                  <p className="mt-3 rounded-xl bg-slate-50 dark:bg-slate-800 p-4 text-sm leading-6 text-slate-700 dark:text-slate-300">Teacher comments: {assignment.teacher_comments}</p>
                 ) : null}
 
                 <div className="mt-6 grid gap-4">
@@ -132,27 +132,27 @@ export default async function LearnerProjectsPage({ searchParams }: { searchPara
                     const submission = latestSubmissionByMilestone.get(milestone.id);
 
                     return (
-                      <div key={milestone.id} className="rounded-2xl border border-slate-200/80 bg-white/90 p-5">
+                      <div key={milestone.id} className="rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 p-5">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <p className="font-semibold text-slate-900">{milestone.title}</p>
-                          {milestone.due_at ? <span className="text-xs font-semibold text-slate-500">Due {formatDateTime(milestone.due_at)}</span> : null}
+                          <p className="font-semibold text-slate-900 dark:text-slate-100">{milestone.title}</p>
+                          {milestone.due_at ? <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Due {formatDateTime(milestone.due_at)}</span> : null}
                         </div>
-                        {milestone.description ? <p className="mt-2 text-sm text-slate-600">{milestone.description}</p> : null}
+                        {milestone.description ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{milestone.description}</p> : null}
 
                         {submission ? (
-                          <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm">
-                            <p className="font-semibold text-slate-700">{submissionStatusLabels[submission.status] ?? submission.status}</p>
-                            <p className="mt-1 text-xs text-slate-500">Submitted {formatDateTime(submission.submitted_at)}</p>
-                            {submission.score !== null ? <p className="mt-1 font-semibold text-teal-700">Score: {submission.score}</p> : null}
-                            {submission.feedback ? <p className="mt-1 text-slate-600">Feedback: {submission.feedback}</p> : null}
+                          <div className="mt-3 rounded-xl bg-slate-50 dark:bg-slate-800 p-3 text-sm">
+                            <p className="font-semibold text-slate-700 dark:text-slate-300">{submissionStatusLabels[submission.status] ?? submission.status}</p>
+                            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Submitted {formatDateTime(submission.submitted_at)}</p>
+                            {submission.score !== null ? <p className="mt-1 font-semibold text-teal-700 dark:text-teal-400">Score: {submission.score}</p> : null}
+                            {submission.feedback ? <p className="mt-1 text-slate-600 dark:text-slate-400">Feedback: {submission.feedback}</p> : null}
                           </div>
                         ) : null}
 
                         {!submission || submission.status === "returned" ? (
                           <form action={submitMilestoneEvidenceAction} className="mt-4 grid gap-3">
                             <input type="hidden" name="milestone_id" value={milestone.id} />
-                            <input name="file_url" type="url" placeholder="Evidence link (photo, video, document)" className="focus-ring min-h-11 rounded-xl border border-slate-200/80 bg-white px-3 py-2 text-sm font-normal shadow-sm" />
-                            <textarea name="content_text" rows={2} placeholder="Notes about your evidence" className="focus-ring rounded-xl border border-slate-200/80 bg-white p-3 text-sm font-normal shadow-sm" />
+                            <input name="file_url" type="url" placeholder="Evidence link (photo, video, document)" className="focus-ring min-h-11 rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 px-3 py-2 text-sm font-normal shadow-sm" />
+                            <textarea name="content_text" rows={2} placeholder="Notes about your evidence" className="focus-ring rounded-xl border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 p-3 text-sm font-normal shadow-sm" />
                             <button className="w-fit rounded-xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
                               {submission?.status === "returned" ? "Resubmit Evidence" : "Submit Evidence"}
                             </button>
@@ -161,7 +161,7 @@ export default async function LearnerProjectsPage({ searchParams }: { searchPara
                       </div>
                     );
                   })}
-                  {!projectMilestones.length ? <p className="text-sm text-slate-500">No milestones set for this project yet.</p> : null}
+                  {!projectMilestones.length ? <p className="text-sm text-slate-500 dark:text-slate-400">No milestones set for this project yet.</p> : null}
                 </div>
               </section>
             );

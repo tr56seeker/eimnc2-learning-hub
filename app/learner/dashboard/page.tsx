@@ -35,15 +35,15 @@ export default async function LearnerDashboardPage() {
       <section className="card my-10 rounded-[1.5rem] p-6 sm:p-7">
         <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr] md:items-end">
           <div>
-            <p className="text-sm font-medium text-slate-500">Learner profile</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">{profile.full_name}</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Electrical Installation and Maintenance NC II</p>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Learner profile</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{profile.full_name}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">Electrical Installation and Maintenance NC II</p>
           </div>
-          <div className="grid gap-3 text-sm text-slate-600 sm:grid-cols-2 md:text-right">
-            <p><span className="font-medium text-slate-900">Section:</span> {section ? `Grade ${section.grade_level} - ${section.name}` : "Not assigned"}</p>
-            <p><span className="font-medium text-slate-900">Grade:</span> {profile.grade_level ?? section?.grade_level ?? "Not set"}</p>
-            <p><span className="font-medium text-slate-900">Status:</span> {profile.status ?? "active"}</p>
-            <p><span className="font-medium text-slate-900">Track:</span> EIM NC II</p>
+          <div className="grid gap-3 text-sm text-slate-600 dark:text-slate-400 sm:grid-cols-2 md:text-right">
+            <p><span className="font-medium text-slate-900 dark:text-slate-100">Section:</span> {section ? `Grade ${section.grade_level} - ${section.name}` : "Not assigned"}</p>
+            <p><span className="font-medium text-slate-900 dark:text-slate-100">Grade:</span> {profile.grade_level ?? section?.grade_level ?? "Not set"}</p>
+            <p><span className="font-medium text-slate-900 dark:text-slate-100">Status:</span> {profile.status ?? "active"}</p>
+            <p><span className="font-medium text-slate-900 dark:text-slate-100">Track:</span> EIM NC II</p>
           </div>
         </div>
       </section>
@@ -62,9 +62,9 @@ export default async function LearnerDashboardPage() {
           ["Submit Output", "Paste your output, photo, PDF, or video link.", "/learner/submissions"]
         ].map(([title, text, href]) => (
           <Link key={href} href={href} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
-            <h2 className="text-xl font-semibold tracking-tight text-slate-950">{title}</h2>
-            <p className="mt-3 leading-7 text-slate-600">{text}</p>
-            <p className="mt-6 text-sm font-semibold text-teal-700">Open</p>
+            <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{title}</h2>
+            <p className="mt-3 leading-7 text-slate-600 dark:text-slate-400">{text}</p>
+            <p className="mt-6 text-sm font-semibold text-teal-700 dark:text-teal-400">Open</p>
           </Link>
         ))}
       </section>

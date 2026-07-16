@@ -19,7 +19,7 @@ export function ProfileDangerActions({ learnerId, status }: { learnerId: string;
           }
         }}
       >
-        <button className={`${buttonClass} border border-slate-200 bg-white text-slate-700 hover:bg-slate-50`}>
+        <button className={`${buttonClass} border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60`}>
           {nextStatus === "active" ? "Activate learner" : "Deactivate learner"}
         </button>
       </form>
@@ -36,7 +36,7 @@ export function ProfileDangerActions({ learnerId, status }: { learnerId: string;
           }
         }}
       >
-        <button className={`${buttonClass} border border-red-200 bg-red-50 text-red-700 hover:bg-red-100`}>
+        <button className={`${buttonClass} border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 dark:hover:bg-red-950/50`}>
           Delete learner
         </button>
       </form>

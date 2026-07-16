@@ -46,12 +46,12 @@ export default async function AssessmentItemAnalysisPage({ searchParams }: { sea
       />
 
       <div className="print:hidden mb-7 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline">
+        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">
           ← Back to Reports
         </Link>
         <div className="flex flex-wrap items-center gap-3">
           <form className="flex items-center gap-2" method="get">
-            <select name="exam_id" defaultValue={examId ?? ""} className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-2 text-sm">
+            <select name="exam_id" defaultValue={examId ?? ""} className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900">
               <option value="">Choose an exam…</option>
               {exams.map((exam) => (
                 <option key={exam.id} value={exam.id}>
@@ -73,8 +73,8 @@ export default async function AssessmentItemAnalysisPage({ searchParams }: { sea
         <EmptyState title="No submitted attempts yet" message="Item analysis will appear once learners submit this exam." />
       ) : (
         <div className="premium-table overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
               <tr>
                 <th className="px-5 py-3 text-left">Question</th>
                 <th className="px-5 py-3 text-left">Attempts</th>
@@ -83,24 +83,24 @@ export default async function AssessmentItemAnalysisPage({ searchParams }: { sea
                 <th className="px-5 py-3 text-left">Avg. Score</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {rows.map((row) => (
                 <tr key={row.questionId}>
-                  <td className="px-5 py-4 font-medium text-slate-900">{row.questionText}</td>
-                  <td className="px-5 py-4 text-slate-600">{row.attempts}</td>
-                  <td className="px-5 py-4 text-slate-600">
+                  <td className="px-5 py-4 font-medium text-slate-900 dark:text-slate-100">{row.questionText}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.attempts}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">
                     {row.correctCount}/{row.gradedAttempts || row.attempts}
                   </td>
                   <td className="px-5 py-4">
                     <span
                       className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        row.correctPct < 50 ? "bg-red-50 text-red-700" : row.correctPct < 75 ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"
+                        row.correctPct < 50 ? "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300" : row.correctPct < 75 ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" : "bg-emerald-50 text-emerald-700"
                       }`}
                     >
                       {row.correctPct}%
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-slate-600">{row.avgScorePct}%</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-400">{row.avgScorePct}%</td>
                 </tr>
               ))}
             </tbody>

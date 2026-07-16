@@ -36,9 +36,9 @@ function statusLabel(status: string, isLate: boolean) {
 }
 
 function statusClass(status: string) {
-  if (status === "returned") return "rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800";
-  if (status === "checked") return "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700";
-  return "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600";
+  if (status === "returned") return "rounded-full bg-amber-50 dark:bg-amber-950/40 px-3 py-1 text-xs font-semibold text-amber-800 dark:text-amber-300";
+  if (status === "checked") return "rounded-full bg-teal-50 dark:bg-teal-950/40 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-teal-400";
+  return "rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400";
 }
 
 export default async function LearnerSubmissionsPage({ searchParams }: { searchParams: Promise<{ message?: string; error?: string }> }) {
@@ -84,7 +84,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
 
       <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
-          <h2 className="text-xl font-semibold text-slate-950">My Activities</h2>
+          <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">My Activities</h2>
           {!assignments.length ? (
             <div className="mt-4"><EmptyState title="No assignments" message="Your teacher has not posted an output task yet." /></div>
           ) : (
@@ -107,15 +107,15 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
                   : null;
 
                 return (
-                  <div key={assignment.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/70 bg-white/75 p-4">
+                  <div key={assignment.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white/75 dark:bg-slate-900/75 p-4">
                     <div>
-                      <p className="font-semibold text-slate-950">{assignment.title}</p>
-                      <p className="mt-1 text-xs text-slate-500">{assignment.due_at ? `Due ${formatDateTime(assignment.due_at)}` : "No due date"}</p>
+                      <p className="font-semibold text-slate-950 dark:text-slate-100">{assignment.title}</p>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{assignment.due_at ? `Due ${formatDateTime(assignment.due_at)}` : "No due date"}</p>
                       {expectedFilename ? (
-                        <p className="mt-1 text-xs font-semibold text-teal-700">Name your file: {expectedFilename}</p>
+                        <p className="mt-1 text-xs font-semibold text-teal-700 dark:text-teal-400">Name your file: {expectedFilename}</p>
                       ) : null}
                     </div>
-                    <span className={isMissing ? "rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700" : latest ? statusClass(latest.status) : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"}>
+                    <span className={isMissing ? "rounded-full bg-red-50 dark:bg-red-950/30 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-400" : latest ? statusClass(latest.status) : "rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400"}>
                       {isMissing ? "Missing" : latest ? statusLabel(latest.status, isLate) : "Not yet submitted"}
                     </span>
                   </div>
@@ -124,25 +124,25 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
             </div>
           )}
 
-          <h2 className="mt-9 text-xl font-semibold text-slate-950">New Submission</h2>
+          <h2 className="mt-9 text-xl font-semibold text-slate-950 dark:text-slate-100">New Submission</h2>
           {!assignments.length ? null : (
             <form action={submitOutputAction} className="mt-5 grid gap-5">
-              <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+              <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Assignment
-                <select name="assignment_id" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm">
+                <select name="assignment_id" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm">
                   <option value="">Select task</option>
                   {assignments.map((assignment) => (
                     <option key={assignment.id} value={assignment.id}>{assignment.title}</option>
                   ))}
                 </select>
               </label>
-              <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+              <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Output link
-                <input name="file_url" type="url" className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm" placeholder="Google Drive / YouTube unlisted / image link" />
+                <input name="file_url" type="url" className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm" placeholder="Google Drive / YouTube unlisted / image link" />
               </label>
-              <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+              <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Notes / explanation
-                <textarea name="content_text" rows={6} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm" placeholder="Briefly explain your submitted work." />
+                <textarea name="content_text" rows={6} className="focus-ring rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 font-normal shadow-sm" placeholder="Briefly explain your submitted work." />
               </label>
               <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">Submit Output</button>
             </form>
@@ -150,7 +150,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
         </section>
 
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
-          <h2 className="text-xl font-semibold text-slate-950">My Submitted Outputs</h2>
+          <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">My Submitted Outputs</h2>
           <div className="mt-7 grid gap-4">
             {!submissions.length ? (
               <EmptyState title="No submissions yet" message="Your submitted outputs will appear here." />
@@ -158,17 +158,17 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
               const assignment = firstRelation(submission.assignments);
 
               return (
-                <div key={submission.id} className="rounded-2xl border border-slate-200/70 bg-white/75 p-5 shadow-sm shadow-slate-200/40">
+                <div key={submission.id} className="rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white/75 dark:bg-slate-900/75 p-5 shadow-sm shadow-slate-200/40 dark:shadow-black/20">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h3 className="font-semibold text-slate-950">{assignment?.title}</h3>
+                    <h3 className="font-semibold text-slate-950 dark:text-slate-100">{assignment?.title}</h3>
                     <span className={statusClass(submission.status)}>{statusLabel(submission.status, false)}</span>
                   </div>
-                  <p className="mt-1 text-sm text-slate-500">Submitted: {formatDateTime(submission.submitted_at)}</p>
-                  {submission.submitted_filename ? <p className="mt-1 text-xs font-semibold text-slate-500">File name used: {submission.submitted_filename}</p> : null}
-                  {submission.score !== null ? <p className="text-sm font-semibold text-teal-700">Score: {submission.score}/{assignment?.max_score}</p> : null}
-                  {submission.feedback ? <p className="mt-2 text-sm text-slate-600">Feedback: {submission.feedback}</p> : null}
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Submitted: {formatDateTime(submission.submitted_at)}</p>
+                  {submission.submitted_filename ? <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">File name used: {submission.submitted_filename}</p> : null}
+                  {submission.score !== null ? <p className="text-sm font-semibold text-teal-700 dark:text-teal-400">Score: {submission.score}/{assignment?.max_score}</p> : null}
+                  {submission.feedback ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Feedback: {submission.feedback}</p> : null}
                   {submission.status === "returned" ? (
-                    <p className="mt-2 text-sm font-semibold text-amber-800">Your teacher asked for a revision — submit an updated version above.</p>
+                    <p className="mt-2 text-sm font-semibold text-amber-800 dark:text-amber-300">Your teacher asked for a revision — submit an updated version above.</p>
                   ) : null}
                 </div>
               );

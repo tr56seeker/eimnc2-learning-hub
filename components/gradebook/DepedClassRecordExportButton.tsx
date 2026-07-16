@@ -134,19 +134,19 @@ export function DepedClassRecordExportButton({ payload }: { payload: DepedExport
         type="button"
         onClick={handleExport}
         disabled={status === "working"}
-        className="rounded-2xl border border-amber-300 bg-white/80 px-4 py-2.5 text-sm font-semibold text-amber-800 shadow-sm hover:bg-amber-50 disabled:opacity-60"
+        className="rounded-2xl border border-amber-300 bg-white/80 px-4 py-2.5 text-sm font-semibold text-amber-800 shadow-sm hover:bg-amber-50 disabled:opacity-60 dark:border-amber-800/50 dark:bg-slate-900/80 dark:text-amber-300 dark:hover:bg-amber-950/40"
       >
         {status === "working" ? "Building DepEd file..." : "Export DepEd Class Record"}
       </button>
       {unassignedCount > 0 ? (
-        <p className="text-xs font-medium text-amber-700">
+        <p className="text-xs font-medium text-amber-700 dark:text-amber-300">
           {unassignedCount} learner{unassignedCount === 1 ? "" : "s"} missing a Sex value and won&apos;t appear in this file — set Sex in the learner profile.
         </p>
       ) : null}
       {truncated ? (
-        <p className="text-xs font-medium text-red-600">This template supports up to 50 per sex — some learners were left out.</p>
+        <p className="text-xs font-medium text-red-600 dark:text-red-400">This template supports up to 50 per sex — some learners were left out.</p>
       ) : null}
-      {status === "error" ? <p className="text-xs font-medium text-red-600">{errorMessage}</p> : null}
+      {status === "error" ? <p className="text-xs font-medium text-red-600 dark:text-red-400">{errorMessage}</p> : null}
     </div>
   );
 }

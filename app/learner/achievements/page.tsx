@@ -36,10 +36,10 @@ export default async function LearnerAchievementsPage() {
             return (
               <div key={entry.id} className="card rounded-[1.75rem] p-6 text-center">
                 <p className="text-4xl">{achievement?.icon || "🏅"}</p>
-                <h2 className="mt-3 text-lg font-semibold text-slate-950">{achievement?.name}</h2>
-                {achievement?.description ? <p className="mt-2 text-sm text-slate-600">{achievement.description}</p> : null}
-                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-teal-700">{formatDateTime(entry.awarded_at)}</p>
-                {entry.evidence_note ? <p className="mt-2 text-sm text-slate-500">{entry.evidence_note}</p> : null}
+                <h2 className="mt-3 text-lg font-semibold text-slate-950 dark:text-slate-100">{achievement?.name}</h2>
+                {achievement?.description ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{achievement.description}</p> : null}
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-teal-700 dark:text-teal-400">{formatDateTime(entry.awarded_at)}</p>
+                {entry.evidence_note ? <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{entry.evidence_note}</p> : null}
               </div>
             );
           })}

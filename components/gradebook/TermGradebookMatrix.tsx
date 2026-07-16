@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-import { hideGradebookAssessmentAction, saveGradebookChangesAction } from "@/app/teacher/gradebook/actions";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { hideGradebookAssessmentAction, saveGradebookChangesAction, unhideGradebookAssessmentAction } from "@/app/teacher/gradebook/actions";
 import {
   categoryComputed,
   formatClassRecordName,
@@ -20,26 +20,33 @@ import {
 type TermGradebookMatrixProps = {
   learners: EditableLearner[];
   assessments: EditableGradebookAssessment[];
+  hiddenAssessments: EditableGradebookAssessment[];
   scores: EditableGradebookScore[];
 };
 
-const dataCellBase = "h-10 border border-slate-300 text-center align-middle tabular-nums";
-const numericCell = `${dataCellBase} w-10 min-w-[2.5rem] p-0`;
-const readOnlyCellBase = `${dataCellBase} bg-slate-50 px-1 text-[11px] font-semibold text-slate-800`;
-const computedCell = `${readOnlyCellBase} w-10 min-w-[2.5rem]`;
-const totalComputedCell = `${readOnlyCellBase} w-[3.25rem] min-w-[3.25rem]`;
-const gradeCell = `${readOnlyCellBase} w-[6rem] min-w-[6rem]`;
-const letterCell = `${gradeCell} text-[10px] leading-tight`;
-const groupHeaderCell = "h-10 border border-slate-400 bg-slate-200 px-2 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-800";
-const headerCellBase = "h-10 border border-slate-300 bg-slate-100 px-1 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-700";
-const headerCell = `${headerCellBase} w-10 min-w-[2.5rem]`;
-const totalHeaderCell = `${headerCellBase} w-[3.25rem] min-w-[3.25rem]`;
-const finalGradeHeaderCell = `${groupHeaderCell} w-[6rem] min-w-[6rem]`;
-const stickyNumberCell = "sticky left-0 z-10 h-10 w-12 min-w-[3rem] border border-slate-300 bg-white p-0 text-center align-middle tabular-nums";
-const stickyNameCell = "sticky left-[48px] z-10 h-10 min-w-[224px] border border-slate-300 bg-white px-2 py-1.5 text-left align-middle";
+type ColumnContextMenuState = {
+  x: number;
+  y: number;
+  assessment: EditableGradebookAssessment;
+};
+
+const dataCellBase = "h-8 border border-slate-300 text-center align-middle tabular-nums dark:border-slate-700";
+const numericCell = `${dataCellBase} w-8 min-w-[2rem] p-0`;
+const readOnlyCellBase = `${dataCellBase} bg-slate-50 px-1 text-[10px] font-semibold text-slate-800 dark:bg-slate-800 dark:text-slate-200`;
+const computedCell = `${readOnlyCellBase} w-8 min-w-[2rem]`;
+const totalComputedCell = `${readOnlyCellBase} w-11 min-w-[2.75rem]`;
+const gradeCell = `${readOnlyCellBase} w-20 min-w-[5rem]`;
+const letterCell = `${gradeCell} text-[9px] leading-tight`;
+const groupHeaderCell = "h-8 border border-slate-400 bg-slate-200 px-1.5 py-1 text-center text-[11px] font-bold uppercase tracking-[0.06em] text-slate-800 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200";
+const headerCellBase = "h-8 border border-slate-300 bg-slate-100 px-0.5 py-0.5 text-center text-[10px] font-bold uppercase tracking-[0.04em] text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300";
+const headerCell = `${headerCellBase} w-8 min-w-[2rem]`;
+const totalHeaderCell = `${headerCellBase} w-11 min-w-[2.75rem]`;
+const finalGradeHeaderCell = `${groupHeaderCell} w-20 min-w-[5rem]`;
+const stickyNumberCell = "sticky left-0 z-10 h-8 w-8 min-w-[2rem] border border-slate-300 bg-white p-0 text-center align-middle text-[10px] tabular-nums dark:border-slate-700 dark:bg-slate-900";
+const stickyNameCell = "sticky left-[32px] z-10 h-8 min-w-[190px] border border-slate-300 bg-white px-1.5 py-1 text-left align-middle dark:border-slate-700 dark:bg-slate-900";
 const numberInputChrome = "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none";
-const inputClass = `${numberInputChrome} h-10 w-10 rounded-none border-0 bg-transparent px-0 text-center text-[11px] tabular-nums outline-none focus:bg-white focus:ring-1 focus:ring-teal-500`;
-const hpsInputClass = `${numberInputChrome} h-10 w-10 rounded-none border-0 bg-transparent px-0 text-center text-[11px] font-semibold tabular-nums outline-none focus:bg-white focus:ring-1 focus:ring-teal-500`;
+const inputClass = `${numberInputChrome} h-8 w-8 rounded-none border-0 bg-transparent px-0 text-center text-[10px] tabular-nums outline-none focus:bg-white focus:ring-1 focus:ring-teal-500 dark:focus:bg-slate-900`;
+const hpsInputClass = `${numberInputChrome} h-8 w-8 rounded-none border-0 bg-transparent px-0 text-center text-[10px] font-semibold tabular-nums outline-none focus:bg-white focus:ring-1 focus:ring-teal-500 dark:focus:bg-slate-900`;
 
 function inputValue(value: number | null) {
   return value === null || value === undefined ? "" : String(value);
@@ -75,25 +82,65 @@ function HpsInput({
   );
 }
 
-export function TermGradebookMatrix({ learners, assessments, scores }: TermGradebookMatrixProps) {
+export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, scores }: TermGradebookMatrixProps) {
   const [isPending, startTransition] = useTransition();
   const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "dirty" | "error">("saved");
   const [statusMessage, setStatusMessage] = useState("Saved");
   const [hpsValues, setHpsValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(assessments.map((assessment) => [assessment.id, inputValue(assessment.highestPossible)]))
+    Object.fromEntries([...assessments, ...hiddenAssessments].map((assessment) => [assessment.id, inputValue(assessment.highestPossible)]))
   );
   const [scoreValues, setScoreValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(scores.map((score) => [`${score.assessmentId}:${score.learnerId}`, inputValue(score.score)]))
   );
-  const [hiddenAssessmentIds, setHiddenAssessmentIds] = useState<Set<string>>(new Set());
+  // Starts mirroring the server's active/hidden split, then tracks this
+  // session's hide/unhide clicks optimistically so the table updates
+  // instantly without waiting for the server action's revalidation.
+  const [activeIds, setActiveIds] = useState<Set<string>>(() => new Set(assessments.map((assessment) => assessment.id)));
+  const [columnMenu, setColumnMenu] = useState<ColumnContextMenuState | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const visibleAssessments = assessments.filter((assessment) => !hiddenAssessmentIds.has(assessment.id));
+  const allAssessments = useMemo(() => [...assessments, ...hiddenAssessments], [assessments, hiddenAssessments]);
+  const visibleAssessments = useMemo(() => allAssessments.filter((assessment) => activeIds.has(assessment.id)), [allAssessments, activeIds]);
+  const currentlyHidden = useMemo(
+    () => sortAssessments(allAssessments.filter((assessment) => !activeIds.has(assessment.id))),
+    [allAssessments, activeIds]
+  );
   const writtenAssessments = useMemo(() => sortAssessments(visibleAssessments.filter((assessment) => assessment.category === "written")), [visibleAssessments]);
   const performanceAssessments = useMemo(() => sortAssessments(visibleAssessments.filter((assessment) => assessment.category === "performance")), [visibleAssessments]);
   const examAssessments = useMemo(
     () => sortAssessments(visibleAssessments.filter((assessment) => assessment.category === "summative" || assessment.category === "term_exam")),
     [visibleAssessments]
   );
+  const columnWidths = useMemo(() => {
+    const widths: (number | null)[] = [32, 190];
+    const addCategory = (count: number) => {
+      for (let i = 0; i < count; i++) widths.push(32);
+      widths.push(44, 32, 32);
+    };
+    addCategory(writtenAssessments.length);
+    addCategory(performanceAssessments.length);
+    addCategory(examAssessments.length);
+    widths.push(80, 80, 80);
+    return widths;
+  }, [writtenAssessments.length, performanceAssessments.length, examAssessments.length]);
+
+  useEffect(() => {
+    if (!columnMenu) return;
+
+    function handleOutsideClick(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setColumnMenu(null);
+    }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setColumnMenu(null);
+    }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [columnMenu]);
 
   function markDirty() {
     setSaveStatus("dirty");
@@ -124,11 +171,11 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
 
     startTransition(async () => {
       const result = await saveGradebookChangesAction({
-        assessmentUpdates: assessments.map((assessment) => ({
+        assessmentUpdates: visibleAssessments.map((assessment) => ({
           id: assessment.id,
           highestPossible: getHps(assessment.id)
         })),
-        scoreUpdates: assessments.flatMap((assessment) =>
+        scoreUpdates: visibleAssessments.flatMap((assessment) =>
           learners.map((learner) => ({
             assessmentId: assessment.id,
             learnerId: learner.id,
@@ -149,12 +196,30 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
 
   function hideAssessment(assessment: EditableGradebookAssessment) {
     if (assessment.category === "term_exam") return;
-    if (!window.confirm(`Hide ${assessment.label}? Existing scores are preserved.`)) return;
+    setColumnMenu(null);
 
     startTransition(async () => {
       const result = await hideGradebookAssessmentAction(assessment.id);
       if (result.ok) {
-        setHiddenAssessmentIds((current) => new Set([...current, assessment.id]));
+        setActiveIds((current) => {
+          const next = new Set(current);
+          next.delete(assessment.id);
+          return next;
+        });
+      } else {
+        setSaveStatus("error");
+        setStatusMessage(result.message);
+      }
+    });
+  }
+
+  function unhideAssessment(assessment: EditableGradebookAssessment) {
+    setColumnMenu(null);
+
+    startTransition(async () => {
+      const result = await unhideGradebookAssessmentAction(assessment.id);
+      if (result.ok) {
+        setActiveIds((current) => new Set([...current, assessment.id]));
       } else {
         setSaveStatus("error");
         setStatusMessage(result.message);
@@ -164,27 +229,22 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
 
   function renderAssessmentHeader(assessment: EditableGradebookAssessment) {
     return (
-      <th key={assessment.id} className={`${headerCell} sticky top-[40px] z-20`}>
-        <div className="flex items-center justify-center gap-1">
-          <span>{assessment.label}</span>
-          {assessment.category !== "term_exam" ? (
-            <button
-              type="button"
-              onClick={() => hideAssessment(assessment)}
-              className="px-1 text-[10px] text-slate-400 hover:bg-red-50 hover:text-red-600"
-              title="Hide column"
-            >
-              x
-            </button>
-          ) : null}
-        </div>
+      <th
+        key={assessment.id}
+        className={`${headerCell} sticky top-[32px] z-20 cursor-context-menu`}
+        onContextMenu={(event) => {
+          event.preventDefault();
+          setColumnMenu({ x: event.clientX, y: event.clientY, assessment });
+        }}
+      >
+        {assessment.label}
       </th>
     );
   }
 
   function renderComputedHeaders(group: string) {
     return ["Total", "PS", "WS"].map((label) => (
-      <th key={`${group}-${label}`} className={`${label === "Total" ? totalHeaderCell : headerCell} sticky top-[40px] z-20`}>
+      <th key={`${group}-${label}`} className={`${label === "Total" ? totalHeaderCell : headerCell} sticky top-[32px] z-20`}>
         {label}
       </th>
     ));
@@ -197,7 +257,7 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
     const isOverHps = score !== null && hps !== null && hps > 0 && score > hps;
 
     return (
-      <td key={key} className={`${numericCell} ${isOverHps ? "bg-red-50" : ""}`}>
+      <td key={key} className={`${numericCell} ${isOverHps ? "bg-red-50 dark:bg-red-950/30" : ""}`}>
         <input
           type="number"
           min={0}
@@ -207,7 +267,7 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
             setScoreValues((current) => ({ ...current, [key]: event.target.value }));
             markDirty();
           }}
-          className={`${inputClass} ${isOverHps ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-300" : ""}`}
+          className={`${inputClass} ${isOverHps ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-300 dark:bg-red-950/30 dark:text-red-300 dark:ring-red-900/50" : ""}`}
           aria-label={`${learner.fullName} ${assessment.label} score`}
         />
       </td>
@@ -216,7 +276,7 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
 
   function renderHpsInputs(categoryAssessments: EditableGradebookAssessment[]) {
     return categoryAssessments.map((assessment) => (
-      <td key={`hps-${assessment.id}`} className={`${numericCell} bg-slate-50 font-medium`}>
+      <td key={`hps-${assessment.id}`} className={`${numericCell} bg-slate-50 font-medium dark:bg-slate-800`}>
         <HpsInput
           value={hpsValues[assessment.id] ?? ""}
           onChange={(value) => {
@@ -237,8 +297,8 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
     return (
       <>
         <td className={totalComputedCell}>{formatGradebookScore(total || null)}</td>
-        <td className={`${computedCell} bg-slate-50`}>{total ? "100.00" : ""}</td>
-        <td className={`${computedCell} bg-slate-50`}>{total ? formatGradebookNumber(weight * 100) : ""}</td>
+        <td className={`${computedCell} bg-slate-50 dark:bg-slate-800`}>{total ? "100.00" : ""}</td>
+        <td className={`${computedCell} bg-slate-50 dark:bg-slate-800`}>{total ? formatGradebookNumber(weight * 100) : ""}</td>
       </>
     );
   }
@@ -258,7 +318,7 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
   return (
     <section className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className={saveStatus === "error" ? "text-sm font-semibold text-red-600" : saveStatus === "dirty" ? "text-sm font-semibold text-amber-700" : "text-sm font-semibold text-teal-700"}>
+        <p className={saveStatus === "error" ? "text-sm font-semibold text-red-600 dark:text-red-400" : saveStatus === "dirty" ? "text-sm font-semibold text-amber-700 dark:text-amber-300" : "text-sm font-semibold text-teal-700 dark:text-teal-400"}>
           {isPending ? "Saving..." : statusMessage}
         </p>
         <button
@@ -271,12 +331,16 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-none border border-slate-400 bg-white shadow-none">
-        <div className="overflow-x-auto">
-          <table className="w-max min-w-max border-collapse text-xs text-slate-700">
-            <thead>
+      <div className="overflow-x-auto">
+        <table className="table-fixed border-collapse border border-slate-400 bg-white text-xs text-slate-700 shadow-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+          <colgroup>
+            {columnWidths.map((width, index) => (
+              <col key={index} style={width ? { width: `${width}px` } : undefined} />
+            ))}
+          </colgroup>
+          <thead>
               <tr>
-                <th rowSpan={2} colSpan={2} className={`${groupHeaderCell} sticky left-0 top-0 z-30 min-w-[272px]`}>
+                <th rowSpan={2} colSpan={2} className={`${groupHeaderCell} sticky left-0 top-0 z-30 min-w-[222px]`}>
                   LEARNERS&apos; NAMES
                 </th>
                 <th colSpan={writtenAssessments.length + 3} className={`${groupHeaderCell} sticky top-0 z-20`}>
@@ -307,7 +371,7 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
                 {renderComputedHeaders("exam")}
               </tr>
               <tr>
-                <th colSpan={2} className={`${headerCellBase} sticky left-0 top-[80px] z-30 min-w-[272px] bg-slate-50 text-left`}>
+                <th colSpan={2} className={`${headerCellBase} sticky left-0 top-[64px] z-30 min-w-[222px] bg-slate-50 dark:bg-slate-800`}>
                   HIGHEST POSSIBLE SCORE
                 </th>
                 {renderHpsInputs(writtenAssessments)}
@@ -331,10 +395,10 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
                 const letter = letterGrade(transmuted);
 
                 return (
-                  <tr key={learner.id} className="odd:bg-white even:bg-slate-50/40 hover:bg-teal-50/40">
+                  <tr key={learner.id} className="odd:bg-white even:bg-slate-50/40 hover:bg-teal-50/40 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 dark:hover:bg-teal-950/40">
                     <td className={stickyNumberCell}>{learner.rowNumber}</td>
                     <td className={stickyNameCell}>
-                      <p className="whitespace-nowrap text-[11px] font-semibold text-slate-900">{formatClassRecordName(learner.fullName)}</p>
+                      <p className="whitespace-nowrap text-[10px] font-semibold text-slate-900 dark:text-slate-100">{formatClassRecordName(learner.fullName)}</p>
                     </td>
                     {renderLearnerCategory(learner, writtenAssessments, gradebookWeights.written)}
                     {renderLearnerCategory(learner, performanceAssessments, gradebookWeights.performance)}
@@ -346,9 +410,49 @@ export function TermGradebookMatrix({ learners, assessments, scores }: TermGrade
                 );
               })}
             </tbody>
-          </table>
-        </div>
+        </table>
       </div>
+
+      {columnMenu ? (
+        <div
+          ref={menuRef}
+          role="menu"
+          style={{ left: columnMenu.x, top: columnMenu.y }}
+          className="fixed z-50 min-w-52 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-xl shadow-slate-950/10 dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-black/40"
+        >
+          {columnMenu.assessment.category !== "term_exam" ? (
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => hideAssessment(columnMenu.assessment)}
+              className="block w-full rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              Hide &ldquo;{columnMenu.assessment.label}&rdquo;
+            </button>
+          ) : (
+            <p className="px-3.5 py-2.5 text-xs text-slate-400 dark:text-slate-500">Term exam columns can&apos;t be hidden.</p>
+          )}
+
+          {currentlyHidden.length ? (
+            <>
+              <p className="mt-1 border-t border-slate-100 px-3.5 pt-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400 dark:border-slate-800 dark:text-slate-500">
+                Unhide
+              </p>
+              {currentlyHidden.map((hidden) => (
+                <button
+                  key={hidden.id}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => unhideAssessment(hidden)}
+                  className="block w-full rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  {hidden.label}
+                </button>
+              ))}
+            </>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }

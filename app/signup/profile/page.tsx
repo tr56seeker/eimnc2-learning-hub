@@ -12,8 +12,8 @@ export default async function MissingProfilePage({ searchParams }: { searchParam
   return (
     <main className="flex min-h-screen items-center justify-center px-5">
       <div className="card max-w-xl rounded-[1.75rem] p-8 text-center">
-        <h1 className="text-2xl font-semibold text-slate-950">Profile setup needs attention</h1>
-        <p className="mt-3 text-slate-600">
+        <h1 className="text-2xl font-semibold text-slate-950 dark:text-slate-100">Profile setup needs attention</h1>
+        <p className="mt-3 text-slate-600 dark:text-slate-400">
           {params.message}
         </p>
       </div>

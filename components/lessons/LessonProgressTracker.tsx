@@ -75,20 +75,20 @@ export function LessonReadingAids({
         aria-valuenow={scrollPercent}
         aria-valuemin={0}
         aria-valuemax={100}
-        className="fixed inset-x-0 top-0 z-40 h-1 bg-transparent"
+        className="fixed inset-x-0 top-0 z-50 h-1 bg-transparent"
       >
         <div className="h-full bg-teal-600 transition-[width] duration-150" style={{ width: `${scrollPercent}%` }} />
       </div>
 
       {sections.length ? (
         <details className="card mb-8 rounded-[1.5rem] p-5">
-          <summary className="cursor-pointer list-none text-sm font-semibold text-teal-700">Table of contents</summary>
+          <summary className="cursor-pointer list-none text-sm font-semibold text-teal-700 dark:text-teal-400">Table of contents</summary>
           <nav aria-label="Table of contents" className="mt-4 grid gap-2 sm:grid-cols-2">
             {sections.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="text-sm font-medium text-slate-600 hover:text-teal-700 hover:underline"
+                className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 hover:underline"
               >
                 {section.label}
               </a>
@@ -114,10 +114,10 @@ export function LessonCompletionControl({ lessonId, initialCompleted }: { lesson
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="mt-12 flex flex-col items-start gap-4 rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-12 flex flex-col items-start gap-4 rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-sm font-semibold text-slate-950">{completed ? "You've completed this lesson." : "Finished reading?"}</p>
-        <p className="mt-1 text-sm text-slate-500">{completed ? "You can revisit it anytime." : "Mark it complete to track your progress."}</p>
+        <p className="text-sm font-semibold text-slate-950 dark:text-slate-100">{completed ? "You've completed this lesson." : "Finished reading?"}</p>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{completed ? "You can revisit it anytime." : "Mark it complete to track your progress."}</p>
       </div>
       <button
         type="button"

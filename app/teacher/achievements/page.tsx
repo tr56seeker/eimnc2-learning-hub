@@ -59,7 +59,7 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
       <div className="grid gap-8 xl:grid-cols-[0.75fr_1.25fr]">
         <aside className="grid content-start gap-6">
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
-            <h2 className="text-lg font-semibold text-slate-950">New Achievement Type</h2>
+            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">New Achievement Type</h2>
             <form action={createAchievementAction} className="mt-4 grid gap-4">
               <FormInput label="Name" name="name" required placeholder="Safety First" />
               <FormTextarea label="Description" name="description" placeholder="What does this recognize?" />
@@ -76,7 +76,7 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
           </section>
 
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
-            <h2 className="text-lg font-semibold text-slate-950">Award Achievement</h2>
+            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Award Achievement</h2>
             {achievements?.length && learners?.length ? (
               <form action={awardAchievementAction} className="mt-4 grid gap-4">
                 <FormSelect label="Achievement" name="achievement_id" required defaultValue="">
@@ -95,13 +95,13 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
                 <SubmitButton>Award Achievement</SubmitButton>
               </form>
             ) : (
-              <p className="mt-3 text-sm text-slate-500">Create an achievement type first, and make sure you have learners assigned to your sections.</p>
+              <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">Create an achievement type first, and make sure you have learners assigned to your sections.</p>
             )}
           </section>
         </aside>
 
         <section>
-          <h2 className="text-lg font-semibold text-slate-950">Recently Awarded</h2>
+          <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Recently Awarded</h2>
           {!awarded?.length ? (
             <div className="mt-4"><EmptyState title="No achievements awarded yet" message="Awarded achievements will appear here." /></div>
           ) : (
@@ -113,12 +113,12 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
                 return (
                   <div key={entry.id} className="card flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] p-5">
                     <div>
-                      <p className="font-semibold text-slate-950">{achievement?.icon} {achievement?.name} &middot; {learner?.full_name}</p>
-                      <p className="mt-1 text-xs text-slate-500">Awarded {formatDateTime(entry.awarded_at)}</p>
-                      {entry.evidence_note ? <p className="mt-1 text-sm text-slate-600">{entry.evidence_note}</p> : null}
+                      <p className="font-semibold text-slate-950 dark:text-slate-100">{achievement?.icon} {achievement?.name} &middot; {learner?.full_name}</p>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Awarded {formatDateTime(entry.awarded_at)}</p>
+                      {entry.evidence_note ? <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{entry.evidence_note}</p> : null}
                     </div>
                     <form action={revokeAchievementAction.bind(null, entry.id)}>
-                      <button className="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50">Remove</button>
+                      <button className="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">Remove</button>
                     </form>
                   </div>
                 );

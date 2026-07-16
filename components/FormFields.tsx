@@ -8,11 +8,12 @@ type FieldProps = {
   required?: boolean;
 };
 
-const fieldClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40";
+const fieldClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20";
+const labelClass = "grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300";
 
 export function FormInput({ label, name, defaultValue, placeholder, required, type = "text", min, max }: FieldProps & { type?: string; min?: number; max?: number }) {
   return (
-    <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+    <label className={labelClass}>
       {label}
       <input name={name} type={type} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} min={min} max={max} className={fieldClass} />
     </label>
@@ -21,9 +22,9 @@ export function FormInput({ label, name, defaultValue, placeholder, required, ty
 
 export function FormTextarea({ label, name, defaultValue, placeholder, required, rows = 4 }: FieldProps & { rows?: number }) {
   return (
-    <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+    <label className={labelClass}>
       {label}
-      <textarea name={name} rows={rows} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/90 p-4 font-normal text-slate-900 shadow-sm shadow-slate-200/40" />
+      <textarea name={name} rows={rows} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/90 p-4 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20" />
     </label>
   );
 }
@@ -36,7 +37,7 @@ export function FormSelect({
   children
 }: FieldProps & { children: ReactNode }) {
   return (
-    <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+    <label className={labelClass}>
       {label}
       <select name={name} required={required} defaultValue={defaultValue ?? ""} className={fieldClass}>
         {children}

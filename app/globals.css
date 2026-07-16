@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Brand */
   --background: #f8fafc;
@@ -62,6 +64,44 @@
   --focus-ring-border: rgba(14, 165, 233, 0.45);
 }
 
+.dark {
+  --background: #0b1220;
+  --foreground: #e2e8f0;
+  --brand: #2dd4bf;
+  --brand-dark: #99f6e4;
+  --brand-light: #134e4a;
+  --secondary: #38bdf8;
+  --accent: #facc15;
+  --gold: #facc15;
+
+  --neutral-50: #0f172a;
+  --neutral-100: #1e293b;
+  --neutral-200: #334155;
+  --neutral-400: #64748b;
+  --neutral-600: #cbd5e1;
+  --neutral-900: #f1f5f9;
+
+  --success: #2dd4bf;
+  --success-bg: rgba(45, 212, 191, 0.1);
+  --success-border: rgba(45, 212, 191, 0.28);
+  --success-text: #5eead4;
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.1);
+  --warning-border: rgba(251, 191, 36, 0.28);
+  --warning-text: #fcd34d;
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.1);
+  --danger-border: rgba(248, 113, 113, 0.28);
+  --danger-text: #fca5a5;
+  --info: #38bdf8;
+  --info-bg: rgba(56, 189, 248, 0.1);
+  --info-border: rgba(56, 189, 248, 0.28);
+  --info-text: #7dd3fc;
+
+  --focus-ring-color: rgba(45, 212, 191, 0.25);
+  --focus-ring-border: rgba(45, 212, 191, 0.5);
+}
+
 @media print {
   body {
     background: white;
@@ -103,6 +143,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.dark body {
+  background:
+    radial-gradient(circle at 12% 4%, rgba(45, 212, 191, 0.07), transparent 24rem),
+    radial-gradient(circle at 88% 10%, rgba(56, 189, 248, 0.06), transparent 28rem),
+    linear-gradient(180deg, #0b1220 0%, #0a0f1a 46%, #070b13 100%);
+}
+
 a,
 button,
 summary,
@@ -142,11 +189,27 @@ textarea::placeholder {
   color: #94a3b8;
 }
 
+.dark input,
+.dark select,
+.dark textarea {
+  background: rgba(15, 23, 42, 0.6);
+  color: #e2e8f0;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b;
+}
+
 .prose-eim h2 {
   margin-top: 1.8rem;
   font-size: 1.25rem;
   font-weight: 700;
   color: #134e4a;
+}
+
+.dark .prose-eim h2 {
+  color: #5eead4;
 }
 
 .prose-eim h3 {
@@ -181,6 +244,16 @@ textarea::placeholder {
   border-color: rgba(20, 184, 166, 0.18);
 }
 
+.dark .card {
+  border-color: rgba(51, 65, 85, 0.6);
+  background: rgba(15, 23, 42, 0.65);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.25);
+}
+
+.dark .card:hover {
+  border-color: rgba(45, 212, 191, 0.28);
+}
+
 .focus-ring:focus {
   outline: 3px solid var(--focus-ring-color);
   outline-offset: 2px;
@@ -200,6 +273,11 @@ textarea::placeholder {
   background: rgba(255, 255, 255, 0.88);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(12px);
+}
+
+.dark .premium-table {
+  border-color: rgba(51, 65, 85, 0.6);
+  background: rgba(15, 23, 42, 0.7);
 }
 
 .status-success {

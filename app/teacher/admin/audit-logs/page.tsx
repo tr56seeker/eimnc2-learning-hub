@@ -65,17 +65,17 @@ export default async function AuditLogsPage({
 
       <div className="print:hidden mb-7 flex flex-wrap items-end justify-between gap-4">
         <form className="flex flex-wrap items-end gap-3" method="get">
-          <label className="grid gap-1.5 text-xs font-semibold text-slate-600">
+          <label className="grid gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
             Action contains
-            <input name="action" defaultValue={action ?? ""} placeholder="learner.created" className="focus-ring min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm" />
+            <input name="action" defaultValue={action ?? ""} placeholder="learner.created" className="focus-ring min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
           </label>
-          <label className="grid gap-1.5 text-xs font-semibold text-slate-600">
+          <label className="grid gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
             From
-            <input name="from" type="date" defaultValue={from ?? ""} className="focus-ring min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm" />
+            <input name="from" type="date" defaultValue={from ?? ""} className="focus-ring min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
           </label>
-          <label className="grid gap-1.5 text-xs font-semibold text-slate-600">
+          <label className="grid gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-400">
             To
-            <input name="to" type="date" defaultValue={to ?? ""} className="focus-ring min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm" />
+            <input name="to" type="date" defaultValue={to ?? ""} className="focus-ring min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
           </label>
           <button type="submit" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
             Filter
@@ -88,8 +88,8 @@ export default async function AuditLogsPage({
         <EmptyState title="No log entries" message="Actions recorded going forward will appear here." />
       ) : (
         <div className="premium-table overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-700">
+            <thead className="bg-slate-50/80 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800/60 dark:text-slate-400">
               <tr>
                 <th className="px-5 py-3 text-left">Date/Time</th>
                 <th className="px-5 py-3 text-left">Actor</th>
@@ -97,13 +97,13 @@ export default async function AuditLogsPage({
                 <th className="px-5 py-3 text-left">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {rows.map((row) => (
                 <tr key={row.id}>
-                  <td className="whitespace-nowrap px-5 py-4 text-slate-500">{formatDateTime(row.created_at)}</td>
-                  <td className="px-5 py-4 font-medium text-slate-900">{firstRelation(row.profiles)?.full_name ?? "System"}</td>
-                  <td className="px-5 py-4 text-slate-700">{row.action}</td>
-                  <td className="px-5 py-4 text-xs text-slate-500">{row.metadata ? JSON.stringify(row.metadata) : "—"}</td>
+                  <td className="whitespace-nowrap px-5 py-4 text-slate-500 dark:text-slate-400">{formatDateTime(row.created_at)}</td>
+                  <td className="px-5 py-4 font-medium text-slate-900 dark:text-slate-100">{firstRelation(row.profiles)?.full_name ?? "System"}</td>
+                  <td className="px-5 py-4 text-slate-700 dark:text-slate-300">{row.action}</td>
+                  <td className="px-5 py-4 text-xs text-slate-500 dark:text-slate-400">{row.metadata ? JSON.stringify(row.metadata) : "—"}</td>
                 </tr>
               ))}
             </tbody>

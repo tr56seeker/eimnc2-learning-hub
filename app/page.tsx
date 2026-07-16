@@ -11,17 +11,17 @@ const features = [
 export default function HomePage() {
   return (
     <main className="min-h-screen px-5 py-6 sm:px-8">
-      <section className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-7xl flex-col rounded-[1.75rem] border border-slate-200/70 bg-white/82 p-6 shadow-xl shadow-slate-200/50 backdrop-blur-xl sm:p-8">
+      <section className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-7xl flex-col rounded-[1.75rem] border border-slate-200/70 bg-white/82 p-6 shadow-xl shadow-slate-200/50 backdrop-blur-xl dark:border-slate-700/70 dark:bg-slate-900/82 dark:shadow-black/20 sm:p-8">
         <nav className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">Tabunoc National High School</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">EIM NC II Learning Hub</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-400">Tabunoc National High School</p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">EIM NC II Learning Hub</h1>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/login" className="rounded-full border border-slate-200/80 bg-white/80 px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:-translate-y-0.5 hover:border-teal-200 hover:text-teal-700">
+            <Link href="/login" className="rounded-full border border-slate-200/80 bg-white/80 px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:-translate-y-0.5 hover:border-teal-200 hover:text-teal-700 dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:text-teal-400">
               Login
             </Link>
-            <Link href="/signup" className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+            <Link href="/signup" className="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 dark:shadow-black/20">
               Create Account
             </Link>
           </div>
@@ -29,30 +29,30 @@ export default function HomePage() {
 
         <div className="grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.05fr_0.95fr] lg:py-16">
           <div>
-            <div className="inline-flex rounded-full border border-teal-200/80 bg-teal-50/80 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm">
+            <div className="inline-flex rounded-full border border-teal-200/80 bg-teal-50/80 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm dark:bg-teal-950/40 dark:text-teal-300">
               School-ready LMS-lite for distance learning days
             </div>
-            <h2 className="mt-6 max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-7xl">
+            <h2 className="mt-6 max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-7xl dark:text-slate-100">
               A calm digital classroom for EIM learners.
             </h2>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-400">
               Lessons, exams, output submissions, and grade tracking in one focused hub for Electrical Installation and Maintenance NC II.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/portal" className="rounded-2xl bg-slate-950 px-6 py-3.5 text-center font-semibold text-white shadow-xl shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+              <Link href="/portal" className="rounded-2xl bg-slate-950 px-6 py-3.5 text-center font-semibold text-white shadow-xl shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 dark:shadow-black/20">
                 Open Portal
               </Link>
-              <Link href="/login" className="rounded-2xl border border-slate-200/80 bg-white/80 px-6 py-3.5 text-center font-semibold text-slate-700 shadow-sm hover:-translate-y-0.5 hover:border-teal-200 hover:text-teal-700">
+              <Link href="/login" className="rounded-2xl border border-slate-200/80 bg-white/80 px-6 py-3.5 text-center font-semibold text-slate-700 shadow-sm hover:-translate-y-0.5 hover:border-teal-200 hover:text-teal-700 dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:text-teal-400">
                 Login
               </Link>
-              <Link href="/signup" className="rounded-2xl border border-slate-200/80 bg-white/60 px-6 py-3.5 text-center font-semibold text-slate-700 hover:-translate-y-0.5 hover:bg-white/80">
+              <Link href="/signup" className="rounded-2xl border border-slate-200/80 bg-white/60 px-6 py-3.5 text-center font-semibold text-slate-700 hover:-translate-y-0.5 hover:bg-white/80 dark:border-slate-700/80 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:bg-slate-800">
                 Create Account
               </Link>
             </div>
           </div>
 
           <div className="card rounded-[1.75rem] p-4 sm:p-5">
-            <div className="rounded-[1.5rem] border border-white/10 bg-slate-950 p-5 text-white shadow-xl shadow-slate-950/15">
+            <div className="rounded-[1.5rem] border border-white/10 bg-slate-950 p-5 text-white shadow-xl shadow-slate-950/15 dark:shadow-black/20">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-teal-100">Learning Snapshot</p>
                 <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-slate-200">Today</span>
@@ -76,9 +76,9 @@ export default function HomePage() {
 
         <div id="features" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {features.map(([title, text]) => (
-            <div key={title} className="rounded-[1.5rem] border border-white/70 bg-white/64 p-5 shadow-sm backdrop-blur">
-              <p className="font-semibold text-slate-950">{title}</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+            <div key={title} className="rounded-[1.5rem] border border-white/70 bg-white/64 p-5 shadow-sm backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/64">
+              <p className="font-semibold text-slate-950 dark:text-slate-100">{title}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{text}</p>
             </div>
           ))}
         </div>

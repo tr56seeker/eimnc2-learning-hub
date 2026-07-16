@@ -78,7 +78,7 @@ export function ExamAutosave({ attemptId, formId }: { attemptId: string; formId:
       className={
         status === "offline"
           ? "status-warning mb-4 rounded-xl border px-4 py-2 text-xs font-semibold"
-          : "mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600"
+          : "mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
       }
     >
       {copy}

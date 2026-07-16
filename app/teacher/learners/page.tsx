@@ -222,21 +222,21 @@ export default async function TeacherLearnersPage({
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <form className="card mb-7 grid gap-4 rounded-[1.75rem] p-5 sm:grid-cols-[1fr_220px_180px_auto] sm:items-end" action="/teacher/learners">
-        <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Search learners
           <input
             name="q"
             defaultValue={params.q ?? ""}
             placeholder="Name, email, LRN, or section"
-            className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal shadow-sm shadow-slate-200/40"
+            className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-black/20"
           />
         </label>
-        <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Section
           <select
             name="section_id"
             defaultValue={sectionFilter}
-            className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal shadow-sm shadow-slate-200/40"
+            className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-black/20"
           >
             <option value="">All sections</option>
             {sections.map((section) => (
@@ -246,12 +246,12 @@ export default async function TeacherLearnersPage({
             ))}
           </select>
         </label>
-        <label className="grid gap-2.5 text-sm font-semibold text-slate-700">
+        <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
           Status
           <select
             name="status"
             defaultValue={statusFilter}
-            className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal shadow-sm shadow-slate-200/40"
+            className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-black/20"
           >
             <option value="active">Active learners</option>
             <option value="all">All statuses</option>

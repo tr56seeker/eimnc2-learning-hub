@@ -71,7 +71,7 @@ function ExamForm({
         required
         defaultValue={exam?.max_violations ?? 3}
       />
-      <div className="grid gap-3 rounded-2xl border border-slate-200/70 bg-white/75 p-4 text-sm font-medium text-slate-700 shadow-sm shadow-slate-200/40 md:grid-cols-2">
+      <div className="grid gap-3 rounded-2xl border border-slate-200/70 bg-white/75 p-4 text-sm font-medium text-slate-700 shadow-sm shadow-slate-200/40 dark:border-slate-700/70 dark:bg-slate-900/75 dark:text-slate-300 dark:shadow-black/20 md:grid-cols-2">
         <label className="flex items-center gap-3"><input name="is_published" type="checkbox" defaultChecked={exam?.status === "published"} /> Published</label>
         <label className="flex items-center gap-3"><input name="randomize_questions" type="checkbox" defaultChecked={exam?.randomize_questions ?? false} /> Randomize questions</label>
         <label className="flex items-center gap-3"><input name="randomize_choices" type="checkbox" defaultChecked={exam?.randomize_choices ?? false} /> Randomize choices</label>
@@ -108,7 +108,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
 
       <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
-          <h2 className="text-xl font-semibold text-slate-950">Create Exam</h2>
+          <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Create Exam</h2>
           <div className="mt-7">
             <ExamForm action={createExamAction} competencies={competencies} submitLabel="Create Exam" />
           </div>
@@ -126,31 +126,31 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
                 <summary className="cursor-pointer list-none">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">{competency?.code ?? "EIM"} / {exam.status}</p>
-                      <h2 className="mt-2 text-2xl font-semibold text-slate-950">{exam.title}</h2>
-                      <p className="mt-3 text-sm leading-6 text-slate-600">{exam.description}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">{competency?.code ?? "EIM"} / {exam.status}</p>
+                      <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-slate-100">{exam.title}</h2>
+                      <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{exam.description}</p>
                     </div>
                     <Link href={`/teacher/exams/${exam.id}/builder`} className="rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
                       Builder
                     </Link>
                   </div>
-                  <div className="mt-6 grid gap-2.5 text-sm leading-6 text-slate-500 md:grid-cols-2">
+                  <div className="mt-6 grid gap-2.5 text-sm leading-6 text-slate-500 dark:text-slate-400 md:grid-cols-2">
                     <p><strong>Questions:</strong> {questionCount}</p>
                     <p><strong>Duration:</strong> {exam.duration_minutes ?? 30} minutes</p>
                     <p><strong>Opens:</strong> {formatDateTime(exam.start_at)}</p>
                     <p><strong>Closes:</strong> {formatDateTime(exam.end_at)}</p>
                   </div>
                 </summary>
-                <div className="mt-7 grid gap-6 border-t border-slate-100 pt-6">
+                <div className="mt-7 grid gap-6 border-t border-slate-100 pt-6 dark:border-slate-800">
                   <ExamForm action={updateExamAction.bind(null, exam.id)} competencies={competencies} exam={exam} submitLabel="Save Exam" />
                   <div className="flex flex-wrap gap-3">
                     <form action={setExamStatusAction.bind(null, exam.id, exam.status === "published" ? "draft" : "published")}>
-                      <SubmitButton className="rounded-2xl border border-teal-200 px-5 py-3 font-semibold text-teal-700 hover:bg-teal-50">
+                      <SubmitButton className="rounded-2xl border border-teal-200 px-5 py-3 font-semibold text-teal-700 hover:bg-teal-50 dark:border-teal-800 dark:text-teal-400 dark:hover:bg-teal-950/40">
                         {exam.status === "published" ? "Unpublish" : "Publish"}
                       </SubmitButton>
                     </form>
                     <form action={deleteExamAction.bind(null, exam.id)}>
-                      <ConfirmSubmitButton message="Delete this exam and its question links?" className="rounded-2xl border border-red-200 px-5 py-3 font-semibold text-red-700 hover:bg-red-50">
+                      <ConfirmSubmitButton message="Delete this exam and its question links?" className="rounded-2xl border border-red-200 px-5 py-3 font-semibold text-red-700 hover:bg-red-50 dark:border-red-900/50 dark:text-red-300 dark:hover:bg-red-950/30">
                         Delete Exam
                       </ConfirmSubmitButton>
                     </form>
