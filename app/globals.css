@@ -67,12 +67,12 @@
 .dark {
   --background: #0b1220;
   --foreground: #e2e8f0;
-  --brand: #2dd4bf;
-  --brand-dark: #99f6e4;
-  --brand-light: #134e4a;
+  --brand: #fbb931;
+  --brand-dark: #ea6113;
+  --brand-light: #4a2410;
   --secondary: #38bdf8;
-  --accent: #facc15;
-  --gold: #facc15;
+  --accent: #fbb931;
+  --gold: #fbb931;
 
   --neutral-50: #0f172a;
   --neutral-100: #1e293b;
@@ -98,8 +98,8 @@
   --info-border: rgba(56, 189, 248, 0.28);
   --info-text: #7dd3fc;
 
-  --focus-ring-color: rgba(45, 212, 191, 0.25);
-  --focus-ring-border: rgba(45, 212, 191, 0.5);
+  --focus-ring-color: rgba(248, 143, 34, 0.25);
+  --focus-ring-border: rgba(248, 143, 34, 0.5);
 }
 
 @media print {
@@ -145,8 +145,8 @@ body {
 
 .dark body {
   background:
-    radial-gradient(circle at 12% 4%, rgba(45, 212, 191, 0.07), transparent 24rem),
-    radial-gradient(circle at 88% 10%, rgba(56, 189, 248, 0.06), transparent 28rem),
+    radial-gradient(circle at 12% 4%, rgba(248, 143, 34, 0.08), transparent 24rem),
+    radial-gradient(circle at 88% 10%, rgba(234, 97, 19, 0.06), transparent 28rem),
     linear-gradient(180deg, #0b1220 0%, #0a0f1a 46%, #070b13 100%);
 }
 
@@ -251,7 +251,7 @@ textarea::placeholder {
 }
 
 .dark .card:hover {
-  border-color: rgba(45, 212, 191, 0.28);
+  border-color: rgba(248, 143, 34, 0.28);
 }
 
 .focus-ring:focus {

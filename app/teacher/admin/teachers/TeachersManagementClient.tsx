@@ -48,7 +48,7 @@ export function TeachersManagementClient({ teachers, currentUserId }: { teachers
           <button
             type="button"
             onClick={() => setIsAddOpen(true)}
-            className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700"
+            className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700"
           >
             Add Account
           </button>
@@ -86,7 +86,7 @@ export function TeachersManagementClient({ teachers, currentUserId }: { teachers
                         <span className="text-xs text-slate-400 dark:text-slate-500">—</span>
                       ) : (
                         <form action={toggleTeacherStatusAction.bind(null, teacher.id, nextStatus)}>
-                          <button className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-teal-400">
+                          <button className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-amber-400 active:scale-[0.97]">
                             {nextStatus === "active" ? "Activate" : "Deactivate"}
                           </button>
                         </form>
@@ -127,11 +127,11 @@ export function TeachersManagementClient({ teachers, currentUserId }: { teachers
               </select>
             </label>
 
-            <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-sm text-teal-800 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300">
+            <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-sm text-teal-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
               Initial password: <span className="font-semibold">eimnc2teacher</span>. The account must change it after signing in.
             </div>
 
-            <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
+            <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
               {isPending ? "Creating..." : "Create Account"}
             </button>
           </form>
@@ -140,7 +140,7 @@ export function TeachersManagementClient({ teachers, currentUserId }: { teachers
 
       {showCredentials && state.credentials ? (
         <Modal title="Account Credentials" description="Share these credentials privately." onClose={() => setShowCredentials(false)} size="md">
-          <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-teal-900/50 dark:bg-teal-950/40">
+          <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-amber-900/50 dark:bg-amber-950/40">
             <dl className="grid gap-4 text-sm sm:grid-cols-2">
               <div>
                 <dt className="font-semibold text-slate-500 dark:text-slate-400">Name</dt>
@@ -162,7 +162,7 @@ export function TeachersManagementClient({ teachers, currentUserId }: { teachers
               await navigator.clipboard.writeText(credentialText);
               setCopied(true);
             }}
-            className="mt-5 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700"
+            className="mt-5 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700"
           >
             {copied ? "Copied" : "Copy Credentials"}
           </button>

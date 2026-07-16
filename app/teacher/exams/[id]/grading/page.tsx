@@ -82,7 +82,7 @@ export default async function ExamEssayGradingPage({
 
   return (
     <PortalShell profile={profile}>
-      <Link href={`/teacher/exams/${id}/analysis`} className="text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-400">
+      <Link href={`/teacher/exams/${id}/analysis`} className="text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-amber-400 active:scale-[0.97]">
         Back to item analysis
       </Link>
 
@@ -126,7 +126,7 @@ export default async function ExamEssayGradingPage({
                             className="focus-ring min-h-11 w-32 rounded-xl border border-slate-200/80 bg-white px-3 py-2 font-normal text-slate-900 shadow-sm dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-100"
                           />
                         </label>
-                        <button className="min-h-11 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700">
+                        <button className="min-h-11 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 active:scale-[0.97]">
                           Save Score
                         </button>
                       </form>

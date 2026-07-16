@@ -126,11 +126,11 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
                 <summary className="cursor-pointer list-none">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">{competency?.code ?? "EIM"} / {exam.status}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{competency?.code ?? "EIM"} / {exam.status}</p>
                       <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-slate-100">{exam.title}</h2>
                       <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{exam.description}</p>
                     </div>
-                    <Link href={`/teacher/exams/${exam.id}/builder`} className="rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+                    <Link href={`/teacher/exams/${exam.id}/builder`} className="rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">
                       Builder
                     </Link>
                   </div>
@@ -145,7 +145,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
                   <ExamForm action={updateExamAction.bind(null, exam.id)} competencies={competencies} exam={exam} submitLabel="Save Exam" />
                   <div className="flex flex-wrap gap-3">
                     <form action={setExamStatusAction.bind(null, exam.id, exam.status === "published" ? "draft" : "published")}>
-                      <SubmitButton className="rounded-2xl border border-teal-200 px-5 py-3 font-semibold text-teal-700 hover:bg-teal-50 dark:border-teal-800 dark:text-teal-400 dark:hover:bg-teal-950/40">
+                      <SubmitButton className="rounded-2xl border border-teal-200 px-5 py-3 font-semibold text-teal-700 hover:bg-teal-50 dark:border-amber-800 dark:text-amber-400 dark:hover:bg-amber-950/40 active:scale-[0.97]">
                         {exam.status === "published" ? "Unpublish" : "Publish"}
                       </SubmitButton>
                     </form>

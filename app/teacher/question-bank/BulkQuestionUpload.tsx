@@ -347,10 +347,10 @@ export function BulkQuestionUpload({ competencies, existingQuestions }: {
 
   return (
     <div className="grid gap-6">
-      <div className="grid gap-4 rounded-2xl border border-teal-100 bg-teal-50/60 p-5 sm:grid-cols-[1fr_auto] sm:items-center dark:border-teal-900/50 dark:bg-teal-950/40">
+      <div className="grid gap-4 rounded-2xl border border-teal-100 bg-teal-50/60 p-5 sm:grid-cols-[1fr_auto] sm:items-center dark:border-amber-900/50 dark:bg-amber-950/40">
         <div>
-          <h3 className="font-semibold text-teal-950 dark:text-teal-300">Start with the Excel template</h3>
-          <p className="mt-1 text-sm leading-6 text-teal-800 dark:text-teal-400">Keep the header names unchanged. Uploading only creates a preview; nothing is saved until you confirm the import.</p>
+          <h3 className="font-semibold text-teal-950 dark:text-amber-300">Start with the Excel template</h3>
+          <p className="mt-1 text-sm leading-6 text-teal-800 dark:text-amber-400">Keep the header names unchanged. Uploading only creates a preview; nothing is saved until you confirm the import.</p>
         </div>
         <button
           type="button"
@@ -366,13 +366,13 @@ export function BulkQuestionUpload({ competencies, existingQuestions }: {
               setIsDownloading(false);
             }
           }}
-          className="min-h-11 rounded-xl border border-teal-200 bg-white px-4 py-2.5 text-sm font-semibold text-teal-800 shadow-sm hover:bg-teal-50 disabled:opacity-60 dark:border-teal-800/50 dark:bg-slate-900 dark:text-teal-300 dark:hover:bg-teal-950/40"
+          className="min-h-11 rounded-xl border border-teal-200 bg-white px-4 py-2.5 text-sm font-semibold text-teal-800 shadow-sm hover:bg-teal-50 disabled:opacity-60 dark:border-amber-800/50 dark:bg-slate-900 dark:text-amber-300 dark:hover:bg-amber-950/40"
         >
           {isDownloading ? "Preparing..." : "Download Excel Template"}
         </button>
       </div>
 
-      <label className="grid cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/70 px-6 py-8 text-center hover:border-teal-300 hover:bg-teal-50/40 dark:border-slate-700 dark:bg-slate-800/60 dark:hover:border-teal-700 dark:hover:bg-teal-950/30">
+      <label className="grid cursor-pointer place-items-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/70 px-6 py-8 text-center hover:border-teal-300 hover:bg-teal-50/40 dark:border-slate-700 dark:bg-slate-800/60 dark:hover:border-amber-700 dark:hover:bg-amber-950/30">
         <input type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" onChange={handleFile} className="sr-only" />
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7 text-slate-400 dark:text-slate-500"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 15v4h14v-4" /></svg>
         <span className="mt-3 text-sm font-semibold text-slate-800 dark:text-slate-200">{isParsing ? "Reading file..." : fileName || "Choose an Excel or CSV file"}</span>

@@ -12,9 +12,12 @@ export const metadata: Metadata = {
 const themeInitScript = `
 (function () {
   try {
-    var stored = localStorage.getItem("theme");
-    var isDark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (isDark) document.documentElement.classList.add("dark");
+    // sessionStorage (not localStorage) so the choice never outlives this
+    // browser session, and no OS/browser dark-mode preference fallback —
+    // light is always the default until the user explicitly toggles dark.
+    if (sessionStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.add("dark");
+    }
   } catch (_) {}
 })();
 `;

@@ -94,7 +94,7 @@ export function SectionsManagementClient({ sections, teachers }: { sections: Man
             <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Section Registry</h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{sections.length} section{sections.length === 1 ? "" : "s"} shown</p>
           </div>
-          <button type="button" onClick={() => setIsAddOpen(true)} className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700">Add Section</button>
+          <button type="button" onClick={() => setIsAddOpen(true)} className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 active:scale-[0.97]">Add Section</button>
         </div>
 
         <div className="overflow-x-auto">
@@ -118,7 +118,7 @@ export function SectionsManagementClient({ sections, teachers }: { sections: Man
                   <td className="border-b border-slate-200/70 px-4 py-4 font-semibold text-slate-950 dark:border-slate-700/70 dark:text-slate-100">{section.name}</td>
                   <td className="border-b border-slate-200/70 px-4 py-4 dark:border-slate-700/70">Grade {section.gradeLevel} - {section.name}</td>
                   <td className="border-b border-slate-200/70 px-4 py-4 tabular-nums dark:border-slate-700/70">{section.schoolYear}</td>
-                  <td className="border-b border-slate-200/70 px-4 py-4 dark:border-slate-700/70"><span className={section.isActive ? "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-950/40 dark:text-teal-400" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400"}>{section.isActive ? "Active" : "Inactive"}</span></td>
+                  <td className="border-b border-slate-200/70 px-4 py-4 dark:border-slate-700/70"><span className={section.isActive ? "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-amber-950/40 dark:text-amber-400" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400"}>{section.isActive ? "Active" : "Inactive"}</span></td>
                   <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums dark:border-slate-700/70">{section.learnerCount}</td>
                   <td className="border-b border-slate-200/70 px-4 py-4 text-sm text-slate-600 dark:border-slate-700/70 dark:text-slate-400">
                     {section.assignedTeacherIds.length
@@ -127,10 +127,10 @@ export function SectionsManagementClient({ sections, teachers }: { sections: Man
                   </td>
                   <td className="border-b border-slate-200/70 px-5 py-4 dark:border-slate-700/70">
                     <div className="flex justify-end gap-2">
-                      <button type="button" onClick={() => setAssigning(section)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-teal-400">Teachers</button>
-                      <button type="button" onClick={() => setEditing(section)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-teal-400">Edit</button>
+                      <button type="button" onClick={() => setAssigning(section)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-amber-400 active:scale-[0.97]">Teachers</button>
+                      <button type="button" onClick={() => setEditing(section)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-amber-400 active:scale-[0.97]">Edit</button>
                       <form action={removeSectionAction.bind(null, section.id)} onSubmit={(event) => { if (!window.confirm("Remove this section? This may affect learner enrollment and gradebook filters.")) event.preventDefault(); }}>
-                        <button className="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">Remove</button>
+                        <button className="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 active:scale-[0.97]">Remove</button>
                       </form>
                     </div>
                   </td>

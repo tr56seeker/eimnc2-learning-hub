@@ -94,11 +94,11 @@ export default async function LessonStudioPage({
 
   return (
     <PortalShell profile={profile}>
-      <section className="rounded-[2rem] border border-white/80 dark:border-slate-800/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(240,253,250,0.9)_52%,rgba(239,246,255,0.88))] dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,45,42,0.9)_52%,rgba(15,30,45,0.88))] p-6 shadow-xl shadow-slate-200/45 dark:shadow-black/30 sm:p-8">
+      <section className="rounded-[2rem] border border-white/80 dark:border-slate-800/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(240,253,250,0.9)_52%,rgba(239,246,255,0.88))] dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(74,36,16,0.9)_52%,rgba(15,23,42,0.88))] p-6 shadow-xl shadow-slate-200/45 dark:shadow-black/30 sm:p-8">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="rounded-full bg-teal-50 dark:bg-teal-950/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-teal-700 dark:text-teal-400">
+              <span className="rounded-full bg-teal-50 dark:bg-amber-950/40 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-teal-700 dark:text-amber-400">
                 {competency?.code ?? "EIM"}
               </span>
               <span
@@ -118,17 +118,17 @@ export default async function LessonStudioPage({
               </span>
               <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{lesson.estimated_minutes ?? 45} minutes</span>
             </div>
-            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">Lesson Studio</p>
+            <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">Lesson Studio</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-100 sm:text-5xl">{lesson.title}</h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600 dark:text-slate-400">{lesson.summary ?? "Add a short lesson summary to guide learners before they begin."}</p>
           </div>
 
           <div className="flex shrink-0 flex-col items-end gap-3 xl:max-w-sm">
             <div className="flex flex-wrap justify-end gap-2.5">
-              <Link href="/teacher/lessons" className="inline-flex min-h-10 items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 px-3.5 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800">
+              <Link href="/teacher/lessons" className="inline-flex min-h-10 items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 px-3.5 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 active:scale-[0.97]">
                 Back to Lessons
               </Link>
-              <Link href={`/learner/lessons/${lesson.id}`} className="inline-flex min-h-10 items-center rounded-xl border border-teal-200 dark:border-teal-800/50 bg-white/80 dark:bg-slate-900/80 px-3.5 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/40">
+              <Link href={`/learner/lessons/${lesson.id}`} className="inline-flex min-h-10 items-center rounded-xl border border-teal-200 dark:border-amber-800/50 bg-white/80 dark:bg-slate-900/80 px-3.5 py-2 text-sm font-semibold text-teal-700 dark:text-amber-400 hover:bg-teal-50 dark:hover:bg-amber-950/40 active:scale-[0.97]">
                 Preview as Learner
               </Link>
               <form action={setLessonPublishedAction.bind(null, lesson.id, !lesson.published)}>
@@ -147,13 +147,13 @@ export default async function LessonStudioPage({
             {!lesson.published ? (
               lesson.scheduled_publish_at ? (
                 <form action={cancelScheduledLessonPublishAction.bind(null, lesson.id)}>
-                  <button className="min-h-9 rounded-xl border border-sky-200 dark:border-sky-800/50 bg-white dark:bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40">
+                  <button className="min-h-9 rounded-xl border border-sky-200 dark:border-sky-800/50 bg-white dark:bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 active:scale-[0.97]">
                     Cancel Scheduled Publish
                   </button>
                 </form>
               ) : (
                 <details className="w-full max-w-xs text-right">
-                  <summary className="cursor-pointer list-none text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-400">Schedule for later ▾</summary>
+                  <summary className="cursor-pointer list-none text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-amber-400">Schedule for later ▾</summary>
                   <form action={scheduleLessonPublishAction.bind(null, lesson.id)} className="mt-2 flex flex-col items-end gap-2">
                     <input
                       name="scheduled_publish_at"
@@ -161,7 +161,7 @@ export default async function LessonStudioPage({
                       required
                       className="focus-ring min-h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-normal text-slate-900 dark:text-slate-100"
                     />
-                    <button className="min-h-9 rounded-xl bg-slate-950 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-teal-700">
+                    <button className="min-h-9 rounded-xl bg-slate-950 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-teal-700 active:scale-[0.97]">
                       Schedule Publish
                     </button>
                   </form>
@@ -185,7 +185,7 @@ export default async function LessonStudioPage({
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">Lesson Setup</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">Lesson Setup</p>
                 <h2 className="mt-1.5 text-xl font-semibold text-slate-950 dark:text-slate-100">Lesson Information</h2>
               </div>
               <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400">{lessonBlocks.length} blocks</span>
@@ -203,7 +203,7 @@ export default async function LessonStudioPage({
             </dl>
 
             <details className="mt-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-              <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-teal-700 dark:text-teal-400">Edit Lesson Info</summary>
+              <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-teal-700 dark:text-amber-400">Edit Lesson Info</summary>
               <form action={updateLessonInfoAction.bind(null, lesson.id)} className="grid gap-4 border-t border-slate-100 dark:border-slate-800 p-4">
                 <label className={labelClass}>
                   Title
@@ -226,13 +226,13 @@ export default async function LessonStudioPage({
                   Estimated minutes
                   <input name="estimated_minutes" type="number" min={1} defaultValue={lesson.estimated_minutes ?? 45} className={inputClass} />
                 </label>
-                <button className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700">Save Lesson Info</button>
+                <button className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 active:scale-[0.97]">Save Lesson Info</button>
               </form>
             </details>
           </section>
 
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">History</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">History</p>
             <h2 className="mt-1.5 text-xl font-semibold text-slate-950 dark:text-slate-100">Version History</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">A snapshot is saved every time this lesson is published. Restoring replaces the current content and blocks.</p>
 
@@ -247,7 +247,7 @@ export default async function LessonStudioPage({
                     <form action={restoreLessonVersionAction.bind(null, lesson.id, version.id)}>
                       <ConfirmSubmitButton
                         message="Restore this version? Current lesson info and blocks will be replaced."
-                        className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-teal-200 dark:hover:border-teal-800 hover:text-teal-700 dark:hover:text-teal-400"
+                        className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:border-teal-200 dark:hover:border-amber-800 hover:text-teal-700 dark:hover:text-amber-400"
                       >
                         Restore
                       </ConfirmSubmitButton>
@@ -261,7 +261,7 @@ export default async function LessonStudioPage({
           </section>
 
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">Lesson Builder</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">Lesson Builder</p>
             <h2 className="mt-1.5 text-xl font-semibold text-slate-950 dark:text-slate-100">Add Content Block</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Build the lesson like a module article using objectives, explanations, media, activities, checks, and reflection.</p>
             <div className="mt-6">

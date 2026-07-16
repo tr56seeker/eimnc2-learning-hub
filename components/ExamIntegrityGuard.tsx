@@ -158,7 +158,7 @@ export function ExamIntegrityGuard({
           <button
             type="button"
             onClick={() => setActiveWarning(null)}
-            className="mt-5 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white hover:bg-teal-700"
+            className="mt-5 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white hover:bg-teal-700 active:scale-[0.97]"
           >
             I understand, continue exam
           </button>
@@ -174,7 +174,7 @@ export function ExamIntegrityGuard({
                 window.location.href = "/learner/exams";
               }
             }}
-            className="mt-5 rounded-2xl bg-red-600 px-5 py-3 text-sm font-semibold text-white hover:bg-red-700"
+            className="mt-5 rounded-2xl bg-red-600 px-5 py-3 text-sm font-semibold text-white hover:bg-red-700 active:scale-[0.97]"
           >
             Exit exam now
           </button>

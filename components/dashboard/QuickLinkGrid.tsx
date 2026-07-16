@@ -8,7 +8,7 @@ export type QuickLink = {
 };
 
 const toneClasses: Record<QuickLink["tone"], string> = {
-  teal: "bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300",
+  teal: "bg-teal-50 text-teal-700 dark:bg-amber-950/40 dark:text-amber-300",
   indigo: "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300",
   amber: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
   rose: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
@@ -23,12 +23,12 @@ export function QuickLinkGrid({ links }: { links: QuickLink[] }) {
         <Link
           key={link.href}
           href={link.href}
-          className="group flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white/80 p-3.5 shadow-sm shadow-slate-200/30 hover:-translate-y-0.5 hover:border-teal-200 hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-black/20 dark:hover:border-teal-700"
+          className="group flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white/80 p-3.5 shadow-sm shadow-slate-200/30 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:border-teal-200 hover:shadow-md dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-black/20 dark:hover:border-amber-700"
         >
           <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${toneClasses[link.tone]}`}>
             {link.glyph}
           </span>
-          <span className="text-sm font-semibold text-slate-800 group-hover:text-teal-700 dark:text-slate-200 dark:group-hover:text-teal-300">{link.label}</span>
+          <span className="text-sm font-semibold text-slate-800 group-hover:text-teal-700 dark:text-slate-200 dark:group-hover:text-amber-300">{link.label}</span>
         </Link>
       ))}
     </div>

@@ -208,7 +208,7 @@ export default async function TeacherLearnerProfilePage({
 
   return (
     <PortalShell profile={profile}>
-      <Link href="/teacher/learners" className="mb-6 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-teal-800 dark:hover:text-teal-400">
+      <Link href="/teacher/learners" className="mb-6 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-amber-800 dark:hover:text-amber-400 active:scale-[0.97]">
         Back to learners
       </Link>
 
@@ -221,7 +221,7 @@ export default async function TeacherLearnerProfilePage({
         <section className="card rounded-[1.75rem] p-6 sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">{formalName}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">{formalName}</p>
               <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{completeName}</h2>
               <p className="mt-2 text-slate-500 dark:text-slate-400">{sectionLabel(section)}</p>
             </div>
@@ -280,7 +280,7 @@ export default async function TeacherLearnerProfilePage({
                               placeholder="Optional note (e.g. remediation reason)"
                               className="focus-ring min-w-[220px] flex-1 rounded-xl border border-slate-200/80 bg-white/90 px-3 py-2 text-xs dark:border-slate-700/80 dark:bg-slate-900/90"
                             />
-                            <button className="rounded-xl bg-teal-700 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-800">
+                            <button className="rounded-xl bg-teal-700 px-3 py-2 text-xs font-semibold text-white hover:bg-teal-800 active:scale-[0.97]">
                               Grant Retake
                             </button>
                           </form>

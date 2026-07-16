@@ -118,7 +118,7 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
                       {entry.evidence_note ? <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{entry.evidence_note}</p> : null}
                     </div>
                     <form action={revokeAchievementAction.bind(null, entry.id)}>
-                      <button className="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">Remove</button>
+                      <button className="rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 active:scale-[0.97]">Remove</button>
                     </form>
                   </div>
                 );

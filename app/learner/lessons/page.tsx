@@ -38,9 +38,9 @@ export default async function LearnerLessonsPage() {
             const completed = completedLessonIds.has(lesson.id);
 
             return (
-              <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
+              <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:shadow-xl">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">
                     {competency?.code ?? "EIM"}
                   </p>
                   {completed ? (

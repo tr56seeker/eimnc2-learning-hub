@@ -318,14 +318,14 @@ export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, 
   return (
     <section className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className={saveStatus === "error" ? "text-sm font-semibold text-red-600 dark:text-red-400" : saveStatus === "dirty" ? "text-sm font-semibold text-amber-700 dark:text-amber-300" : "text-sm font-semibold text-teal-700 dark:text-teal-400"}>
+        <p className={saveStatus === "error" ? "text-sm font-semibold text-red-600 dark:text-red-400" : saveStatus === "dirty" ? "text-sm font-semibold text-amber-700 dark:text-amber-300" : "text-sm font-semibold text-teal-700 dark:text-amber-400"}>
           {isPending ? "Saving..." : statusMessage}
         </p>
         <button
           type="button"
           onClick={saveChanges}
           disabled={isPending}
-          className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           Save Changes
         </button>
@@ -395,7 +395,7 @@ export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, 
                 const letter = letterGrade(transmuted);
 
                 return (
-                  <tr key={learner.id} className="odd:bg-white even:bg-slate-50/40 hover:bg-teal-50/40 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 dark:hover:bg-teal-950/40">
+                  <tr key={learner.id} className="odd:bg-white even:bg-slate-50/40 hover:bg-teal-50/40 dark:odd:bg-slate-900 dark:even:bg-slate-800/40 dark:hover:bg-amber-950/40">
                     <td className={stickyNumberCell}>{learner.rowNumber}</td>
                     <td className={stickyNameCell}>
                       <p className="whitespace-nowrap text-[10px] font-semibold text-slate-900 dark:text-slate-100">{formatClassRecordName(learner.fullName)}</p>

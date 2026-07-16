@@ -37,7 +37,7 @@ export function ExamTimer({ deadlineIso, formId }: { deadlineIso: string; formId
           ? "animate-pulse border-red-300 bg-red-50 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
           : isLow
             ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-800/50 dark:bg-amber-950/40 dark:text-amber-300"
-            : "border-teal-200 bg-teal-50 text-teal-800 dark:border-teal-800 dark:bg-teal-950/40 dark:text-teal-300"
+            : "border-teal-200 bg-teal-50 text-teal-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
       }`}
     >
       <span aria-hidden="true">⏱</span>

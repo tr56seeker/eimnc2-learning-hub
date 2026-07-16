@@ -74,13 +74,13 @@ export function PortalShell({ profile, children }: { profile: Profile; children:
             <Link href="/portal" className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">
               EIM NC II Learning Hub
             </Link>
-            <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">{portalLabel}</p>
+            <p className="mt-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">{portalLabel}</p>
           </div>
           <PortalNav items={links} />
           <div className="flex items-center gap-2.5">
             <ThemeToggle />
             <form action={signOutAction}>
-              <button className="rounded-full border border-slate-200/80 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm hover:border-red-200 hover:bg-red-50 hover:text-red-700 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-red-800 dark:hover:bg-red-950/40 dark:hover:text-red-300">
+              <button className="rounded-full border border-slate-200/80 bg-white px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm hover:border-red-200 hover:bg-red-50 hover:text-red-700 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-red-800 dark:hover:bg-red-950/40 dark:hover:text-red-300 active:scale-[0.97]">
                 Sign out
               </button>
             </form>

@@ -90,7 +90,7 @@ function ModuleSection({
   return (
     <section id={id} className="mt-12 scroll-mt-24">
       <div className="mb-5 border-l-4 border-teal-500 pl-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">{eyebrow}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{eyebrow}</p>
         <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100 sm:text-3xl">{title}</h2>
         <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{description}</p>
       </div>
@@ -196,12 +196,12 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
   return (
     <PortalShell profile={profile}>
       <article className="mx-auto max-w-6xl">
-        <header className="rounded-3xl border border-white/80 dark:border-slate-800/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(240,253,250,0.88)_48%,rgba(239,246,255,0.86))] dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(15,45,42,0.88)_48%,rgba(15,30,45,0.86))] p-7 shadow-xl shadow-slate-200/50 dark:shadow-black/30 sm:p-10">
-          <Link href={isTeacherPreview ? `/teacher/lessons/${id}/studio` : "/learner/lessons"} className="text-sm font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300">
+        <header className="rounded-3xl border border-white/80 dark:border-slate-800/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(240,253,250,0.88)_48%,rgba(239,246,255,0.86))] dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(74,36,16,0.88)_48%,rgba(15,23,42,0.86))] p-7 shadow-xl shadow-slate-200/50 dark:shadow-black/30 sm:p-10">
+          <Link href={isTeacherPreview ? `/teacher/lessons/${id}/studio` : "/learner/lessons"} className="text-sm font-semibold text-teal-700 dark:text-amber-400 hover:text-teal-800 dark:hover:text-amber-300 active:scale-[0.97]">
             {isTeacherPreview ? "Back to Studio" : "Back to lessons"}
           </Link>
           <div className="mt-8 flex flex-wrap gap-3">
-            <span className="rounded-full border border-teal-200 dark:border-teal-800/50 bg-teal-50 dark:bg-teal-950/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-teal-400">
+            <span className="rounded-full border border-teal-200 dark:border-amber-800/50 bg-teal-50 dark:bg-amber-950/40 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">
               {competency?.code ?? "EIM"}
             </span>
             {isTeacherPreview ? (
@@ -283,13 +283,13 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
           <ModuleSection id={slugify("Resources")} eyebrow="Further Learning" title="Resources" description="Use these supporting links for review, practice, and further reading.">
             {resourceBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
             {resources.length ? (
-              <div className="rounded-[1.75rem] border border-teal-100/80 dark:border-teal-900/50 bg-teal-50/80 dark:bg-teal-950/40 p-6">
+              <div className="rounded-[1.75rem] border border-teal-100/80 dark:border-amber-900/50 bg-teal-50/80 dark:bg-amber-950/40 p-6">
                 <div className="grid gap-3">
                   {resources.map((resource) => (
                     <div key={resource.id} className="rounded-2xl bg-white/75 dark:bg-slate-900/75 p-4 shadow-sm shadow-teal-100/50 dark:shadow-black/20">
                       <p className="font-semibold text-slate-950 dark:text-slate-100">{resource.title}</p>
                       <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">{resource.resource_type}</p>
-                      <a href={resource.url} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-2xl border border-teal-200 dark:border-teal-800/50 px-4 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/40">
+                      <a href={resource.url} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-2xl border border-teal-200 dark:border-amber-800/50 px-4 py-2 text-sm font-semibold text-teal-700 dark:text-amber-400 hover:bg-teal-50 dark:hover:bg-amber-950/40">
                         Open in New Tab
                       </a>
                     </div>

@@ -89,7 +89,7 @@ export default async function LearnerProgressReportPage({
       />
 
       <div className="print:hidden mb-7 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">
+        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-amber-400">
           ← Back to Reports
         </Link>
         <div className="flex flex-wrap items-center gap-3">
@@ -111,7 +111,7 @@ export default async function LearnerProgressReportPage({
               <option value="missing">Missing outputs only</option>
               <option value="late">Late submissions only</option>
             </select>
-            <button type="submit" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
+            <button type="submit" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 active:scale-[0.97]">
               Apply
             </button>
           </form>
@@ -140,7 +140,7 @@ export default async function LearnerProgressReportPage({
               {rows.map((row) => (
                 <tr key={row.id}>
                   <td className="px-5 py-4 font-semibold text-slate-900 dark:text-slate-100">
-                    <Link href={`/teacher/learners/${row.id}`} className="hover:text-teal-700 hover:underline dark:hover:text-teal-400">
+                    <Link href={`/teacher/learners/${row.id}`} className="hover:text-teal-700 hover:underline dark:hover:text-amber-400 active:scale-[0.97]">
                       {row.fullName}
                     </Link>
                   </td>

@@ -37,7 +37,7 @@ function statusLabel(status: string, isLate: boolean) {
 
 function statusClass(status: string) {
   if (status === "returned") return "rounded-full bg-amber-50 dark:bg-amber-950/40 px-3 py-1 text-xs font-semibold text-amber-800 dark:text-amber-300";
-  if (status === "checked") return "rounded-full bg-teal-50 dark:bg-teal-950/40 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-teal-400";
+  if (status === "checked") return "rounded-full bg-teal-50 dark:bg-amber-950/40 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-amber-400";
   return "rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400";
 }
 
@@ -112,7 +112,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
                       <p className="font-semibold text-slate-950 dark:text-slate-100">{assignment.title}</p>
                       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{assignment.due_at ? `Due ${formatDateTime(assignment.due_at)}` : "No due date"}</p>
                       {expectedFilename ? (
-                        <p className="mt-1 text-xs font-semibold text-teal-700 dark:text-teal-400">Name your file: {expectedFilename}</p>
+                        <p className="mt-1 text-xs font-semibold text-teal-700 dark:text-amber-400">Name your file: {expectedFilename}</p>
                       ) : null}
                     </div>
                     <span className={isMissing ? "rounded-full bg-red-50 dark:bg-red-950/30 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-400" : latest ? statusClass(latest.status) : "rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400"}>
@@ -144,7 +144,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
                 Notes / explanation
                 <textarea name="content_text" rows={6} className="focus-ring rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 font-normal shadow-sm" placeholder="Briefly explain your submitted work." />
               </label>
-              <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">Submit Output</button>
+              <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">Submit Output</button>
             </form>
           )}
         </section>
@@ -165,7 +165,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
                   </div>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Submitted: {formatDateTime(submission.submitted_at)}</p>
                   {submission.submitted_filename ? <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">File name used: {submission.submitted_filename}</p> : null}
-                  {submission.score !== null ? <p className="text-sm font-semibold text-teal-700 dark:text-teal-400">Score: {submission.score}/{assignment?.max_score}</p> : null}
+                  {submission.score !== null ? <p className="text-sm font-semibold text-teal-700 dark:text-amber-400">Score: {submission.score}/{assignment?.max_score}</p> : null}
                   {submission.feedback ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Feedback: {submission.feedback}</p> : null}
                   {submission.status === "returned" ? (
                     <p className="mt-2 text-sm font-semibold text-amber-800 dark:text-amber-300">Your teacher asked for a revision — submit an updated version above.</p>

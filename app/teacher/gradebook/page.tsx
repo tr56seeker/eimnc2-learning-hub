@@ -215,7 +215,7 @@ function AddAssessmentButtons({ term, sectionId }: { term: string; sectionId: st
           <input type="hidden" name="term" value={term} />
           <input type="hidden" name="section_id" value={sectionId} />
           <input type="hidden" name="category" value={category} />
-          <button className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-800 dark:hover:text-teal-400">
+          <button className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-teal-800 dark:hover:text-teal-400 active:scale-[0.97]">
             {label}
           </button>
         </form>

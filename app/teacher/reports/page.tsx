@@ -24,10 +24,10 @@ export default async function ReportsHubPage() {
 
       <div className="grid gap-5 md:grid-cols-2">
         {reportLinks.map(([title, text, href]) => (
-          <Link key={href} href={href} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
+          <Link key={href} href={href} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:shadow-xl">
             <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">{title}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{text}</p>
-            <p className="mt-6 text-sm font-semibold text-teal-700 dark:text-teal-400">Open report</p>
+            <p className="mt-6 text-sm font-semibold text-teal-700 dark:text-amber-400">Open report</p>
           </Link>
         ))}
       </div>

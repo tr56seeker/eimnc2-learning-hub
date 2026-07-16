@@ -41,8 +41,8 @@ export default async function LearnerExamsPage({ searchParams }: { searchParams:
             const competency = firstRelation(exam.competencies);
 
             return (
-              <Link key={exam.id} href={`/learner/exams/${exam.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 hover:shadow-xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">
+              <Link key={exam.id} href={`/learner/exams/${exam.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:shadow-xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">
                   {competency?.code ?? "EIM"}
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{exam.title}</h2>

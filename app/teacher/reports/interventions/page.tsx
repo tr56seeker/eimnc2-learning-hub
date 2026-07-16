@@ -62,7 +62,7 @@ export default async function InterventionReportPage() {
       />
 
       <div className="print:hidden mb-7 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">
+        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-amber-400">
           ← Back to Reports
         </Link>
         {rows.length ? <ReportToolbar filename="intervention-report.csv" columns={columns} rows={csvRows} /> : null}
@@ -76,7 +76,7 @@ export default async function InterventionReportPage() {
             <div key={row.id} className="card rounded-[1.5rem] p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <Link href={`/teacher/learners/${row.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline dark:text-slate-100 dark:hover:text-teal-400">
+                  <Link href={`/teacher/learners/${row.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline dark:text-slate-100 dark:hover:text-amber-400 active:scale-[0.97]">
                     {row.fullName}
                   </Link>
                   <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">{row.sectionName}</p>

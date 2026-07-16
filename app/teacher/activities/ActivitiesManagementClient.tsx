@@ -100,7 +100,7 @@ export function ActivitiesManagementClient({ activities, lessons }: { activities
             <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Activities</h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{activities.length} activit{activities.length === 1 ? "y" : "ies"} shown</p>
           </div>
-          <button type="button" onClick={() => setIsAddOpen(true)} className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700">
+          <button type="button" onClick={() => setIsAddOpen(true)} className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 active:scale-[0.97]">
             Add Activity
           </button>
         </div>
@@ -129,15 +129,15 @@ export function ActivitiesManagementClient({ activities, lessons }: { activities
                   <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums dark:border-slate-700/70">{activity.maxScore}</td>
                   <td className="border-b border-slate-200/70 px-4 py-4 text-center tabular-nums dark:border-slate-700/70">{activity.submissionCount}</td>
                   <td className="border-b border-slate-200/70 px-4 py-4 dark:border-slate-700/70">
-                    <span className={activity.isActive ? "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-950/40 dark:text-teal-400" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400"}>
+                    <span className={activity.isActive ? "rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-amber-950/40 dark:text-amber-400" : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400"}>
                       {activity.isActive ? "Active" : "Archived"}
                     </span>
                   </td>
                   <td className="border-b border-slate-200/70 px-5 py-4 dark:border-slate-700/70">
                     <div className="flex justify-end gap-2">
-                      <button type="button" onClick={() => setEditing(activity)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-teal-400">Edit</button>
+                      <button type="button" onClick={() => setEditing(activity)} className="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-amber-400 active:scale-[0.97]">Edit</button>
                       <form action={setActivityActiveAction.bind(null, activity.id, !activity.isActive)}>
-                        <button className={activity.isActive ? "rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30" : "rounded-lg px-3 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-teal-950/40"}>
+                        <button className={activity.isActive ? "rounded-lg px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30" : "rounded-lg px-3 py-2 text-xs font-semibold text-teal-700 hover:bg-teal-50 dark:text-amber-400 dark:hover:bg-amber-950/40"}>
                           {activity.isActive ? "Archive" : "Restore"}
                         </button>
                       </form>

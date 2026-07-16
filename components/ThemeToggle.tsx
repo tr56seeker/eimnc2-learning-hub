@@ -16,7 +16,9 @@ export function ThemeToggle() {
     const next = !isDark;
     setIsDark(next);
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
+    // sessionStorage, not localStorage: the choice should only last this
+    // browser session, not follow the user back the next time they log in.
+    sessionStorage.setItem("theme", next ? "dark" : "light");
   }
 
   return (
@@ -25,7 +27,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={isDark}
-      className="focus-ring grid h-10 w-10 shrink-0 place-items-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow-sm hover:border-teal-200 hover:text-teal-700 dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-teal-700 dark:hover:text-teal-300"
+      className="focus-ring grid h-10 w-10 shrink-0 place-items-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow-sm hover:border-teal-200 hover:text-teal-700 active:scale-[0.97] dark:border-slate-700/80 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-amber-700 dark:hover:text-amber-300"
     >
       {isDark ? (
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className="h-5 w-5">

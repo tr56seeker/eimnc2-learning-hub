@@ -107,7 +107,7 @@ export default async function MasteryReportPage({ searchParams }: { searchParams
 
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <MasteryViewSwitcher current={view} />
-        <Link href="/teacher/gradebook" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800">
+        <Link href="/teacher/gradebook" className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-white dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-800 active:scale-[0.97]">
           Open Term Gradebook
         </Link>
       </div>

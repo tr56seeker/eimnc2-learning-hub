@@ -12,6 +12,7 @@ import { classifyLearnerRisk, loadProgressBaseData } from "@/lib/reports";
 
 const SHORTCUTS: QuickLink[] = [
   { label: "Lessons", href: "/teacher/lessons", glyph: "Le", tone: "teal" },
+  { label: "Competencies", href: "/teacher/competencies", glyph: "Co", tone: "indigo" },
   { label: "Activities", href: "/teacher/activities", glyph: "Ac", tone: "indigo" },
   { label: "Exams", href: "/teacher/exams", glyph: "Ex", tone: "violet" },
   { label: "Question Bank", href: "/teacher/question-bank", glyph: "QB", tone: "indigo" },
@@ -116,7 +117,7 @@ export default async function TeacherDashboardPage() {
               );
             })}
           </div>
-          <Link href="/teacher/incidents" className="mt-4 inline-block text-sm font-semibold text-red-700 hover:text-red-800">
+          <Link href="/teacher/incidents" className="mt-4 inline-block text-sm font-semibold text-red-700 hover:text-red-800 active:scale-[0.97]">
             Review all flagged incidents
           </Link>
         </section>
@@ -128,11 +129,10 @@ export default async function TeacherDashboardPage() {
         <MiniListCard title="Recently Published" items={recentlyPublished} emptyMessage="No published lessons yet." />
       </section>
 
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-5 sm:grid-cols-3">
         <StatCard label="Active Learners" value={activeLearners.count ?? 0} />
         <StatCard label="Sections" value={sections.count ?? 0} />
         <StatCard label="Published Lessons" value={lessons.count ?? 0} />
-        <StatCard label="Pending Checks" value={pending.count ?? 0} />
       </div>
 
       <section className="mt-10">

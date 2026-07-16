@@ -134,7 +134,7 @@ export function DepedClassRecordExportButton({ payload }: { payload: DepedExport
         type="button"
         onClick={handleExport}
         disabled={status === "working"}
-        className="rounded-2xl border border-amber-300 bg-white/80 px-4 py-2.5 text-sm font-semibold text-amber-800 shadow-sm hover:bg-amber-50 disabled:opacity-60 dark:border-amber-800/50 dark:bg-slate-900/80 dark:text-amber-300 dark:hover:bg-amber-950/40"
+        className="rounded-2xl border border-amber-300 bg-white/80 px-4 py-2.5 text-sm font-semibold text-amber-800 shadow-sm hover:bg-amber-50 active:scale-[0.97] disabled:opacity-60 dark:border-amber-800/50 dark:bg-slate-900/80 dark:text-amber-300 dark:hover:bg-amber-950/40"
       >
         {status === "working" ? "Building DepEd file..." : "Export DepEd Class Record"}
       </button>

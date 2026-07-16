@@ -10,7 +10,7 @@ export default function InactiveAccountPage() {
           Your account is inactive. Please contact your school administrator for assistance.
         </p>
         <form action={signOutAction} className="mt-7">
-          <button className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 dark:shadow-black/20">
+          <button className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 dark:shadow-black/20 active:scale-[0.97]">
             Sign out
           </button>
         </form>

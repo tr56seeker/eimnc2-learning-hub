@@ -96,10 +96,10 @@ export default async function ExamItemAnalysisPage({ params }: { params: Promise
   return (
     <PortalShell profile={profile}>
       <div className="flex flex-wrap gap-3">
-        <Link href={`/teacher/exams/${id}/builder`} className="text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-400">
+        <Link href={`/teacher/exams/${id}/builder`} className="text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-amber-400 active:scale-[0.97]">
           Back to exam builder
         </Link>
-        <Link href={`/teacher/exams/${id}/grading`} className="text-sm font-semibold text-amber-700 hover:text-amber-800 dark:text-amber-300">
+        <Link href={`/teacher/exams/${id}/grading`} className="text-sm font-semibold text-amber-700 hover:text-amber-800 dark:text-amber-300 active:scale-[0.97]">
           Grade Essays
         </Link>
       </div>

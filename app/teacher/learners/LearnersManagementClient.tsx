@@ -35,7 +35,7 @@ const initialResetState: LearnerPasswordResetState = {
 };
 
 const fieldClass = "focus-ring min-h-11 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20";
-const menuItemClass = "block w-full px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-teal-400";
+const menuItemClass = "block w-full px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-amber-400";
 
 function sectionLabel(section: SectionOption) {
   return `Grade ${section.grade_level} - ${section.name}`;
@@ -130,11 +130,11 @@ function AddLearnerForm({
         </label>
       </div>
 
-      <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-sm text-teal-800 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300">
+      <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-4 text-sm text-teal-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
         Initial password: <span className="font-semibold">eimnc2password</span>. The learner will be required to change it after signing in.
       </div>
 
-      <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
+      <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
         {isPending ? "Adding..." : "Add Learner"}
       </button>
     </form>
@@ -218,7 +218,7 @@ function EditLearnerForm({ learner, sections }: { learner: LearnerListItem; sect
         </label>
       </div>
 
-      <button className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+      <button className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">
         Save Learner
       </button>
     </form>
@@ -239,7 +239,7 @@ function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
   return (
     <div className="grid gap-5">
       {state.credentials ? (
-        <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-teal-900/50 dark:bg-teal-950/40">
+        <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-amber-900/50 dark:bg-amber-950/40">
           <dl className="grid gap-4 text-sm sm:grid-cols-2">
             <div>
               <dt className="font-semibold text-slate-500 dark:text-slate-400">Learner Name</dt>
@@ -274,7 +274,7 @@ function ResetPasswordForm({ learner }: { learner: LearnerListItem }) {
           New Temporary Password
           <input name="password" type="text" required minLength={8} defaultValue="eimnc2password" className={fieldClass} placeholder="At least 8 characters" />
         </label>
-        <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60">
+        <button disabled={isPending} className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.97]">
           {isPending ? "Resetting..." : "Reset Password"}
         </button>
       </form>
@@ -335,7 +335,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
           <button
             type="button"
             onClick={() => setIsAddOpen(true)}
-            className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700"
+            className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700"
           >
             Add Learner
           </button>
@@ -367,7 +367,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
                 return (
                   <tr key={learner.id} className="align-middle text-slate-700 hover:bg-slate-50/60 dark:text-slate-300 dark:hover:bg-slate-800/40">
                     <td className="border-b border-slate-200/70 px-5 py-3.5 dark:border-slate-700/70">
-                      <Link href={`/teacher/learners/${learner.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline hover:underline-offset-4 dark:text-slate-100 dark:hover:text-teal-400">
+                      <Link href={`/teacher/learners/${learner.id}`} className="font-semibold text-slate-950 hover:text-teal-700 hover:underline hover:underline-offset-4 dark:text-slate-100 dark:hover:text-amber-400 active:scale-[0.97]">
                         {completeName}
                       </Link>
                     </td>
@@ -413,7 +413,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
                             setOpenMenuId(null);
                           }}
                         >
-                              <button className="block w-full px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30">Delete</button>
+                              <button className="block w-full px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 active:scale-[0.97]">Delete</button>
                         </form>
                           </div>
                         ) : null}
@@ -451,7 +451,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
           onClose={() => setShowCredentials(false)}
           size="lg"
         >
-          <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-teal-900/50 dark:bg-teal-950/40">
+          <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5 dark:border-amber-900/50 dark:bg-amber-950/40">
             <dl className="grid gap-4 text-sm sm:grid-cols-2">
               <div>
                 <dt className="font-semibold text-slate-500 dark:text-slate-400">Learner Name</dt>
@@ -477,7 +477,7 @@ export function LearnersManagementClient({ learners, sections }: LearnersManagem
               await navigator.clipboard.writeText(credentialText);
               setCopied(true);
             }}
-            className="mt-5 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700"
+            className="mt-5 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700"
           >
             {copied ? "Copied" : "Copy Credentials"}
           </button>

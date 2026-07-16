@@ -11,7 +11,7 @@ function isGroup(item: NavItem): item is { label: string; items: NavLink[] } {
   return "items" in item;
 }
 
-const activeClass = "bg-white text-teal-800 shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-800 dark:text-teal-300 dark:ring-slate-700/80";
+const activeClass = "bg-white text-teal-800 shadow-sm ring-1 ring-slate-200/80 dark:bg-slate-800 dark:text-amber-300 dark:ring-slate-700/80";
 const inactiveClass = "text-slate-600 hover:bg-white/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/80 dark:hover:text-slate-100";
 
 export function PortalNav({ items }: { items: NavItem[] }) {
@@ -92,7 +92,7 @@ export function PortalNav({ items }: { items: NavItem[] }) {
                       href={link.href}
                       role="menuitem"
                       aria-current={active ? "page" : undefined}
-                      className={`block rounded-xl px-3.5 py-2.5 text-sm font-semibold ${active ? "bg-teal-50 text-teal-800 dark:bg-teal-950/50 dark:text-teal-300" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"}`}
+                      className={`block rounded-xl px-3.5 py-2.5 text-sm font-semibold ${active ? "bg-teal-50 text-teal-800 dark:bg-amber-950/50 dark:text-amber-300" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"}`}
                     >
                       {link.label}
                     </Link>

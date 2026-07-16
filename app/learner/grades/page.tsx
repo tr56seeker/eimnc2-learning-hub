@@ -50,7 +50,7 @@ export default async function LearnerGradesPage({ searchParams }: { searchParams
                   <td className="p-4 font-semibold text-slate-900 dark:text-slate-100">{grade.title}</td>
                   <td className="p-4 capitalize text-slate-600 dark:text-slate-400">{grade.component.replaceAll("_", " ")}</td>
                   <td className="p-4 font-medium">{grade.score}/{grade.max_score}</td>
-                  <td className="p-4 font-semibold text-teal-700 dark:text-teal-400">{percent(Number(grade.score), Number(grade.max_score))}%</td>
+                  <td className="p-4 font-semibold text-teal-700 dark:text-amber-400">{percent(Number(grade.score), Number(grade.max_score))}%</td>
                 </tr>
               ))}
             </tbody>

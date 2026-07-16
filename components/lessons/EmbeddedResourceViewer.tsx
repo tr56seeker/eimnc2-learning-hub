@@ -90,7 +90,7 @@ export function EmbeddedResourceViewer({ title, url, caption, blockType }: Embed
           type="button"
           onClick={toggleFullscreen}
           disabled={!embedUrl}
-          className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-800 active:scale-[0.97] disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
         </button>
@@ -101,8 +101,8 @@ export function EmbeddedResourceViewer({ title, url, caption, blockType }: Embed
             rel="noopener noreferrer"
             className={
               isFullscreen
-                ? "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-slate-400 hover:bg-white/10"
-                : "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-sm transition hover:border-teal-200 dark:hover:border-teal-800 hover:text-teal-700 dark:hover:text-teal-400"
+                ? "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-100 transition hover:border-slate-400 hover:bg-white/10 active:scale-[0.97]"
+                : "inline-flex min-h-11 items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 shadow-sm transition hover:border-teal-200 dark:hover:border-teal-800 hover:text-teal-700 dark:hover:text-teal-400 active:scale-[0.97]"
             }
           >
             Open in New Tab

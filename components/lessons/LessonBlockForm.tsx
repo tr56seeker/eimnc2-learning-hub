@@ -148,7 +148,7 @@ export function LessonBlockForm({ action, block, defaultOrder, submitLabel }: Le
         </label>
       ) : null}
 
-      <button className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+      <button className="rounded-2xl bg-slate-950 px-5 py-3 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">
         {submitLabel}
       </button>
     </form>

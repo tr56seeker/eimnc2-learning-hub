@@ -76,7 +76,7 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
                 <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-400">{latest.status}</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{latest.status}</p>
                       {isLate ? <span className="rounded-full bg-red-50 px-2.5 py-1 text-[11px] font-semibold text-red-700 dark:bg-red-950/30 dark:text-red-300">Late</span> : null}
                       {versions.length > 1 ? (
                         <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">Version {versions.length}</span>
@@ -86,7 +86,7 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
                     <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">Learner: {learner?.full_name}</p>
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Submitted: {formatDateTime(latest.submitted_at)}</p>
                     {latest.submitted_filename ? <p className="mt-3 text-xs font-semibold text-slate-500 dark:text-slate-400">Expected file name: {latest.submitted_filename} — confirm the learner&apos;s actual file matches.</p> : null}
-                    {latest.file_url ? <a className="mt-2 inline-block font-semibold text-teal-700 hover:underline dark:text-teal-400" href={latest.file_url} target="_blank" rel="noreferrer">Open submitted link</a> : null}
+                    {latest.file_url ? <a className="mt-2 inline-block font-semibold text-teal-700 hover:underline dark:text-amber-400" href={latest.file_url} target="_blank" rel="noreferrer">Open submitted link</a> : null}
                     {latest.content_text ? <p className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-slate-800 dark:text-slate-300">{latest.content_text}</p> : null}
 
                     {olderVersions.length ? (
@@ -101,7 +101,7 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
                                 Version {olderVersions.length - index} &middot; {formatDateTime(version.submitted_at)}
                               </p>
                               {version.file_url ? (
-                                <a href={version.file_url} target="_blank" rel="noreferrer" className="mt-1 inline-block text-teal-700 hover:underline dark:text-teal-400">
+                                <a href={version.file_url} target="_blank" rel="noreferrer" className="mt-1 inline-block text-teal-700 hover:underline dark:text-amber-400">
                                   Open submitted link
                                 </a>
                               ) : null}
@@ -130,7 +130,7 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
                       <textarea name="feedback" rows={4} defaultValue={latest.feedback ?? ""} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80" placeholder="Required if returning for revision." />
                     </label>
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                      <button type="submit" className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">
+                      <button type="submit" className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">
                         Save Score
                       </button>
                       <button

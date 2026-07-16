@@ -3,7 +3,7 @@
 import { softDeleteLearnerAction, toggleLearnerStatusAction } from "../actions";
 import type { ProfileStatus } from "@/lib/types";
 
-const buttonClass = "rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-sm";
+const buttonClass = "rounded-2xl px-4 py-2.5 text-sm font-semibold shadow-sm active:scale-[0.97]";
 
 export function ProfileDangerActions({ learnerId, status }: { learnerId: string; status: ProfileStatus | null }) {
   const nextStatus = status === "active" ? "inactive" : "active";

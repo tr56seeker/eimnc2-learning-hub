@@ -77,7 +77,7 @@ export default async function AuditLogsPage({
             To
             <input name="to" type="date" defaultValue={to ?? ""} className="focus-ring min-h-10 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900" />
           </label>
-          <button type="submit" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
+          <button type="submit" className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 active:scale-[0.97]">
             Filter
           </button>
         </form>

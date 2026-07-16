@@ -64,7 +64,7 @@ export default async function TeacherCompetenciesPage({
             <option value="all">All competencies</option>
           </select>
         </label>
-        <button className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-teal-800 dark:hover:text-teal-400">Apply Filter</button>
+        <button className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-teal-200 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-teal-800 dark:hover:text-teal-400 active:scale-[0.97]">Apply Filter</button>
       </form>
 
       <CompetenciesManagementClient competencies={competencies} />

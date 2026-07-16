@@ -77,7 +77,7 @@ export default async function ClassProgressReportPage() {
       />
 
       <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
-        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-teal-400">
+        <Link href="/teacher/reports" className="text-sm font-semibold text-teal-700 hover:underline dark:text-amber-400">
           ← Back to Reports
         </Link>
         <ReportToolbar filename="class-progress-report.csv" columns={columns} rows={csvRows} />

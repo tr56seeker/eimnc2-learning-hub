@@ -82,13 +82,13 @@ export function LessonReadingAids({
 
       {sections.length ? (
         <details className="card mb-8 rounded-[1.5rem] p-5">
-          <summary className="cursor-pointer list-none text-sm font-semibold text-teal-700 dark:text-teal-400">Table of contents</summary>
+          <summary className="cursor-pointer list-none text-sm font-semibold text-teal-700 dark:text-amber-400">Table of contents</summary>
           <nav aria-label="Table of contents" className="mt-4 grid gap-2 sm:grid-cols-2">
             {sections.map((section) => (
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 hover:underline"
+                className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-teal-700 dark:hover:text-amber-400 hover:underline"
               >
                 {section.label}
               </a>
@@ -128,7 +128,7 @@ export function LessonCompletionControl({ lessonId, initialCompleted }: { lesson
             markLessonCompleteAction(lessonId);
           });
         }}
-        className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:bg-teal-700 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {completed ? "Completed ✓" : "Mark as Complete"}
       </button>

@@ -157,7 +157,7 @@ export default async function TeacherIncidentsPage({ searchParams }: { searchPar
                       Reviewer Notes
                       <textarea name="notes" rows={4} defaultValue={review?.notes ?? ""} className="focus-ring rounded-xl border border-slate-200 bg-white p-3 font-normal dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
                     </label>
-                    <button className="mt-4 w-full rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700">Save Review</button>
+                    <button className="mt-4 w-full rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 active:scale-[0.97]">Save Review</button>
                   </form>
                 </div>
               </div>

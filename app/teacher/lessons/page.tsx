@@ -77,7 +77,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
             <label className="flex items-center gap-3 rounded-2xl border border-slate-200/70 dark:border-slate-700/70 bg-white/70 dark:bg-slate-900/70 p-4 text-sm font-medium text-slate-700 dark:text-slate-300">
               <input name="published" type="checkbox" /> Publish immediately after creation
             </label>
-            <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 hover:bg-teal-700">Create Lesson</button>
+            <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">Create Lesson</button>
           </form>
         </section>
 
@@ -112,7 +112,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
                       key={lesson.id}
                       className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-5 py-4 transition-colors hover:bg-slate-50/70 dark:hover:bg-slate-800/60 sm:px-6 lg:grid-cols-[100px_minmax(0,1fr)_80px_72px_auto] lg:gap-4"
                     >
-                      <span className="col-start-1 row-start-1 w-fit rounded-full bg-teal-50 dark:bg-teal-950/40 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-teal-700 dark:text-teal-400 lg:col-start-1">
+                      <span className="col-start-1 row-start-1 w-fit rounded-full bg-teal-50 dark:bg-amber-950/40 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-teal-700 dark:text-amber-400 lg:col-start-1">
                         {competency?.code ?? "EIM"}
                       </span>
 
@@ -124,7 +124,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
                       <span
                         className={
                           lesson.published
-                            ? "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-teal-50 dark:bg-teal-950/40 px-2.5 py-1 text-[11px] font-semibold text-teal-700 dark:text-teal-400 lg:col-start-3 lg:justify-self-start"
+                            ? "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-teal-50 dark:bg-amber-950/40 px-2.5 py-1 text-[11px] font-semibold text-teal-700 dark:text-amber-400 lg:col-start-3 lg:justify-self-start"
                             : lesson.scheduled_publish_at
                               ? "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-sky-50 dark:bg-sky-950/40 px-2.5 py-1 text-[11px] font-semibold text-sky-700 dark:text-sky-400 lg:col-start-3 lg:justify-self-start"
                               : "col-start-2 row-start-1 w-fit justify-self-end rounded-full bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300 lg:col-start-3 lg:justify-self-start"
@@ -143,7 +143,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
 
                       <Link
                         href={`/teacher/lessons/${lesson.id}/studio`}
-                        className="col-start-2 row-start-3 inline-flex min-h-9 items-center justify-center justify-self-end rounded-xl border border-teal-200 dark:border-teal-800/50 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-teal-700 dark:text-teal-400 transition hover:bg-teal-50 dark:hover:bg-teal-950/40 lg:col-start-5 lg:row-start-1"
+                        className="col-start-2 row-start-3 inline-flex min-h-9 items-center justify-center justify-self-end rounded-xl border border-teal-200 dark:border-amber-800/50 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-semibold text-teal-700 dark:text-amber-400 transition hover:bg-teal-50 dark:hover:bg-amber-950/40 lg:col-start-5 lg:row-start-1"
                       >
                         Open Studio
                       </Link>
