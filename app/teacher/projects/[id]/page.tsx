@@ -87,7 +87,7 @@ export default async function TeacherProjectDetailPage({
     supabase.from("projects").select("id, title, overview, competency_id, due_at, is_active, rubric, competencies(code, title)").eq("id", id).maybeSingle<ProjectRow>(),
     supabase.from("project_milestones").select("id, title, description, due_at, display_order").eq("project_id", id).order("display_order").returns<MilestoneRow[]>(),
     supabase.from("project_assignments").select("id, learner_id, status, progress_percentage, final_score, final_reflection, teacher_comments, profiles(full_name)").eq("project_id", id).returns<AssignmentRow[]>(),
-    supabase.from("competencies").select("id, code, title").order("order_index"),
+    supabase.from("competencies").select("id, code, title, is_active").order("order_index"),
     supabase.from("profiles").select("id, full_name").eq("role", "learner").order("full_name").returns<LearnerOption[]>()
   ]);
 
@@ -141,7 +141,7 @@ export default async function TeacherProjectDetailPage({
                 <FormSelect label="Competency" name="competency_id" defaultValue={project.competency_id ?? ""}>
                   <option value="">No competency selected</option>
                   {(competencies ?? []).map((item) => (
-                    <option key={item.id} value={item.id}>{item.code} - {item.title}</option>
+                    <option key={item.id} value={item.id}>{item.code} - {item.title}{item.is_active === false ? " (Archived)" : ""}</option>
                   ))}
                 </FormSelect>
                 <FormInput label="Due Date" name="due_at" type="datetime-local" defaultValue={project.due_at ? project.due_at.slice(0, 16) : ""} />

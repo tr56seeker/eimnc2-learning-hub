@@ -36,7 +36,7 @@ export default async function TeacherProjectsPage({
       .select("id, title, due_at, is_active, competencies(code, title), project_assignments(status)")
       .order("due_at", { ascending: true })
       .returns<ProjectRow[]>(),
-    supabase.from("competencies").select("id, code, title").order("order_index")
+    supabase.from("competencies").select("id, code, title").eq("is_active", true).order("order_index")
   ]);
 
   const competencies = competenciesResult.data ?? [];

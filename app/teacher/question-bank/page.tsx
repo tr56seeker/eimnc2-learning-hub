@@ -24,7 +24,7 @@ export default async function TeacherQuestionBankPage({ searchParams }: { search
   const { profile, supabase } = await requireTeacher();
 
   const [competenciesResult, questionsResult] = await Promise.all([
-    supabase.from("competencies").select("id, code, title").order("order_index"),
+    supabase.from("competencies").select("id, code, title, is_active").order("order_index"),
     supabase
       .from("question_bank")
       .select("id, competency_id, question_text, question_type, choices, correct_answer, points, difficulty, explanation, is_active, competencies(code, title)")
@@ -36,7 +36,8 @@ export default async function TeacherQuestionBankPage({ searchParams }: { search
   const competencies = (competenciesResult.data ?? []).map((competency) => ({
     id: competency.id,
     code: competency.code ?? "",
-    title: competency.title ?? "Untitled competency"
+    title: competency.title ?? "Untitled competency",
+    isActive: competency.is_active !== false
   }));
 
   const questions: QuestionBankItem[] = (questionsResult.data ?? []).map((question) => {

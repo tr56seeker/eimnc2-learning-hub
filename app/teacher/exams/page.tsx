@@ -41,7 +41,7 @@ function ExamForm({
   submitLabel
 }: {
   action: (formData: FormData) => void;
-  competencies: { id: string; code: string; title: string }[];
+  competencies: { id: string; code: string; title: string; is_active?: boolean | null }[];
   exam?: ExamRow;
   submitLabel: string;
 }) {
@@ -54,7 +54,7 @@ function ExamForm({
       <FormSelect label="Competency" name="competency_id" defaultValue={exam?.competency_id ?? ""}>
         <option value="">No competency</option>
         {competencies.map((competency) => (
-          <option key={competency.id} value={competency.id}>{competency.code} - {competency.title}</option>
+          <option key={competency.id} value={competency.id}>{competency.code} - {competency.title}{competency.is_active === false ? " (Archived)" : ""}</option>
         ))}
       </FormSelect>
       <div className="grid gap-5 md:grid-cols-3">
@@ -88,7 +88,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
   const { profile, supabase } = await requireTeacher();
 
   const [competenciesResult, examsResult] = await Promise.all([
-    supabase.from("competencies").select("id, code, title").order("order_index"),
+    supabase.from("competencies").select("id, code, title, is_active").order("order_index"),
     supabase
       .from("exams")
       .select("id, competency_id, title, description, status, duration_minutes, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, max_violations, competencies(code, title), exam_questions(id)")

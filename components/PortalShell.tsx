@@ -28,6 +28,7 @@ const teacherLinks: NavItem[] = [
     label: "Content",
     items: [
       { label: "Lessons", href: "/teacher/lessons" },
+      { label: "Competencies", href: "/teacher/competencies" },
       { label: "Activities", href: "/teacher/activities" },
       { label: "Projects", href: "/teacher/projects" }
     ]

@@ -32,7 +32,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
       .select("id, title, summary, published, scheduled_publish_at, competencies(code, title), lesson_blocks(count)")
       .order("created_at", { ascending: false })
       .returns<LessonListRow[]>(),
-    supabase.from("competencies").select("id, code, title").order("order_index")
+    supabase.from("competencies").select("id, code, title").eq("is_active", true).order("order_index")
   ]);
 
   const lessons = lessonsResult.data ?? [];

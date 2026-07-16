@@ -20,7 +20,11 @@ export type AuditAction =
   | "term.created"
   | "term.updated"
   | "term.set_current"
-  | "report.exported";
+  | "report.exported"
+  | "competency.created"
+  | "competency.updated"
+  | "competency.archived"
+  | "competency.restored";
 
 /**
  * Writes to the `activity_logs` table (the audit trail wired up in Phase 9).

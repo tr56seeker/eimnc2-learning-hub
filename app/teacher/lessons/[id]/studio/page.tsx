@@ -33,6 +33,7 @@ type CompetencyRow = {
   id: string;
   code: string;
   title: string;
+  is_active: boolean | null;
 };
 
 type VersionRow = {
@@ -71,7 +72,7 @@ export default async function LessonStudioPage({
       .order("display_order")
       .order("created_at")
       .returns<LessonBlock[]>(),
-    supabase.from("competencies").select("id, code, title").order("order_index").returns<CompetencyRow[]>(),
+    supabase.from("competencies").select("id, code, title, is_active").order("order_index").returns<CompetencyRow[]>(),
     supabase
       .from("lesson_versions")
       .select("id, created_at, created_by")
@@ -213,7 +214,7 @@ export default async function LessonStudioPage({
                   <select name="competency_id" defaultValue={lesson.competency_id ?? ""} className={inputClass}>
                     <option value="">No competency selected</option>
                     {competencies.map((item) => (
-                      <option key={item.id} value={item.id}>{item.code} - {item.title}</option>
+                      <option key={item.id} value={item.id}>{item.code} - {item.title}{item.is_active === false ? " (Archived)" : ""}</option>
                     ))}
                   </select>
                 </label>

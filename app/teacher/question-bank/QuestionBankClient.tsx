@@ -7,7 +7,7 @@ import { createQuestionAction, deleteQuestionAction, updateQuestionAction } from
 import { BulkQuestionUpload } from "./BulkQuestionUpload";
 
 type Choice = { label: string; value: string } | { key: string; text: string };
-type CompetencyOption = { id: string; code: string; title: string };
+type CompetencyOption = { id: string; code: string; title: string; isActive?: boolean };
 
 export type QuestionBankItem = {
   id: string;
@@ -91,7 +91,7 @@ function QuestionForm({
           <option value="">No competency</option>
           {competencies.map((competency) => (
             <option key={competency.id} value={competency.id}>
-              {competency.code ? `${competency.code} - ` : ""}{competency.title}
+              {competency.code ? `${competency.code} - ` : ""}{competency.title}{competency.isActive === false ? " (Archived)" : ""}
             </option>
           ))}
         </select>
@@ -365,7 +365,7 @@ export function QuestionBankClient({ questions, competencies, message, error }: 
                 <option value="">All competencies</option>
                 <option value="unassigned">Unassigned</option>
                 {competencies.map((competency) => (
-                  <option key={competency.id} value={competency.id}>{competency.code || competency.title}</option>
+                  <option key={competency.id} value={competency.id}>{competency.code || competency.title}{competency.isActive === false ? " (Archived)" : ""}</option>
                 ))}
               </select>
             </label>
