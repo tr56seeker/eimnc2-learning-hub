@@ -57,7 +57,7 @@ export function PortalNav({ items }: { items: NavItem[] }) {
         aria-expanded={mobileOpen}
         aria-label="Toggle navigation menu"
         onClick={() => setMobileOpen((open) => !open)}
-        className="focus-ring inline-flex w-full items-center justify-between gap-2 rounded-full border border-slate-200/70 bg-slate-50/70 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-inner shadow-slate-200/40 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-200 dark:shadow-black/20 lg:hidden"
+        className="focus-ring inline-flex w-full items-center justify-between gap-2 rounded-full border border-slate-200/70 bg-slate-50/70 px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-inner shadow-slate-200/40 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-200 dark:shadow-black/20 lg:hidden"
       >
         Menu
         <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" className="h-4 w-4">
@@ -128,7 +128,7 @@ export function PortalNav({ items }: { items: NavItem[] }) {
       </div>
 
       {mobileOpen ? (
-        <div role="menu" className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 flex flex-col gap-1 rounded-2xl border border-slate-200/80 bg-white p-2 shadow-xl shadow-slate-950/10 dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-black/40 lg:hidden">
+        <div role="menu" className="absolute left-0 right-0 top-[calc(100%+0.375rem)] z-40 flex flex-col gap-0.5 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-xl shadow-slate-950/10 dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-black/40 lg:hidden">
           {items.map((item) => {
             if (!isGroup(item)) {
               const active = isLinkActive(item.href);
