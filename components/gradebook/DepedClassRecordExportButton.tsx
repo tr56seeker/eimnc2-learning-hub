@@ -7,50 +7,61 @@ import {
   type DepedExportPayload,
   type DepedTermData
 } from "@/lib/deped-export";
+import { clearCell, columnLetters, mapSheetNameToPath, setNumberCell, setStringCell } from "@/lib/xlsx-raw-cells";
 
 const MAX_PER_SEX = 50;
 
+// Raw score input columns the template exposes: written F-J, performance N-P, SA1/SA2/TE T-V.
+const SCORE_COLUMNS = [6, 7, 8, 9, 10, 14, 15, 16, 20, 21, 22].map(columnLetters);
+const MALE_ROWS = Array.from({ length: MAX_PER_SEX }, (_, i) => 13 + i);
+const FEMALE_ROWS = Array.from({ length: MAX_PER_SEX }, (_, i) => 64 + i);
+
 function writeRowScores(
-  worksheet: import("exceljs").Worksheet,
+  xml: string,
   row: number,
   scores: { written: (number | null)[]; performance: (number | null)[]; sa1: number | null; sa2: number | null; te: number | null }
 ) {
   scores.written.forEach((value, index) => {
-    if (value !== null) worksheet.getCell(row, 6 + index).value = value; // F=6..J=10
+    if (value !== null) xml = setNumberCell(xml, `${columnLetters(6 + index)}${row}`, value); // F..J
   });
   scores.performance.forEach((value, index) => {
-    if (value !== null) worksheet.getCell(row, 14 + index).value = value; // N=14..P=16
+    if (value !== null) xml = setNumberCell(xml, `${columnLetters(14 + index)}${row}`, value); // N..P
   });
-  if (scores.sa1 !== null) worksheet.getCell(row, 20).value = scores.sa1; // T
-  if (scores.sa2 !== null) worksheet.getCell(row, 21).value = scores.sa2; // U
-  if (scores.te !== null) worksheet.getCell(row, 22).value = scores.te; // V
+  if (scores.sa1 !== null) xml = setNumberCell(xml, `T${row}`, scores.sa1);
+  if (scores.sa2 !== null) xml = setNumberCell(xml, `U${row}`, scores.sa2);
+  if (scores.te !== null) xml = setNumberCell(xml, `V${row}`, scores.te);
+  return xml;
 }
 
-function fillTermSheet(
-  worksheet: import("exceljs").Worksheet,
-  termData: DepedTermData,
-  maleLearnerIds: string[],
-  femaleLearnerIds: string[]
-) {
+function fillTermSheet(xml: string, termData: DepedTermData, maleLearnerIds: string[], femaleLearnerIds: string[]) {
+  // Always clear before writing — the template is expected to be blank, but this guards
+  // against it ever being re-saved with real scores still in it (see the class record
+  // incident where a filled-in copy sat in public/templates for months).
+  for (const row of [11, ...MALE_ROWS, ...FEMALE_ROWS]) {
+    for (const col of SCORE_COLUMNS) xml = clearCell(xml, `${col}${row}`);
+  }
+
   termData.writtenHPS.forEach((value, index) => {
-    if (value !== null) worksheet.getCell(11, 6 + index).value = value;
+    if (value !== null) xml = setNumberCell(xml, `${columnLetters(6 + index)}11`, value);
   });
   termData.performanceHPS.forEach((value, index) => {
-    if (value !== null) worksheet.getCell(11, 14 + index).value = value;
+    if (value !== null) xml = setNumberCell(xml, `${columnLetters(14 + index)}11`, value);
   });
-  if (termData.sa1HPS !== null) worksheet.getCell(11, 20).value = termData.sa1HPS;
-  if (termData.sa2HPS !== null) worksheet.getCell(11, 21).value = termData.sa2HPS;
-  if (termData.teHPS !== null) worksheet.getCell(11, 22).value = termData.teHPS;
+  if (termData.sa1HPS !== null) xml = setNumberCell(xml, "T11", termData.sa1HPS);
+  if (termData.sa2HPS !== null) xml = setNumberCell(xml, "U11", termData.sa2HPS);
+  if (termData.teHPS !== null) xml = setNumberCell(xml, "V11", termData.teHPS);
 
   maleLearnerIds.slice(0, MAX_PER_SEX).forEach((learnerId, index) => {
     const scores = termData.scoresByLearner[learnerId];
-    if (scores) writeRowScores(worksheet, 13 + index, scores);
+    if (scores) xml = writeRowScores(xml, MALE_ROWS[index], scores);
   });
 
   femaleLearnerIds.slice(0, MAX_PER_SEX).forEach((learnerId, index) => {
     const scores = termData.scoresByLearner[learnerId];
-    if (scores) writeRowScores(worksheet, 64 + index, scores);
+    if (scores) xml = writeRowScores(xml, FEMALE_ROWS[index], scores);
   });
+
+  return xml;
 }
 
 export function DepedClassRecordExportButton({ payload }: { payload: DepedExportPayload }) {
@@ -66,37 +77,49 @@ export function DepedClassRecordExportButton({ payload }: { payload: DepedExport
     setStatus("working");
     setErrorMessage(null);
     try {
-      const response = await fetch("/templates/eim-eclass-record-master.xlsx");
+      const response = await fetch("/api/gradebook/deped-template");
       if (!response.ok) throw new Error("Could not load the DepEd template file.");
       const templateBuffer = await response.arrayBuffer();
 
-      const { Workbook } = await import("exceljs");
-      const workbook = new Workbook();
-      await workbook.xlsx.load(templateBuffer);
+      // Edited at the raw XML level rather than via exceljs's read-modify-write cycle:
+      // exceljs rebuilds styles.xml on every write, which for this template's hundreds of
+      // hand-set cell styles causes real, visible formatting loss in Excel. Touching only
+      // the specific <c> value nodes keeps every other part of the file byte-identical.
+      const { default: JSZip } = await import("jszip");
+      const zip = await JSZip.loadAsync(templateBuffer);
+      const sheetPaths = await mapSheetNameToPath(zip);
 
-      const inputData = workbook.getWorksheet("INPUT DATA");
-      if (!inputData) throw new Error("Template is missing the INPUT DATA sheet.");
+      const inputDataPath = sheetPaths["INPUT DATA"];
+      if (!inputDataPath) throw new Error("Template is missing the INPUT DATA sheet.");
+      let inputDataXml = await zip.file(inputDataPath)!.async("string");
 
-      inputData.getCell("F10").value = DEPED_SCHOOL_INFO.region;
-      inputData.getCell("F11").value = DEPED_SCHOOL_INFO.division;
-      inputData.getCell("F13").value = DEPED_SCHOOL_INFO.schoolId;
-      inputData.getCell("F14").value = DEPED_SCHOOL_INFO.schoolName;
-      inputData.getCell("F16").value = payload.schoolYear;
-      inputData.getCell("F22").value = payload.teacherName;
-      inputData.getCell("F23").value = DEPED_SUBJECT_INFO.track;
-      inputData.getCell("F24").value = payload.gradeLevel;
-      inputData.getCell("F25").value = payload.section;
-      inputData.getCell("F26").value = DEPED_SUBJECT_INFO.subjectType;
-      inputData.getCell("F28").value = DEPED_SUBJECT_INFO.subject;
+      inputDataXml = setStringCell(inputDataXml, "F10", DEPED_SCHOOL_INFO.region);
+      inputDataXml = setStringCell(inputDataXml, "F11", DEPED_SCHOOL_INFO.division);
+      inputDataXml = setStringCell(inputDataXml, "F13", DEPED_SCHOOL_INFO.schoolId);
+      inputDataXml = setStringCell(inputDataXml, "F14", DEPED_SCHOOL_INFO.schoolName);
+      inputDataXml = setStringCell(inputDataXml, "F16", payload.schoolYear);
+      inputDataXml = setStringCell(inputDataXml, "F22", payload.teacherName);
+      inputDataXml = setStringCell(inputDataXml, "F23", DEPED_SUBJECT_INFO.track);
+      inputDataXml = setStringCell(inputDataXml, "F24", String(payload.gradeLevel));
+      inputDataXml = setStringCell(inputDataXml, "F25", payload.section);
+      inputDataXml = setStringCell(inputDataXml, "F26", DEPED_SUBJECT_INFO.subjectType);
+      inputDataXml = setStringCell(inputDataXml, "F28", DEPED_SUBJECT_INFO.subject);
+
+      // Always clear the full roster range first — if the current section has fewer
+      // learners than a previous export left behind, stale names must not survive.
+      for (let row = 11; row <= 11 + MAX_PER_SEX - 1; row++) {
+        for (const col of ["K", "L", "N", "O"]) inputDataXml = clearCell(inputDataXml, `${col}${row}`);
+      }
 
       maleLearners.slice(0, MAX_PER_SEX).forEach((learner, index) => {
-        inputData.getCell(11 + index, 11).value = index + 1; // K
-        inputData.getCell(11 + index, 12).value = learner.fullName; // L
+        inputDataXml = setNumberCell(inputDataXml, `K${11 + index}`, index + 1);
+        inputDataXml = setStringCell(inputDataXml, `L${11 + index}`, learner.fullName);
       });
       femaleLearners.slice(0, MAX_PER_SEX).forEach((learner, index) => {
-        inputData.getCell(11 + index, 14).value = index + 1; // N
-        inputData.getCell(11 + index, 15).value = learner.fullName; // O
+        inputDataXml = setNumberCell(inputDataXml, `N${11 + index}`, index + 1);
+        inputDataXml = setStringCell(inputDataXml, `O${11 + index}`, learner.fullName);
       });
+      zip.file(inputDataPath, inputDataXml);
 
       const maleIds = maleLearners.map((learner) => learner.id);
       const femaleIds = femaleLearners.map((learner) => learner.id);
@@ -104,13 +127,15 @@ export function DepedClassRecordExportButton({ payload }: { payload: DepedExport
       const termSheetNames = ["TERM 1", "TERM 2", "TERM 3"] as const;
       const termKeys = ["First Term", "Second Term", "Third Term"] as const;
 
-      termSheetNames.forEach((sheetName, index) => {
-        const worksheet = workbook.getWorksheet(sheetName);
-        if (!worksheet) return;
-        fillTermSheet(worksheet, payload.terms[termKeys[index]], maleIds, femaleIds);
-      });
+      for (const [index, sheetName] of termSheetNames.entries()) {
+        const path = sheetPaths[sheetName];
+        if (!path) continue;
+        let xml = await zip.file(path)!.async("string");
+        xml = fillTermSheet(xml, payload.terms[termKeys[index]], maleIds, femaleIds);
+        zip.file(path, xml);
+      }
 
-      const buffer = await workbook.xlsx.writeBuffer();
+      const buffer = await zip.generateAsync({ type: "blob" });
       const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");

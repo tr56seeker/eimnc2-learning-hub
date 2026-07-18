@@ -38,7 +38,7 @@ async function exportSummary(rows: TermSummaryRow[], sectionLabel: string) {
 
   const worksheet = workbook.addWorksheet("Term Summary", { views: [{ state: "frozen", ySplit: 2 }] });
   worksheet.mergeCells("A1:H1");
-  worksheet.getCell("A1").value = `EIM NC II Term Gradebook Summary — ${sectionLabel}`;
+  worksheet.getCell("A1").value = `EIM NC II Gradebook Summary — ${sectionLabel}`;
   worksheet.getCell("A1").font = { bold: true, size: 13 };
 
   worksheet.columns = [

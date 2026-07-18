@@ -13,8 +13,8 @@ const stickyNameCell = "sticky left-[32px] z-10 h-8 border border-slate-300 bg-w
 
 export function TermSummaryTable({ rows }: TermSummaryTableProps) {
   return (
-    <div className="overflow-x-auto">
-      <table className="table-fixed border-collapse border border-slate-400 bg-white text-xs text-slate-700 shadow-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+    <div className="max-h-[75vh] overflow-auto">
+      <table className="table-fixed border-separate border-spacing-0 border border-slate-400 bg-white text-xs text-slate-700 shadow-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
         <colgroup>
           {columnWidths.map((width, index) => (
             <col key={index} style={{ width: `${width}px` }} />
@@ -25,11 +25,11 @@ export function TermSummaryTable({ rows }: TermSummaryTableProps) {
             <th colSpan={2} className={`${header} sticky left-0 top-0 z-30`}>
               LEARNERS&apos; NAMES
             </th>
-            <th className={header}>FIRST TERM</th>
-            <th className={header}>SECOND TERM</th>
-            <th className={header}>THIRD TERM</th>
-            <th className={header}>AVERAGE</th>
-            <th className={header}>REMARKS</th>
+            <th className={`${header} sticky top-0 z-20`}>FIRST TERM</th>
+            <th className={`${header} sticky top-0 z-20`}>SECOND TERM</th>
+            <th className={`${header} sticky top-0 z-20`}>THIRD TERM</th>
+            <th className={`${header} sticky top-0 z-20`}>AVERAGE</th>
+            <th className={`${header} sticky top-0 z-20`}>REMARKS</th>
           </tr>
         </thead>
         <tbody>

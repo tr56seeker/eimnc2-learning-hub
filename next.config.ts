@@ -31,6 +31,13 @@ const nextConfig: NextConfig = {
         headers: securityHeaders
       }
     ];
+  },
+  // Not under public/ on purpose — served only through the authenticated
+  // /api/gradebook/deped-template route. Without this, Next's build tracing
+  // isn't guaranteed to bundle a file outside public/ that's only read at
+  // runtime via a dynamically-joined path.
+  outputFileTracingIncludes: {
+    "/api/gradebook/deped-template": ["./private-assets/templates/**/*"]
   }
 };
 

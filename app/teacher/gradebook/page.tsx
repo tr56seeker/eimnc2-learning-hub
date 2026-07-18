@@ -1,6 +1,7 @@
 import { addGradebookAssessmentAction } from "@/app/teacher/gradebook/actions";
 import { DepedClassRecordExportButton } from "@/components/gradebook/DepedClassRecordExportButton";
 import { GradebookExportButton } from "@/components/gradebook/GradebookExportButton";
+import { GradebookPrintButton } from "@/components/gradebook/GradebookPrintButton";
 import { GradebookToolbar } from "@/components/gradebook/GradebookToolbar";
 import { TermGradebookMatrix } from "@/components/gradebook/TermGradebookMatrix";
 import { TermSummaryTable } from "@/components/gradebook/TermSummaryTable";
@@ -420,7 +421,8 @@ export default async function TeacherGradebookPage({
       <div className="grid gap-7">
         <GradebookToolbar sections={sections} selectedSectionId={selectedSectionId} selectedTerm={selectedTerm} selectedView={selectedView} selectedSort={selectedSort} />
 
-        <div className="flex flex-wrap justify-end gap-3">
+        <div className="flex flex-wrap justify-end gap-3 print:hidden">
+          <GradebookPrintButton />
           <GradebookExportButton
             view={selectedView}
             term={selectedTerm}
@@ -436,7 +438,7 @@ export default async function TeacherGradebookPage({
           )}
         </div>
 
-        {selectedView === "detail" ? <AddAssessmentButtons term={selectedTerm} sectionId={selectedSectionId} /> : null}
+        {selectedView === "detail" ? <div className="print:hidden"><AddAssessmentButtons term={selectedTerm} sectionId={selectedSectionId} /></div> : null}
 
         {!learners.length ? (
           <EmptyState title="No learners found" message="Add learners or choose another section to populate the term class record." />

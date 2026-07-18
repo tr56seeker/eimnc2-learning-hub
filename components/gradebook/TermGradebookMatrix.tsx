@@ -276,7 +276,7 @@ export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, 
 
   function renderHpsInputs(categoryAssessments: EditableGradebookAssessment[]) {
     return categoryAssessments.map((assessment) => (
-      <td key={`hps-${assessment.id}`} className={`${numericCell} bg-slate-50 font-medium dark:bg-slate-800`}>
+      <td key={`hps-${assessment.id}`} className={`${numericCell} sticky top-[64px] z-20 bg-slate-50 font-medium dark:bg-slate-800`}>
         <HpsInput
           value={hpsValues[assessment.id] ?? ""}
           onChange={(value) => {
@@ -296,9 +296,9 @@ export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, 
     const total = hpsTotal(categoryAssessments);
     return (
       <>
-        <td className={totalComputedCell}>{formatGradebookScore(total || null)}</td>
-        <td className={`${computedCell} bg-slate-50 dark:bg-slate-800`}>{total ? "100.00" : ""}</td>
-        <td className={`${computedCell} bg-slate-50 dark:bg-slate-800`}>{total ? formatGradebookNumber(weight * 100) : ""}</td>
+        <td className={`${totalComputedCell} sticky top-[64px] z-20`}>{formatGradebookScore(total || null)}</td>
+        <td className={`${computedCell} sticky top-[64px] z-20 bg-slate-50 dark:bg-slate-800`}>{total ? "100.00" : ""}</td>
+        <td className={`${computedCell} sticky top-[64px] z-20 bg-slate-50 dark:bg-slate-800`}>{total ? formatGradebookNumber(weight * 100) : ""}</td>
       </>
     );
   }
@@ -317,7 +317,7 @@ export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, 
 
   return (
     <section className="grid gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <p className={saveStatus === "error" ? "text-sm font-semibold text-red-600 dark:text-red-400" : saveStatus === "dirty" ? "text-sm font-semibold text-amber-700 dark:text-amber-300" : "text-sm font-semibold text-teal-700 dark:text-amber-400"}>
           {isPending ? "Saving..." : statusMessage}
         </p>
@@ -331,8 +331,8 @@ export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, 
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="table-fixed border-collapse border border-slate-400 bg-white text-xs text-slate-700 shadow-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+      <div className="max-h-[75vh] overflow-auto">
+        <table className="table-fixed border-separate border-spacing-0 border border-slate-400 bg-white text-xs text-slate-700 shadow-none dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
           <colgroup>
             {columnWidths.map((width, index) => (
               <col key={index} style={width ? { width: `${width}px` } : undefined} />
@@ -380,9 +380,9 @@ export function TermGradebookMatrix({ learners, assessments, hiddenAssessments, 
                 {renderHpsComputed(performanceAssessments, gradebookWeights.performance)}
                 {renderHpsInputs(examAssessments)}
                 {renderHpsComputed(examAssessments, gradebookWeights.exam)}
-                <td className={gradeCell}></td>
-                <td className={gradeCell}></td>
-                <td className={gradeCell}></td>
+                <td className={`${gradeCell} sticky top-[64px] z-20`}></td>
+                <td className={`${gradeCell} sticky top-[64px] z-20`}></td>
+                <td className={`${gradeCell} sticky top-[64px] z-20`}></td>
               </tr>
             </thead>
             <tbody>
