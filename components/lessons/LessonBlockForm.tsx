@@ -54,9 +54,9 @@ export function LessonBlockForm({ action, block, defaultOrder, submitLabel }: Le
   const [blockType, setBlockType] = useState<LessonBlockType>(block?.block_type ?? "paragraph");
 
   return (
-    <form action={action} className="grid gap-5">
-      <div className="grid gap-5 md:grid-cols-[1fr_160px_160px]">
-        <label className={labelClass}>
+    <form action={action} className="@container grid gap-5">
+      <div className="grid min-w-0 gap-5 @min-[540px]:grid-cols-[minmax(0,1fr)_160px_160px]">
+        <label className={`${labelClass} min-w-0`}>
           Choose block type
           <select
             name="block_type"

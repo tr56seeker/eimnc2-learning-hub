@@ -98,6 +98,23 @@ export async function setCompetencyActiveAction(competencyId: string, isActive: 
   redirect(`/teacher/competencies?message=${encodeURIComponent(isActive ? "Competency restored." : "Competency archived.")}`);
 }
 
+export async function deleteCompetencyAction(competencyId: string) {
+  const { profile, supabase } = await requireTeacher();
+
+  // Only archived competencies can be permanently deleted — this filter is the
+  // server-side guard, since the UI only shows the delete option there too.
+  const { error } = await supabase.from("competencies").delete().eq("id", competencyId).eq("is_active", false);
+
+  if (error) {
+    redirect(`/teacher/competencies?status=archived&error=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidateCompetencyConsumers();
+  await logActivity(supabase, profile.id, "competency.deleted", { competency_id: competencyId });
+
+  redirect("/teacher/competencies?status=archived&message=Competency%20permanently%20deleted.");
+}
+
 export async function moveCompetencyAction(competencyId: string, direction: "up" | "down") {
   const { supabase } = await requireTeacher();
 

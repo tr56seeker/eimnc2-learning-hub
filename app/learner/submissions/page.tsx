@@ -83,7 +83,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <section className="card rounded-[1.75rem] p-7 sm:p-8">
+        <section className="card min-w-0 rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">My Activities</h2>
           {!assignments.length ? (
             <div className="mt-4"><EmptyState title="No assignments" message="Your teacher has not posted an output task yet." /></div>
@@ -149,7 +149,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
           )}
         </section>
 
-        <section className="card rounded-[1.75rem] p-7 sm:p-8">
+        <section className="card min-w-0 rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">My Submitted Outputs</h2>
           <div className="mt-7 grid gap-4">
             {!submissions.length ? (

@@ -98,7 +98,7 @@ export default async function ExamBuilderPage({
       <FlashMessage message={query.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
-        <aside className="card rounded-[1.75rem] p-7 sm:p-8">
+        <aside className="card min-w-0 rounded-[1.75rem] p-7 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{competency?.code ?? "EIM"} / {exam.status}</p>
           <h2 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">Exam Setup</h2>
           <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{exam.description}</p>
@@ -124,7 +124,7 @@ export default async function ExamBuilderPage({
           </form>
         </aside>
 
-        <section className="grid gap-5">
+        <section className="grid min-w-0 gap-5">
           {!assigned.length ? (
             <EmptyState title="No questions attached" message="Add active questions from the bank to assemble this exam." />
           ) : assigned.map((row, index) => {

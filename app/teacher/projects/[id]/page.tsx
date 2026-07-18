@@ -131,8 +131,8 @@ export default async function TeacherProjectDetailPage({
       <FlashMessage message={query.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <aside className="grid content-start gap-6">
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+        <aside className="grid min-w-0 content-start gap-6">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <details>
               <summary className="cursor-pointer list-none text-sm font-semibold text-teal-700 dark:text-amber-400">Edit Project Info</summary>
               <form action={updateProjectAction.bind(null, project.id)} className="mt-4 grid gap-4">
@@ -156,7 +156,7 @@ export default async function TeacherProjectDetailPage({
             </details>
           </section>
 
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Milestones</h2>
             <div className="mt-4 grid gap-3">
               {(milestones ?? []).map((milestone) => (
@@ -190,7 +190,7 @@ export default async function TeacherProjectDetailPage({
             </details>
           </section>
 
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Assign Learner</h2>
             {availableLearners.length ? (
               <form action={assignLearnerAction.bind(null, project.id)} className="mt-4 grid gap-4">
@@ -208,7 +208,7 @@ export default async function TeacherProjectDetailPage({
           </section>
         </aside>
 
-        <section className="grid content-start gap-5">
+        <section className="grid min-w-0 content-start gap-5">
           {!assignments?.length ? (
             <div className="card rounded-[1.75rem] p-8 text-center text-slate-500 dark:text-slate-400">No learners assigned to this project yet.</div>
           ) : (

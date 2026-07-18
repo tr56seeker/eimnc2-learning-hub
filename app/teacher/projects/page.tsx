@@ -52,7 +52,7 @@ export default async function TeacherProjectsPage({
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
-        <section className="card rounded-[1.75rem] p-7 sm:p-8">
+        <section className="card min-w-0 rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Create Project</h2>
           <form action={createProjectAction} className="mt-6 grid gap-5">
             <FormInput label="Title" name="title" required placeholder="Residential Wiring Layout" />
@@ -74,7 +74,7 @@ export default async function TeacherProjectsPage({
           </form>
         </section>
 
-        <section>
+        <section className="min-w-0">
           <form action="/teacher/projects" className="card mb-6 flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-end sm:justify-between">
             <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
               Status

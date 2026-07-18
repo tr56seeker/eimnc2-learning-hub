@@ -24,7 +24,8 @@ export type AuditAction =
   | "competency.created"
   | "competency.updated"
   | "competency.archived"
-  | "competency.restored";
+  | "competency.restored"
+  | "competency.deleted";
 
 /**
  * Writes to the `activity_logs` table (the audit trail wired up in Phase 9).

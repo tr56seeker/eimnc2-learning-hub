@@ -34,12 +34,12 @@ export default async function LearnerDashboardPage() {
 
       <section className="card my-10 rounded-[1.5rem] p-6 sm:p-7">
         <div className="grid gap-5 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:items-end">
-          <div>
+          <div className="min-w-0">
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Learner profile</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{profile.full_name}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">Electrical Installation and Maintenance NC II</p>
           </div>
-          <div className="grid gap-3 text-sm text-slate-600 dark:text-slate-400 sm:grid-cols-2 md:text-right">
+          <div className="min-w-0 grid gap-3 text-sm text-slate-600 dark:text-slate-400 sm:grid-cols-2 md:text-right">
             <p><span className="font-medium text-slate-900 dark:text-slate-100">Section:</span> {section ? `Grade ${section.grade_level} - ${section.name}` : "Not assigned"}</p>
             <p><span className="font-medium text-slate-900 dark:text-slate-100">Grade:</span> {profile.grade_level ?? section?.grade_level ?? "Not set"}</p>
             <p><span className="font-medium text-slate-900 dark:text-slate-100">Status:</span> {profile.status ?? "active"}</p>

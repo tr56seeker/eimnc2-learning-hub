@@ -181,8 +181,8 @@ export default async function LessonStudioPage({
       )}
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
-        <aside className="grid content-start gap-6">
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+        <aside className="grid min-w-0 content-start gap-6">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">Lesson Setup</p>
@@ -231,7 +231,7 @@ export default async function LessonStudioPage({
             </details>
           </section>
 
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">History</p>
             <h2 className="mt-1.5 text-xl font-semibold text-slate-950 dark:text-slate-100">Version History</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">A snapshot is saved every time this lesson is published. Restoring replaces the current content and blocks.</p>
@@ -260,7 +260,7 @@ export default async function LessonStudioPage({
             )}
           </section>
 
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-700 dark:text-amber-400">Lesson Builder</p>
             <h2 className="mt-1.5 text-xl font-semibold text-slate-950 dark:text-slate-100">Add Content Block</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Build the lesson like a module article using objectives, explanations, media, activities, checks, and reflection.</p>
@@ -270,7 +270,7 @@ export default async function LessonStudioPage({
           </section>
         </aside>
 
-        <section className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/35 dark:shadow-black/30">
+        <section className="min-w-0 overflow-hidden rounded-[1.75rem] border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/35 dark:shadow-black/30">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 dark:border-slate-700/80 px-5 py-5 sm:px-6">
             <div>
               <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Content Blocks</h2>

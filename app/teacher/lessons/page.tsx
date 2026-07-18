@@ -45,7 +45,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]">
-        <section className="card rounded-[1.75rem] p-7 sm:p-8">
+        <section className="card min-w-0 rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Create Lesson</h2>
           <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Create the lesson shell here, then use Lesson Studio to build the full module with content blocks.</p>
           <form action={createLessonAction} className="mt-7 grid gap-5">
@@ -81,7 +81,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
           </form>
         </section>
 
-        <section className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/30">
+        <section className="min-w-0 overflow-hidden rounded-[1.75rem] border border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/40 dark:shadow-black/30">
           <div className="flex items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700/80 px-5 py-5 sm:px-6">
             <div>
               <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Existing Lessons</h2>

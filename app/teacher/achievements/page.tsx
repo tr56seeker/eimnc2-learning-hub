@@ -57,8 +57,8 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
-        <aside className="grid content-start gap-6">
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+        <aside className="grid min-w-0 content-start gap-6">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">New Achievement Type</h2>
             <form action={createAchievementAction} className="mt-4 grid gap-4">
               <FormInput label="Name" name="name" required placeholder="Safety First" />
@@ -75,7 +75,7 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
             </form>
           </section>
 
-          <section className="card rounded-[1.75rem] p-6 sm:p-7">
+          <section className="card min-w-0 rounded-[1.75rem] p-6 sm:p-7">
             <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Award Achievement</h2>
             {achievements?.length && learners?.length ? (
               <form action={awardAchievementAction} className="mt-4 grid gap-4">
@@ -100,7 +100,7 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
           </section>
         </aside>
 
-        <section>
+        <section className="min-w-0">
           <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Recently Awarded</h2>
           {!awarded?.length ? (
             <div className="mt-4"><EmptyState title="No achievements awarded yet" message="Awarded achievements will appear here." /></div>

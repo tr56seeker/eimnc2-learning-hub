@@ -107,14 +107,14 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
-        <section className="card rounded-[1.75rem] p-7 sm:p-8">
+        <section className="card min-w-0 rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Create Exam</h2>
           <div className="mt-7">
             <ExamForm action={createExamAction} competencies={competencies} submitLabel="Create Exam" />
           </div>
         </section>
 
-        <section className="grid gap-5">
+        <section className="grid min-w-0 gap-5">
           {!exams.length ? (
             <EmptyState title="No exams yet" message="Create an exam, then add questions from the builder." />
           ) : exams.map((exam) => {
