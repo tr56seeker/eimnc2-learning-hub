@@ -130,5 +130,5 @@ export async function moveCompetencyAction(competencyId: string, direction: "up"
   }
 
   revalidateCompetencyConsumers();
-  redirect("/teacher/competencies");
+  redirect("/teacher/competencies?message=Order%20updated.");
 }
