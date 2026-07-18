@@ -123,11 +123,11 @@ export default async function TeacherSubmissionsPage({ searchParams }: { searchP
                     <input type="hidden" name="max_score" value={assignment?.max_score ?? 100} />
                     <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                       Score / {assignment?.max_score ?? 100}
-                      <input name="score" type="number" min={0} max={assignment?.max_score ?? 100} defaultValue={latest.score ?? 0} className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80" />
+                      <input name="score" type="number" min={0} max={assignment?.max_score ?? 100} defaultValue={latest.score ?? 0} className="focus-ring w-full min-h-12 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 font-normal shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80" />
                     </label>
                     <label className="mt-4 grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                       Feedback
-                      <textarea name="feedback" rows={4} defaultValue={latest.feedback ?? ""} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80" placeholder="Required if returning for revision." />
+                      <textarea name="feedback" rows={4} defaultValue={latest.feedback ?? ""} className="focus-ring w-full max-w-full resize-y rounded-2xl border border-slate-200/80 bg-white/80 p-4 font-normal shadow-sm dark:border-slate-700/80 dark:bg-slate-900/80" placeholder="Required if returning for revision." />
                     </label>
                     <div className="mt-5 grid gap-3 sm:grid-cols-2">
                       <button type="submit" className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">

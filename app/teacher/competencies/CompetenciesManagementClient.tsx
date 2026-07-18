@@ -38,8 +38,8 @@ export function CompetenciesManagementClient({ competencies }: { competencies: M
 
   return (
     <>
-      <section className="overflow-hidden border border-slate-200/80 bg-white shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-black/20">
-        <div className="flex flex-col gap-4 border-b border-slate-200 bg-slate-50/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-slate-700 dark:bg-slate-800/60">
+      <section className="border border-slate-200/80 bg-white shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900 dark:shadow-black/20">
+        <div className="sticky top-[118px] z-10 flex flex-col gap-4 border-b border-slate-200 bg-slate-50/95 p-5 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:top-[76px] dark:border-slate-700 dark:bg-slate-800/95">
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Competency Registry</h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{competencies.length} competenc{competencies.length === 1 ? "y" : "ies"} shown</p>

@@ -130,7 +130,7 @@ export default async function TeacherProjectDetailPage({
       <FlashMessage message={query.error} variant="error" className="mb-7" />
       <FlashMessage message={query.message} variant="success" className="mb-7" />
 
-      <div className="grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <aside className="grid content-start gap-6">
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
             <details>

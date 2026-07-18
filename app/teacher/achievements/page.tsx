@@ -56,7 +56,7 @@ export default async function TeacherAchievementsPage({ searchParams }: { search
       <FlashMessage message={params.error} variant="error" className="mb-7" />
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
-      <div className="grid gap-8 xl:grid-cols-[0.75fr_1.25fr]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
         <aside className="grid content-start gap-6">
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
             <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-100">New Achievement Type</h2>

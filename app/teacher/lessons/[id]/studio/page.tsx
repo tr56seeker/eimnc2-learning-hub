@@ -42,7 +42,7 @@ type VersionRow = {
   created_by: string | null;
 };
 
-const inputClass = "focus-ring min-h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 font-normal text-slate-900 dark:text-slate-100 shadow-sm";
+const inputClass = "focus-ring w-full max-w-full resize-y min-h-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 font-normal text-slate-900 dark:text-slate-100 shadow-sm";
 const labelClass = "grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300";
 
 export default async function LessonStudioPage({
@@ -180,7 +180,7 @@ export default async function LessonStudioPage({
         <div className="h-6" />
       )}
 
-      <div className="grid gap-8 xl:grid-cols-[0.78fr_1.22fr]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]">
         <aside className="grid content-start gap-6">
           <section className="card rounded-[1.75rem] p-6 sm:p-7">
             <div className="flex items-start justify-between gap-4">

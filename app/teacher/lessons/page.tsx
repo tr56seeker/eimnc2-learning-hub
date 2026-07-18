@@ -7,8 +7,8 @@ import { firstRelation } from "@/lib/relations";
 import { createLessonAction } from "./actions";
 import Link from "next/link";
 
-const inputClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm";
-const textareaClass = "focus-ring rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 font-normal shadow-sm";
+const inputClass = "focus-ring w-full min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm";
+const textareaClass = "focus-ring w-full max-w-full resize-y rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 font-normal shadow-sm";
 
 type LessonListRow = {
   id: string;
@@ -44,7 +44,7 @@ export default async function TeacherLessonsPage({ searchParams }: { searchParam
       <FlashMessage message={params.error} variant="error" className="mb-7" />
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
-      <div className="grid gap-8 xl:grid-cols-[0.72fr_1.28fr]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Create Lesson</h2>
           <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Create the lesson shell here, then use Lesson Studio to build the full module with content blocks.</p>

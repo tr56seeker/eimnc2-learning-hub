@@ -82,7 +82,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
       <FlashMessage message={params.error} variant="error" className="mb-7" />
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
-      <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">My Activities</h2>
           {!assignments.length ? (
@@ -129,7 +129,7 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
             <form action={submitOutputAction} className="mt-5 grid gap-5">
               <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Assignment
-                <select name="assignment_id" required className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm">
+                <select name="assignment_id" required className="focus-ring w-full min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm">
                   <option value="">Select task</option>
                   {assignments.map((assignment) => (
                     <option key={assignment.id} value={assignment.id}>{assignment.title}</option>
@@ -138,11 +138,11 @@ export default async function LearnerSubmissionsPage({ searchParams }: { searchP
               </label>
               <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Output link
-                <input name="file_url" type="url" className="focus-ring min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm" placeholder="Google Drive / YouTube unlisted / image link" />
+                <input name="file_url" type="url" className="focus-ring w-full min-h-12 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 px-4 py-3 font-normal shadow-sm" placeholder="Google Drive / YouTube unlisted / image link" />
               </label>
               <label className="grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Notes / explanation
-                <textarea name="content_text" rows={6} className="focus-ring rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 font-normal shadow-sm" placeholder="Briefly explain your submitted work." />
+                <textarea name="content_text" rows={6} className="focus-ring w-full max-w-full resize-y rounded-2xl border border-slate-200/80 dark:border-slate-700/80 bg-white/80 dark:bg-slate-900/80 p-4 font-normal shadow-sm" placeholder="Briefly explain your submitted work." />
               </label>
               <button className="rounded-2xl bg-slate-950 px-5 py-3.5 font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">Submit Output</button>
             </form>

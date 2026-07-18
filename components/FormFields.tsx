@@ -8,7 +8,7 @@ type FieldProps = {
   required?: boolean;
 };
 
-const fieldClass = "focus-ring min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20";
+const fieldClass = "focus-ring w-full min-h-12 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-3 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20";
 const labelClass = "grid gap-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300";
 
 export function FormInput({ label, name, defaultValue, placeholder, required, type = "text", min, max }: FieldProps & { type?: string; min?: number; max?: number }) {
@@ -24,7 +24,7 @@ export function FormTextarea({ label, name, defaultValue, placeholder, required,
   return (
     <label className={labelClass}>
       {label}
-      <textarea name={name} rows={rows} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} className="focus-ring rounded-2xl border border-slate-200/80 bg-white/90 p-4 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20" />
+      <textarea name={name} rows={rows} required={required} defaultValue={defaultValue ?? ""} placeholder={placeholder} className="focus-ring w-full max-w-full resize-y rounded-2xl border border-slate-200/80 bg-white/90 p-4 font-normal text-slate-900 shadow-sm shadow-slate-200/40 dark:border-slate-700/80 dark:bg-slate-900/90 dark:text-slate-100 dark:shadow-black/20" />
     </label>
   );
 }

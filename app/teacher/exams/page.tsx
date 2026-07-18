@@ -106,7 +106,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
       <FlashMessage message={params.error} variant="error" className="mb-7" />
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
-      <div className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr]">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Create Exam</h2>
           <div className="mt-7">

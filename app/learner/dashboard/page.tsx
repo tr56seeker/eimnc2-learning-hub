@@ -33,7 +33,7 @@ export default async function LearnerDashboardPage() {
       />
 
       <section className="card my-10 rounded-[1.5rem] p-6 sm:p-7">
-        <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr] md:items-end">
+        <div className="grid gap-5 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:items-end">
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Learner profile</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{profile.full_name}</h2>

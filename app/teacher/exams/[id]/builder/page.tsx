@@ -97,7 +97,7 @@ export default async function ExamBuilderPage({
       <FlashMessage message={query.error} variant="error" className="mb-7" />
       <FlashMessage message={query.message} variant="success" className="mb-7" />
 
-      <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
         <aside className="card rounded-[1.75rem] p-7 sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{competency?.code ?? "EIM"} / {exam.status}</p>
           <h2 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">Exam Setup</h2>

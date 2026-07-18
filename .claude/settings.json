@@ -35,7 +35,8 @@
       "Bash(xargs grep -LE 'active:')",
       "Bash(xargs -0 perl -i -pe ' *)",
       "Bash(git reset *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(xargs grep -LE 'w-full')"
     ],
     "deny": [
       "mcp__*",

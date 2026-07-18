@@ -51,7 +51,7 @@ export default async function TeacherProjectsPage({
       <FlashMessage message={params.error} variant="error" className="mb-7" />
       <FlashMessage message={params.message} variant="success" className="mb-7" />
 
-      <div className="grid gap-8 xl:grid-cols-[0.75fr_1.25fr]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
         <section className="card rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Create Project</h2>
           <form action={createProjectAction} className="mt-6 grid gap-5">
