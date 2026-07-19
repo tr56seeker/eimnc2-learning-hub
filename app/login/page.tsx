@@ -1,11 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { FlashMessage } from "@/components/FlashMessage";
 import { ResetThemeOnLogin } from "@/components/ResetThemeOnLogin";
+import { createClient } from "@/lib/supabase/server";
 import { loginAction } from "./actions";
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ message?: string; next?: string }> }) {
   const params = await searchParams;
+
+  // Middleware already redirects an authenticated visitor away from this page,
+  // but that check can occasionally miss (a transient error from Supabase's
+  // getUser() call reads as "no user" for that one request). Checking again
+  // here means a logged-in visitor is never shown the login form, even if
+  // middleware's redirect didn't fire.
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (user) redirect("/portal");
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10">

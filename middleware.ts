@@ -48,6 +48,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
+  // Auth-sensitive pages (login, and anything requiring a logged-in session)
+  // must never be served from the browser's disk cache or back/forward cache —
+  // otherwise a stale copy from before logging in/out can show through on the
+  // next visit or on hitting the back button, out of sync with the real session.
+  if (isProtected || pathname === "/login" || pathname === "/signup") {
+    response.headers.set("Cache-Control", "no-store, must-revalidate");
+  }
+
   return response;
 }
 

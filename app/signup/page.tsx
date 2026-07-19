@@ -1,6 +1,14 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (user) redirect("/portal");
+
   return (
     <main className="flex min-h-screen items-center justify-center px-5 py-10">
       <div className="card w-full max-w-xl rounded-[1.75rem] p-7 text-center sm:p-9">
