@@ -89,6 +89,21 @@ export function isLessonBlockType(value: string): value is LessonBlockType {
   return lessonBlockTypes.includes(value as LessonBlockType);
 }
 
+// Block types a learner actually interacts with, as opposed to reads — these
+// are the ones lesson_block_progress tracks completion/response for.
+export const interactiveLessonBlockTypes = ["activity", "checklist", "quick_question", "reflection"] as const;
+export type InteractiveLessonBlockType = (typeof interactiveLessonBlockTypes)[number];
+
+export function isInteractiveLessonBlockType(value: LessonBlockType): value is InteractiveLessonBlockType {
+  return (interactiveLessonBlockTypes as readonly string[]).includes(value);
+}
+
+export type LessonBlockProgress = {
+  blockId: string;
+  completed: boolean;
+  response: { text?: string; checked?: boolean[] } | null;
+};
+
 export function extractEmbedSrc(input: string) {
   const value = input.trim();
   if (!value) return "";

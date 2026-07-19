@@ -36,7 +36,10 @@ const eventLabels: Record<string, string> = {
   copy_attempt: "Attempted to copy",
   paste_attempt: "Attempted to paste",
   right_click: "Used right-click / context menu",
-  fullscreen_exit: "Exited fullscreen"
+  fullscreen_exit: "Exited fullscreen",
+  devtools_attempt: "Attempted to open developer tools",
+  print_attempt: "Attempted to print the exam",
+  idle_timeout: "Long period of no activity"
 };
 
 const reviewStatusLabels: Record<string, string> = {

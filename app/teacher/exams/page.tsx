@@ -13,6 +13,7 @@ import { createExamAction, deleteExamAction, setExamStatusAction, updateExamActi
 type ExamRow = {
   id: string;
   competency_id: string | null;
+  lesson_id: string | null;
   title: string;
   description: string | null;
   status: "draft" | "published" | "closed";
@@ -37,11 +38,13 @@ function toDateInput(value: string | null) {
 function ExamForm({
   action,
   competencies,
+  lessons,
   exam,
   submitLabel
 }: {
   action: (formData: FormData) => void;
   competencies: { id: string; code: string; title: string; is_active?: boolean | null }[];
+  lessons: { id: string; title: string }[];
   exam?: ExamRow;
   submitLabel: string;
 }) {
@@ -55,6 +58,12 @@ function ExamForm({
         <option value="">No competency</option>
         {competencies.map((competency) => (
           <option key={competency.id} value={competency.id}>{competency.code} - {competency.title}{competency.is_active === false ? " (Archived)" : ""}</option>
+        ))}
+      </FormSelect>
+      <FormSelect label="Lesson (optional — scopes this as a per-topic quiz)" name="lesson_id" defaultValue={exam?.lesson_id ?? ""}>
+        <option value="">No specific lesson</option>
+        {lessons.map((lesson) => (
+          <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
         ))}
       </FormSelect>
       <div className="grid gap-5 md:grid-cols-3">
@@ -87,16 +96,18 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
   const params = await searchParams;
   const { profile, supabase } = await requireTeacher();
 
-  const [competenciesResult, examsResult] = await Promise.all([
+  const [competenciesResult, lessonsResult, examsResult] = await Promise.all([
     supabase.from("competencies").select("id, code, title, is_active").order("order_index"),
+    supabase.from("lessons").select("id, title").order("title"),
     supabase
       .from("exams")
-      .select("id, competency_id, title, description, status, duration_minutes, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, max_violations, competencies(code, title), exam_questions(id)")
+      .select("id, competency_id, lesson_id, title, description, status, duration_minutes, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, max_violations, competencies(code, title), exam_questions(id)")
       .order("created_at", { ascending: false })
       .returns<ExamRow[]>()
   ]);
 
   const competencies = competenciesResult.data ?? [];
+  const lessons = lessonsResult.data ?? [];
   const exams = examsResult.data ?? [];
 
   return (
@@ -110,7 +121,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
         <section className="card min-w-0 rounded-[1.75rem] p-7 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Create Exam</h2>
           <div className="mt-7">
-            <ExamForm action={createExamAction} competencies={competencies} submitLabel="Create Exam" />
+            <ExamForm action={createExamAction} competencies={competencies} lessons={lessons} submitLabel="Create Exam" />
           </div>
         </section>
 
@@ -120,6 +131,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
           ) : exams.map((exam) => {
             const competency = firstRelation(exam.competencies);
             const questionCount = exam.exam_questions?.length ?? 0;
+            const linkedLesson = lessons.find((lesson) => lesson.id === exam.lesson_id);
 
             return (
               <details key={exam.id} className="card rounded-[1.75rem] p-6 sm:p-7">
@@ -129,6 +141,11 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
                       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{competency?.code ?? "EIM"} / {exam.status}</p>
                       <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-slate-100">{exam.title}</h2>
                       <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{exam.description}</p>
+                      {linkedLesson ? (
+                        <p className="mt-2 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
+                          Topic quiz for: {linkedLesson.title}
+                        </p>
+                      ) : null}
                     </div>
                     <Link href={`/teacher/exams/${exam.id}/builder`} className="rounded-2xl bg-slate-950 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-slate-950/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:bg-teal-700">
                       Builder
@@ -142,7 +159,7 @@ export default async function TeacherExamsPage({ searchParams }: { searchParams:
                   </div>
                 </summary>
                 <div className="mt-7 grid gap-6 border-t border-slate-100 pt-6 dark:border-slate-800">
-                  <ExamForm action={updateExamAction.bind(null, exam.id)} competencies={competencies} exam={exam} submitLabel="Save Exam" />
+                  <ExamForm action={updateExamAction.bind(null, exam.id)} competencies={competencies} lessons={lessons} exam={exam} submitLabel="Save Exam" />
                   <div className="flex flex-wrap gap-3">
                     <form action={setExamStatusAction.bind(null, exam.id, exam.status === "published" ? "draft" : "published")}>
                       <SubmitButton className="rounded-2xl border border-teal-200 px-5 py-3 font-semibold text-teal-700 hover:bg-teal-50 dark:border-amber-800 dark:text-amber-400 dark:hover:bg-amber-950/40 active:scale-[0.97]">

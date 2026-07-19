@@ -8,6 +8,7 @@ import type { Profile } from "@/lib/types";
 const learnerLinks: NavItem[] = [
   { label: "Dashboard", href: "/learner/dashboard" },
   { label: "Lessons", href: "/learner/lessons" },
+  { label: "My Progress", href: "/learner/progress" },
   { label: "Exams", href: "/learner/exams" },
   { label: "Submissions", href: "/learner/submissions" },
   { label: "Projects", href: "/learner/projects" },

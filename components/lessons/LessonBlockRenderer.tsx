@@ -1,5 +1,6 @@
 import { EmbeddedResourceViewer } from "@/components/lessons/EmbeddedResourceViewer";
-import { type LessonBlock, lessonBlockLabels } from "@/lib/lesson-blocks";
+import { ActivityProgressToggle, ChecklistProgress, TextResponseBlock } from "@/components/lessons/InteractiveLessonBlocks";
+import { type LessonBlock, type LessonBlockProgress, lessonBlockLabels } from "@/lib/lesson-blocks";
 
 function safeHttpUrl(value: string | null) {
   if (!value) return null;
@@ -48,7 +49,15 @@ function ExternalLinkButton({ href, label = "Open in New Tab" }: { href: string 
   );
 }
 
-export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
+export function LessonBlockRenderer({
+  block,
+  progress,
+  interactive = false
+}: {
+  block: LessonBlock;
+  progress?: LessonBlockProgress;
+  interactive?: boolean;
+}) {
   const title = block.title || lessonBlockLabels[block.block_type];
   const blockUrl = safeHttpUrl(block.image_url);
 
@@ -209,7 +218,10 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{lessonBlockLabels.activity}</p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <Paragraphs body={block.body ?? block.caption} />
-        <ExternalLinkButton href={block.image_url} label="Open Activity Link" />
+        <div className="flex flex-wrap items-center">
+          <ExternalLinkButton href={block.image_url} label="Open Activity Link" />
+          {interactive ? <ActivityProgressToggle blockId={block.id} lessonId={block.lesson_id} initialCompleted={progress?.completed ?? false} /> : null}
+        </div>
       </section>
     );
   }
@@ -220,14 +232,18 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
       <section className="rounded-[1.5rem] border border-sky-100 dark:border-sky-900/50 bg-sky-50/70 dark:bg-sky-950/30 p-6 sm:p-7">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-400">Preparation Checklist</p>
         <h3 className="mt-2 text-xl font-semibold text-sky-950 dark:text-sky-200">{title}</h3>
-        <ul className="mt-5 grid gap-3">
-          {items.map((item, index) => (
-            <li key={`${item}-${index}`} className="flex items-start gap-3 rounded-2xl bg-white/75 dark:bg-slate-900/75 p-4 text-sm leading-6 text-slate-700 dark:text-slate-300">
-              <span aria-hidden="true" className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 border-sky-300 dark:border-sky-700 bg-white dark:bg-slate-900" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+        {interactive ? (
+          <ChecklistProgress blockId={block.id} lessonId={block.lesson_id} items={items} initialChecked={progress?.response?.checked ?? []} />
+        ) : (
+          <ul className="mt-5 grid gap-3">
+            {items.map((item, index) => (
+              <li key={`${item}-${index}`} className="flex items-start gap-3 rounded-2xl bg-white/75 dark:bg-slate-900/75 p-4 text-sm leading-6 text-slate-700 dark:text-slate-300">
+                <span aria-hidden="true" className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border-2 border-sky-300 dark:border-sky-700 bg-white dark:bg-slate-900" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     );
   }
@@ -238,6 +254,16 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-700 dark:text-violet-400">Quick Question</p>
         <h3 className="mt-2 text-xl font-semibold text-violet-950 dark:text-violet-200">{title}</h3>
         <Paragraphs body={block.body} />
+        {interactive ? (
+          <TextResponseBlock
+            blockId={block.id}
+            lessonId={block.lesson_id}
+            initialText={progress?.response?.text ?? ""}
+            initialCompleted={progress?.completed ?? false}
+            placeholder="Type your answer here..."
+            submitLabel="Save My Answer"
+          />
+        ) : null}
       </section>
     );
   }
@@ -248,6 +274,17 @@ export function LessonBlockRenderer({ block }: { block: LessonBlock }) {
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">Reflection Prompt</p>
         <h3 className="mt-2 text-xl font-semibold text-amber-950 dark:text-amber-200">{title}</h3>
         <Paragraphs body={block.body} />
+        {interactive ? (
+          <TextResponseBlock
+            blockId={block.id}
+            lessonId={block.lesson_id}
+            initialText={progress?.response?.text ?? ""}
+            initialCompleted={progress?.completed ?? false}
+            placeholder="Write your reflection here..."
+            submitLabel="Save My Reflection"
+            rows={4}
+          />
+        ) : null}
       </section>
     );
   }

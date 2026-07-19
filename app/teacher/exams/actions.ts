@@ -24,6 +24,7 @@ function examPayload(formData: FormData, createdBy?: string) {
 
   return {
     competency_id: optionalValue(formData, "competency_id"),
+    lesson_id: optionalValue(formData, "lesson_id"),
     title: value(formData, "title"),
     description: optionalValue(formData, "description"),
     duration_minutes: Number(value(formData, "duration_minutes") || 30),

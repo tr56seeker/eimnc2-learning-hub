@@ -4,7 +4,7 @@ import { LessonBlockRenderer } from "@/components/lessons/LessonBlockRenderer";
 import { LessonCompletionControl, LessonReadingAids } from "@/components/lessons/LessonProgressTracker";
 import { PortalShell } from "@/components/PortalShell";
 import { getCurrentUserAndProfile, requireActiveAccount } from "@/lib/auth";
-import { type LessonBlock, type LessonBlockType } from "@/lib/lesson-blocks";
+import { type LessonBlock, type LessonBlockProgress, type LessonBlockType } from "@/lib/lesson-blocks";
 import { publishDueLessons } from "@/lib/lesson-scheduling";
 import { firstRelation } from "@/lib/relations";
 
@@ -170,14 +170,16 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
   ]);
   const legacyBlocks = blocks.filter((block) => !groupedTypes.has(block.block_type));
 
-  const { data: progress } = !isTeacherPreview
-    ? await supabase
-        .from("lesson_progress")
-        .select("completed, last_section")
-        .eq("lesson_id", id)
-        .eq("learner_id", profile.id)
-        .maybeSingle()
-    : { data: null };
+  const [{ data: progress }, { data: blockProgressRows }] = !isTeacherPreview
+    ? await Promise.all([
+        supabase.from("lesson_progress").select("completed, last_section").eq("lesson_id", id).eq("learner_id", profile.id).maybeSingle(),
+        supabase.from("lesson_block_progress").select("block_id, completed, response").eq("lesson_id", id).eq("learner_id", profile.id)
+      ])
+    : [{ data: null }, { data: null }];
+
+  const progressByBlock = new Map<string, LessonBlockProgress>(
+    (blockProgressRows ?? []).map((row) => [row.block_id, { blockId: row.block_id, completed: row.completed, response: row.response as LessonBlockProgress["response"] }])
+  );
 
   const readerSections: { id: string; label: string }[] = [];
   if (blocks.length) {
@@ -239,14 +241,18 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
 
               return (
                 <ModuleSection key={group.title} id={slugify(group.title)} eyebrow={group.eyebrow} title={group.title} description={group.description}>
-                  {sectionBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
+                  {sectionBlocks.map((block) => (
+                    <LessonBlockRenderer key={block.id} block={block} progress={progressByBlock.get(block.id)} interactive={!isTeacherPreview} />
+                  ))}
                 </ModuleSection>
               );
             })}
 
             {legacyBlocks.length ? (
               <ModuleSection id={slugify("Additional Lesson Content")} eyebrow="More to Explore" title="Additional Lesson Content" description="Review these supporting notes and references from your teacher.">
-                {legacyBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
+                {legacyBlocks.map((block) => (
+                  <LessonBlockRenderer key={block.id} block={block} progress={progressByBlock.get(block.id)} interactive={!isTeacherPreview} />
+                ))}
               </ModuleSection>
             ) : null}
           </>
@@ -275,7 +281,9 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
 
         {reflectionBlocks.length ? (
           <ModuleSection id={slugify("Reflection")} eyebrow="Learning Journal" title="Reflection" description="Connect the lesson to your own practice and identify your next step.">
-            {reflectionBlocks.map((block) => <LessonBlockRenderer key={block.id} block={block} />)}
+            {reflectionBlocks.map((block) => (
+              <LessonBlockRenderer key={block.id} block={block} progress={progressByBlock.get(block.id)} interactive={!isTeacherPreview} />
+            ))}
           </ModuleSection>
         ) : null}
 

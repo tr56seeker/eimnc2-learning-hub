@@ -2,12 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EmptyState } from "@/components/EmptyState";
 import { FlashMessage } from "@/components/FlashMessage";
+import { ChecklistItem, ProgressMeter } from "@/components/lessons/TopicProgressMeter";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { onlineBadgeClass, statusBadgeClass } from "@/lib/badges";
 import { requireTeacher } from "@/lib/auth";
 import { formatDateTime } from "@/lib/format";
 import { formatGradeSection, formatLearnerCompleteName, formatLearnerName } from "@/lib/learner-accounts";
+import { loadLessonTopicProgress } from "@/lib/lesson-topic-progress";
 import { calculateAge, getOnlineStatus } from "@/lib/presence";
 import { firstRelation } from "@/lib/relations";
 import type { ProfileStatus } from "@/lib/types";
@@ -200,6 +202,7 @@ export default async function TeacherLearnerProfilePage({
   ]);
 
   const pendingRetakeExamIds = new Set((retakeGrantsResult.data ?? []).map((grant) => grant.exam_id));
+  const topicProgress = await loadLessonTopicProgress(supabase, id);
 
   const attempts = attemptsResult.data ?? [];
   const submissions = submissionsResult.data ?? [];
@@ -314,6 +317,38 @@ export default async function TeacherLearnerProfilePage({
               <div className="mt-5"><EmptyState title="No submissions" message="Submitted assignment work will appear here." /></div>
             )}
           </div>
+        </section>
+
+        <section className="card rounded-[1.75rem] p-6">
+          <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">Topic Progress</h2>
+          {!topicProgress.length ? (
+            <div className="mt-5"><EmptyState title="No published lessons yet" message="Per-topic progress will appear here once lessons are published." /></div>
+          ) : (
+            <div className="mt-5 grid gap-4">
+              {topicProgress.map((topic) => (
+                <div key={topic.lessonId} className="rounded-2xl border border-slate-100 bg-white/80 p-4 dark:border-slate-800 dark:bg-slate-800/60">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <p className="font-semibold text-slate-950 dark:text-slate-100">{topic.lessonTitle}</p>
+                    <div className="w-full max-w-[220px] sm:w-48">
+                      <ProgressMeter percent={topic.percentComplete} />
+                    </div>
+                  </div>
+                  <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                    <ChecklistItem done={topic.read} label="Reading" />
+                    <ChecklistItem
+                      done={topic.activity !== null && topic.activity.total > 0 && topic.activity.completed === topic.activity.total}
+                      label={topic.activity ? `Activities (${topic.activity.completed}/${topic.activity.total})` : "No activity"}
+                    />
+                    <ChecklistItem done={topic.output !== null && topic.output.status !== "not_submitted"} label={topic.output ? "Output submitted" : "No output required"} />
+                    <ChecklistItem
+                      done={topic.assessment !== null && topic.assessment.attempted}
+                      label={topic.assessment ? (topic.assessment.attempted ? `Assessment ${topic.assessment.score ?? 0}/${topic.assessment.maxScore ?? 0}` : "Assessment pending") : "No assessment"}
+                    />
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="card rounded-[1.75rem] p-6">

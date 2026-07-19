@@ -37,23 +37,33 @@ export default async function TeacherDashboardPage() {
   const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
   const nowIso = now.toISOString();
 
-  const [activeLearners, sections, learnersWithoutSection, lessons, pending, cheatingAlerts, progressData, dueAssignments, dueExams, recentLessons] = await Promise.all([
+  const [activeLearners, sections, learnersWithoutSection, lessons, pending, cheatingAlertsRaw, progressData, dueAssignments, dueExams, recentLessons] = await Promise.all([
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "learner").eq("status", "active"),
     supabase.from("sections").select("id", { count: "exact", head: true }),
     supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "learner").is("section_id", null),
     supabase.from("lessons").select("id", { count: "exact", head: true }).eq("published", true),
     supabase.from("submissions").select("id", { count: "exact", head: true }).eq("status", "submitted"),
+    // Fetches more than the 5 we'll display, since some of the most recent
+    // terminations may already be reviewed/resolved and get filtered out below —
+    // otherwise a handled incident could sit here indefinitely just because it's recent.
     supabase
       .from("exam_attempts")
       .select("id, violation_count, termination_reason, submitted_at, learner_id, exam_id, profiles(full_name), exams(title)")
       .not("termination_reason", "is", null)
       .order("submitted_at", { ascending: false })
-      .limit(5),
+      .limit(20),
     loadProgressBaseData(supabase),
     supabase.from("assignments").select("id, title, due_at").eq("is_active", true).gte("due_at", nowIso).lte("due_at", weekFromNow).order("due_at", { ascending: true }).limit(4),
     supabase.from("exams").select("id, title, start_at").eq("status", "published").gte("start_at", nowIso).lte("start_at", weekFromNow).order("start_at", { ascending: true }).limit(4),
     supabase.from("lessons").select("id, title, created_at").eq("published", true).order("created_at", { ascending: false }).limit(3)
   ]);
+
+  const unreviewedAttemptIds = (cheatingAlertsRaw.data ?? []).map((alert) => alert.id);
+  const { data: reviewRows } = unreviewedAttemptIds.length
+    ? await supabase.from("exam_incident_reviews").select("attempt_id, status").in("attempt_id", unreviewedAttemptIds)
+    : { data: [] as { attempt_id: string; status: string }[] };
+  const reviewedIds = new Set((reviewRows ?? []).filter((review) => review.status !== "needs_review").map((review) => review.attempt_id));
+  const cheatingAlerts = { data: (cheatingAlertsRaw.data ?? []).filter((alert) => !reviewedIds.has(alert.id)).slice(0, 5) };
 
   const flaggedLearnerCount = progressData.learners.filter((learner) => classifyLearnerRisk(progressData, learner.id).riskLevel !== "Normal").length;
 
@@ -98,9 +108,9 @@ export default async function TeacherDashboardPage() {
       />
 
       {cheatingAlerts.data && cheatingAlerts.data.length > 0 ? (
-        <section className="mt-8 rounded-[1.5rem] border border-red-200 bg-red-50/80 p-6">
-          <h2 className="text-lg font-semibold text-red-800">Academic Integrity Alerts</h2>
-          <p className="mt-1 text-sm text-red-700">Exams auto-submitted due to policy violations (tab-switching, copy/paste, etc.).</p>
+        <section className="mt-8 rounded-[1.5rem] border border-red-200 bg-red-50/80 p-6 dark:border-red-900/50 dark:bg-red-950/20">
+          <h2 className="text-lg font-semibold text-red-800 dark:text-red-300">Academic Integrity Alerts</h2>
+          <p className="mt-1 text-sm text-red-700 dark:text-red-400">Exams auto-submitted after exceeding the allowed policy violations, awaiting your review.</p>
           <div className="mt-4 grid gap-3">
             {cheatingAlerts.data.map((alert) => {
               const learner = firstRelation(alert.profiles);
@@ -109,15 +119,15 @@ export default async function TeacherDashboardPage() {
                 <Link
                   key={alert.id}
                   href={`/teacher/learners/${alert.learner_id}`}
-                  className="block rounded-2xl border border-red-200/80 bg-white/80 p-4 hover:border-red-300 hover:bg-white"
+                  className="block rounded-2xl border border-red-200/80 bg-white/80 p-4 hover:border-red-300 hover:bg-white active:scale-[0.97] dark:border-red-900/40 dark:bg-slate-900/60 dark:hover:border-red-800 dark:hover:bg-slate-900"
                 >
-                  <p className="font-semibold text-slate-950">{learner?.full_name ?? "Learner"} — {exam?.title ?? "Exam"}</p>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-red-600">{alert.violation_count ?? 0} violations · {formatDateTime(alert.submitted_at)}</p>
+                  <p className="font-semibold text-slate-950 dark:text-slate-100">{learner?.full_name ?? "Learner"} — {exam?.title ?? "Exam"}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-red-600 dark:text-red-400">{alert.violation_count ?? 0} violations · {formatDateTime(alert.submitted_at)}</p>
                 </Link>
               );
             })}
           </div>
-          <Link href="/teacher/incidents" className="mt-4 inline-block text-sm font-semibold text-red-700 hover:text-red-800 active:scale-[0.97]">
+          <Link href="/teacher/incidents" className="mt-4 inline-block text-sm font-semibold text-red-700 hover:text-red-800 active:scale-[0.97] dark:text-red-400 dark:hover:text-red-300">
             Review all flagged incidents
           </Link>
         </section>
