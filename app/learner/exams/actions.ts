@@ -24,7 +24,15 @@ function normalizeAnswer(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-export type ExamViolationType = "tab_switch" | "copy_attempt" | "paste_attempt" | "right_click" | "fullscreen_exit";
+export type ExamViolationType =
+  | "tab_switch"
+  | "copy_attempt"
+  | "paste_attempt"
+  | "right_click"
+  | "fullscreen_exit"
+  | "devtools_attempt"
+  | "print_attempt"
+  | "idle_timeout";
 
 // Called in real time by ExamIntegrityGuard as each violation happens, so
 // the violation count is a server-persisted tally instead of a single
