@@ -72,7 +72,7 @@ export function ChecklistProgress({
           <button
             type="button"
             onClick={() => toggleItem(index)}
-            className="flex w-full items-start gap-3 rounded-2xl bg-white/75 p-4 text-left text-sm leading-6 text-slate-700 shadow-sm transition hover:bg-white active:scale-[0.99] dark:bg-slate-900/75 dark:text-slate-300 dark:hover:bg-slate-900"
+            className="flex w-full items-start gap-3 rounded-2xl bg-white/75 p-4 text-left text-sm leading-6 text-slate-700 transition hover:bg-white active:scale-[0.99] dark:bg-slate-900/75 dark:text-slate-300 dark:hover:bg-slate-900"
           >
             <span
               aria-hidden="true"

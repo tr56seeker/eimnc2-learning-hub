@@ -6,6 +6,7 @@ import { ExamTimer } from "@/components/ExamTimer";
 import { ExamIntegrityGuard } from "@/components/ExamIntegrityGuard";
 import { FlashMessage } from "@/components/FlashMessage";
 import { requireLearner } from "@/lib/auth";
+import { firstRelation } from "@/lib/relations";
 import { submitExamAction } from "../actions";
 
 type QuestionRow = {
@@ -35,12 +36,14 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
 
   const { data: exam } = await supabase
     .from("exams")
-    .select("id, title, description, duration_minutes, status, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, max_violations")
+    .select("id, title, description, duration_minutes, status, start_at, end_at, randomize_questions, randomize_choices, show_result_after_submit, show_score_after_submit, allow_review_after_close, max_violations, lesson_id, lessons(title)")
     .eq("id", id)
     .eq("status", "published")
     .single();
 
   if (!exam) notFound();
+
+  const lesson = firstRelation(exam.lessons);
 
   const { data: existingAttempts } = await supabase
     .from("exam_attempts")
@@ -108,7 +111,16 @@ export default async function ExamDetailPage({ params, searchParams }: { params:
   return (
     <PortalShell profile={profile}>
       <section className="card rounded-[1.75rem] p-7 sm:p-9">
-        <Link href="/learner/exams" className="text-sm font-semibold text-teal-700 dark:text-amber-400 hover:text-teal-800 dark:hover:text-amber-300 active:scale-[0.97]">Back to exams</Link>
+        {exam.lesson_id ? (
+          <Link
+            href={`/learner/lessons/${exam.lesson_id}#reflection`}
+            className="text-sm font-semibold text-teal-700 dark:text-amber-400 hover:text-teal-800 dark:hover:text-amber-300 active:scale-[0.97]"
+          >
+            ← Back to {lesson?.title ?? "lesson"}
+          </Link>
+        ) : (
+          <Link href="/learner/exams" className="text-sm font-semibold text-teal-700 dark:text-amber-400 hover:text-teal-800 dark:hover:text-amber-300 active:scale-[0.97]">Back to exams</Link>
+        )}
         <p className="mt-7 text-xs font-semibold uppercase tracking-[0.2em] text-teal-700 dark:text-amber-400">Online Assessment</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 dark:text-slate-100 sm:text-5xl">{exam.title}</h1>
         <p className="mt-4 max-w-3xl leading-7 text-slate-600 dark:text-slate-400">{exam.description}</p>

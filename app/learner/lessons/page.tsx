@@ -1,8 +1,9 @@
-import Link from "next/link";
 import { PortalShell } from "@/components/PortalShell";
 import { SectionHeader } from "@/components/SectionHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { CompetencyOutline, type Topic } from "@/components/lessons/CompetencyOutline";
 import { requireLearner } from "@/lib/auth";
+import { type LessonBlock, type LessonBlockProgress } from "@/lib/lesson-blocks";
 import { publishDueLessons } from "@/lib/lesson-scheduling";
 import { firstRelation } from "@/lib/relations";
 
@@ -14,45 +15,118 @@ export default async function LearnerLessonsPage() {
   const [lessonsResult, progressResult] = await Promise.all([
     supabase
       .from("lessons")
-      .select("id, title, summary, estimated_minutes, competencies(code, title)")
+      .select("id, title, summary, content_md, estimated_minutes, competencies(id, code, title, order_index)")
       .eq("published", true)
       .order("order_index"),
     supabase.from("lesson_progress").select("lesson_id, completed").eq("learner_id", profile.id)
   ]);
 
-  const lessons = lessonsResult.data;
+  const lessons = lessonsResult.data ?? [];
+  const lessonIds = lessons.map((lesson) => lesson.id);
   const completedLessonIds = new Set(
     (progressResult.data ?? []).filter((row) => row.completed).map((row) => row.lesson_id)
   );
+
+  const [blocksResult, blockProgressResult, assignmentsResult, resourcesResult, examsResult] = lessonIds.length
+    ? await Promise.all([
+        supabase
+          .from("lesson_blocks")
+          .select("id, lesson_id, block_type, title, body, image_url, caption, alt_text, metadata, display_order, is_active, created_at, updated_at")
+          .in("lesson_id", lessonIds)
+          .eq("is_active", true)
+          .order("display_order")
+          .order("created_at")
+          .returns<LessonBlock[]>(),
+        supabase.from("lesson_block_progress").select("block_id, completed, response").eq("learner_id", profile.id),
+        supabase
+          .from("assignments")
+          .select("id, lesson_id, title, instructions, due_at, submission_type")
+          .in("lesson_id", lessonIds)
+          .order("created_at"),
+        supabase.from("lesson_resources").select("id, lesson_id, title, url, resource_type").in("lesson_id", lessonIds),
+        supabase
+          .from("exams")
+          .select("id, lesson_id, title, duration_minutes, attempts_allowed")
+          .in("lesson_id", lessonIds)
+          .eq("status", "published")
+          .order("created_at")
+      ])
+    : [{ data: [] as LessonBlock[] }, { data: [] }, { data: [] }, { data: [] }, { data: [] }];
+
+  const blocksByLesson = new Map<string, LessonBlock[]>();
+  for (const block of blocksResult.data ?? []) {
+    if (!blocksByLesson.has(block.lesson_id)) blocksByLesson.set(block.lesson_id, []);
+    blocksByLesson.get(block.lesson_id)!.push(block);
+  }
+
+  const blockProgressByBlock: Record<string, LessonBlockProgress> = Object.fromEntries(
+    (blockProgressResult.data ?? []).map((row) => [row.block_id, { blockId: row.block_id, completed: row.completed, response: row.response as LessonBlockProgress["response"] }])
+  );
+
+  const assignmentsByLesson = new Map<string, Topic["assignments"]>();
+  for (const assignment of assignmentsResult.data ?? []) {
+    if (!assignmentsByLesson.has(assignment.lesson_id)) assignmentsByLesson.set(assignment.lesson_id, []);
+    assignmentsByLesson.get(assignment.lesson_id)!.push(assignment);
+  }
+
+  const resourcesByLesson = new Map<string, Topic["resources"]>();
+  for (const resource of resourcesResult.data ?? []) {
+    if (!resourcesByLesson.has(resource.lesson_id)) resourcesByLesson.set(resource.lesson_id, []);
+    resourcesByLesson.get(resource.lesson_id)!.push(resource);
+  }
+
+  const examByLesson = new Map<string, Topic["exam"]>();
+  for (const exam of examsResult.data ?? []) {
+    if (!exam.lesson_id || examByLesson.has(exam.lesson_id)) continue;
+    examByLesson.set(exam.lesson_id, {
+      id: exam.id,
+      title: exam.title,
+      durationMinutes: exam.duration_minutes ?? 30,
+      attemptsAllowed: exam.attempts_allowed ?? 1
+    });
+  }
+
+  const groups = new Map<string, { code: string | null; title: string; orderIndex: number; topics: Topic[] }>();
+
+  for (const lesson of lessons) {
+    const competency = firstRelation(lesson.competencies);
+    const key = competency?.id ?? "general";
+    if (!groups.has(key)) {
+      groups.set(key, {
+        code: competency?.code ?? null,
+        title: competency?.title ?? "General EIM Topics",
+        orderIndex: competency?.order_index ?? 0,
+        topics: []
+      });
+    }
+    groups.get(key)!.topics.push({
+      id: lesson.id,
+      title: lesson.title,
+      summary: lesson.summary,
+      contentMd: lesson.content_md,
+      estimatedMinutes: lesson.estimated_minutes ?? 30,
+      completed: completedLessonIds.has(lesson.id),
+      blocks: blocksByLesson.get(lesson.id) ?? [],
+      blockProgress: blockProgressByBlock,
+      assignments: assignmentsByLesson.get(lesson.id) ?? [],
+      resources: resourcesByLesson.get(lesson.id) ?? [],
+      exam: examByLesson.get(lesson.id) ?? null
+    });
+  }
+
+  const orderedGroups = Array.from(groups.values()).sort((a, b) => a.orderIndex - b.orderIndex);
 
   return (
     <PortalShell profile={profile}>
       <SectionHeader eyebrow="Lessons" title="EIM Competency Lessons" description="Read the lessons before taking exams or submitting performance outputs." />
 
-      {!lessons?.length ? (
+      {!orderedGroups.length ? (
         <EmptyState title="No lessons yet" message="Your teacher has not published lessons yet." />
       ) : (
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {lessons.map((lesson) => {
-            const competency = firstRelation(lesson.competencies);
-            const completed = completedLessonIds.has(lesson.id);
-
-            return (
-              <Link key={lesson.id} href={`/learner/lessons/${lesson.id}`} className="card rounded-[1.5rem] p-6 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] hover:shadow-xl">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">
-                    {competency?.code ?? "EIM"}
-                  </p>
-                  {completed ? (
-                    <span className="rounded-full border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">Completed</span>
-                  ) : null}
-                </div>
-                <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">{lesson.title}</h2>
-                <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{lesson.summary}</p>
-                <p className="mt-6 text-sm font-medium text-slate-500 dark:text-slate-400">{lesson.estimated_minutes ?? 30} minutes</p>
-              </Link>
-            );
-          })}
+        <div className="grid gap-16">
+          {orderedGroups.map((group) => (
+            <CompetencyOutline key={group.title} competencyCode={group.code} competencyTitle={group.title} topics={group.topics} />
+          ))}
         </div>
       )}
     </PortalShell>

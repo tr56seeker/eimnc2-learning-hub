@@ -1,4 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
+import { PublicFooter } from "@/components/PublicFooter";
 
 const learnerFeatures = [
   { glyph: "Le", tone: "teal", title: "Lessons", text: "Read competency-based EIM topics at your own pace, with progress that picks up right where you left off." },
@@ -21,28 +23,12 @@ const toneClasses: Record<string, string> = {
 };
 
 export default function HomePage() {
-  const year = new Date().getFullYear();
-
   return (
     <main className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/75 px-5 py-4 backdrop-blur-lg sm:px-8 dark:border-slate-800/70 dark:bg-slate-950/70">
-        <nav className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700 dark:text-amber-400">Tabunoc National High School</p>
-            <h1 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">EIM NC II Learning Hub</h1>
-          </div>
-          <Link
-            href="/login"
-            className="focus-ring inline-flex w-fit rounded-full border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-700 hover:border-teal-300 hover:text-teal-700 active:scale-[0.97] dark:border-slate-700 dark:text-slate-300 dark:hover:border-amber-700 dark:hover:text-amber-300"
-          >
-            Login
-          </Link>
-        </nav>
-      </header>
-
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <section className="py-14 lg:py-20">
-          <div className="inline-flex rounded-full border border-teal-200/80 bg-teal-50/80 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm dark:bg-amber-950/40 dark:text-amber-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700 dark:text-amber-400">Tabunoc National High School</p>
+          <div className="mt-4 inline-flex rounded-full border border-teal-200/80 bg-teal-50/80 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm dark:bg-amber-950/40 dark:text-amber-300">
             Built for Electrical Installation and Maintenance NC II
           </div>
           <h2 className="mt-6 max-w-4xl text-5xl font-semibold tracking-tight text-slate-950 sm:text-7xl dark:text-slate-100">
@@ -58,6 +44,24 @@ export default function HomePage() {
             <Link href="/signup" className="text-sm font-semibold text-slate-600 hover:text-teal-700 dark:text-slate-400 dark:hover:text-amber-400 active:scale-[0.97]">
               New here? Ask your teacher for an account →
             </Link>
+          </div>
+        </section>
+
+        <section className="border-t border-slate-200/70 py-10 dark:border-slate-800/70">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-xl shadow-slate-950/10 sm:aspect-[16/9] lg:aspect-[21/9] dark:shadow-black/30">
+            <Image
+              src="/images/login-background.png"
+              alt="Tabunoc NHS learners practicing hands-on electrical installation and maintenance skills together"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-9">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">Real Tabunoc NHS Learners</p>
+              <p className="mt-2 max-w-xl text-lg font-semibold leading-7 text-white sm:text-2xl sm:leading-9">
+                Hands-on practice today becomes real-world skill tomorrow.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -95,9 +99,7 @@ export default function HomePage() {
         </section>
       </div>
 
-      <footer className="border-t border-slate-200/70 px-5 py-8 text-center text-xs text-slate-500 sm:px-8 dark:border-slate-800/70 dark:text-slate-400">
-        © {year} Tabunoc National High School · EIM NC II Learning Hub
-      </footer>
+      <PublicFooter />
     </main>
   );
 }

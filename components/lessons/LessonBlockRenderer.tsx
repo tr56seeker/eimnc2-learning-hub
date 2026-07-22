@@ -80,7 +80,7 @@ export function LessonBlockRenderer({
 
   if (block.block_type === "image") {
     return (
-      <figure className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-3 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <figure className="overflow-hidden rounded-[1.75rem] bg-slate-50 dark:bg-slate-900/50 p-3">
         {blockUrl ? (
           <img src={blockUrl} alt={block.alt_text ?? block.caption ?? ""} className="max-h-[520px] w-full rounded-[1.35rem] object-cover" />
         ) : (
@@ -114,11 +114,11 @@ export function LessonBlockRenderer({
   if (block.block_type === "procedure") {
     const steps = linesFrom(block.body);
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <h3 className="text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <ol className="mt-5 grid gap-4">
           {steps.map((step, index) => (
-            <li key={step} className="flex gap-4 rounded-2xl bg-slate-50 dark:bg-slate-800 p-4 leading-7 text-slate-700 dark:text-slate-300">
+            <li key={step} className="flex gap-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 p-4 leading-7 text-slate-700 dark:text-slate-300">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-950 text-sm font-semibold text-white">{index + 1}</span>
               <span>{step}</span>
             </li>
@@ -131,11 +131,11 @@ export function LessonBlockRenderer({
   if (block.block_type === "tools_materials") {
     const items = linesFrom(block.body);
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <h3 className="text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {items.map((item) => (
-            <div key={item} className="rounded-2xl bg-slate-50 dark:bg-slate-800 p-4 text-sm font-medium text-slate-700 dark:text-slate-300">
+            <div key={item} className="rounded-2xl bg-white/70 dark:bg-slate-900/60 p-4 text-sm font-medium text-slate-700 dark:text-slate-300">
               {item}
             </div>
           ))}
@@ -146,7 +146,7 @@ export function LessonBlockRenderer({
 
   if (block.block_type === "formula") {
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 bg-slate-950 p-6 text-white shadow-sm">
+      <section className="rounded-[1.5rem] bg-slate-950 p-6 text-white">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">Formula</p>
         <h3 className="mt-2 text-xl font-semibold">{title}</h3>
         <pre className="mt-5 overflow-x-auto rounded-2xl bg-white/10 p-4 text-sm leading-7 text-slate-100">{block.body}</pre>
@@ -174,7 +174,7 @@ export function LessonBlockRenderer({
 
   if (block.block_type === "embed") {
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <h3 className="text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
       </section>
@@ -183,7 +183,7 @@ export function LessonBlockRenderer({
 
   if (block.block_type === "video") {
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">Lesson Video</p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
@@ -193,7 +193,7 @@ export function LessonBlockRenderer({
 
   if (block.block_type === "module") {
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{lessonBlockLabels.module}</p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <Paragraphs body={block.body} />
@@ -204,7 +204,7 @@ export function LessonBlockRenderer({
 
   if (block.block_type === "module_pdf") {
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">Module PDF</p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <EmbeddedResourceViewer title={title} url={block.image_url} caption={block.caption} blockType={block.block_type} />
@@ -214,7 +214,7 @@ export function LessonBlockRenderer({
 
   if (block.block_type === "activity") {
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{lessonBlockLabels.activity}</p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <Paragraphs body={block.body ?? block.caption} />
@@ -292,7 +292,7 @@ export function LessonBlockRenderer({
   if (block.block_type === "glossary" || block.block_type === "references" || block.block_type === "resources") {
     const items = linesFrom(block.body);
     return (
-      <section className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/85 dark:bg-slate-900/85 p-6 shadow-sm shadow-slate-200/50 dark:shadow-black/20">
+      <section className="rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700 dark:text-amber-400">{lessonBlockLabels[block.block_type]}</p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-100">{title}</h3>
         <ul className="mt-5 grid gap-3">

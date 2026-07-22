@@ -65,7 +65,13 @@
       "Bash(MSYS_NO_PATHCONV=1 node _debug_gb_sweep.mjs)",
       "Bash(MSYS_NO_PATHCONV=1 node _debug_gb_sweep2.mjs)",
       "Bash(MSYS_NO_PATHCONV=1 node _debug_gb_verify.mjs)",
-      "Bash(MSYS_NO_PATHCONV=1 node _debug_gb_summary.mjs)"
+      "Bash(MSYS_NO_PATHCONV=1 node _debug_gb_summary.mjs)",
+      "Bash(node -e \"console.log\\(require\\('playwright/package.json'\\).version\\)\")",
+      "Bash(node _debug_shot.mjs)",
+      "Bash(node _debug_login_shot.mjs)",
+      "Bash(node _debug_examback.mjs)",
+      "Bash(node _debug_quizcheck.mjs)",
+      "Bash(node _debug_flat_shot.mjs)"
     ],
     "deny": [
       "mcp__*",

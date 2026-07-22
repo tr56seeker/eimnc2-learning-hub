@@ -114,7 +114,7 @@ export function LessonCompletionControl({ lessonId, initialCompleted }: { lesson
   const [isPending, startTransition] = useTransition();
 
   return (
-    <div className="mt-12 flex flex-col items-start gap-4 rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/90 dark:bg-slate-900/90 p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-12 flex flex-col items-start gap-4 rounded-[1.5rem] bg-slate-50 dark:bg-slate-900/50 p-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="text-sm font-semibold text-slate-950 dark:text-slate-100">{completed ? "You've completed this lesson." : "Finished reading?"}</p>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{completed ? "You can revisit it anytime." : "Mark it complete to track your progress."}</p>
